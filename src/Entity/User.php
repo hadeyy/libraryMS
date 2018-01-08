@@ -9,42 +9,192 @@
 namespace App\Entity;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @ORM\Entity
+ */
 class User implements UserInterface, \Serializable
 {
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
     protected $id;
+
+    /**
+     * @ORM\Column(type="string")
+     */
     protected $firstName;
+
+    /**
+     * @ORM\Column(type="string")
+     */
     protected $lastName;
+
+    /**
+     * @ORM\Column(type="string")
+     */
     protected $username;
+
+    /**
+     * @ORM\Column(type="string")
+     */
     protected $email;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $registeredAt;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $photo;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="reader")
+     */
+    private $bookReservations;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Notification", mappedBy="receiver")
+     */
+    private $notifications;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author")
+     */
+    private $comments;
+
     protected $plainPassword;
+
+    /**
+     * @ORM\Column(type="string")
+     */
     protected $password;
+
     protected $roles;
 
-    /**
-     * String representation of object
-     * @link http://php.net/manual/en/serializable.serialize.php
-     * @return string the string representation of the object or null
-     * @since 5.1.0
-     */
-    public function serialize()
+
+    public function __construct()
     {
-        // TODO: Implement serialize() method.
+        $this->notifications = new ArrayCollection();
+        $this->bookReservations = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
-    /**
-     * Constructs the object
-     * @link http://php.net/manual/en/serializable.unserialize.php
-     * @param string $serialized <p>
-     * The string representation of the object.
-     * </p>
-     * @return void
-     * @since 5.1.0
-     */
-    public function unserialize($serialized)
+    public function getId()
     {
-        // TODO: Implement unserialize() method.
+        return $this->id;
+    }
+
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName($firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName($lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function setUsername($username): void
+    {
+        $this->username = $username;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setEmail($email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword($plainPassword): void
+    {
+        $this->plainPassword = $plainPassword;
+    }
+
+    public function getRegisteredAt()
+    {
+        return $this->registeredAt;
+    }
+
+    public function setRegisteredAt($registeredAt): void
+    {
+        $this->registeredAt = $registeredAt;
+    }
+
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto($photo): void
+    {
+        $this->photo = $photo;
+    }
+
+    public function getBookReservations()
+    {
+        return $this->bookReservations;
+    }
+
+    public function addBookReservation($bookReservation): void
+    {
+        $this->bookReservations->add($bookReservation);
+    }
+
+    public function getNotifications()
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification($notification): void
+    {
+        $this->notifications->add($notification);
+    }
+
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    public function addComment($comment): void
+    {
+        $this->comments->add($comment);
     }
 
     /**
@@ -60,12 +210,10 @@ class User implements UserInterface, \Serializable
      * Alternatively, the roles might be stored on a ``roles`` property,
      * and populated in any number of different ways when the user object
      * is created.
-     *
-     * @return (Role|string)[] The user roles
      */
-    public function getRoles()
+    public function getRoles(): array
     {
-        // TODO: Implement getRoles() method.
+        return $this->roles;
     }
 
     /**
@@ -78,7 +226,12 @@ class User implements UserInterface, \Serializable
      */
     public function getPassword()
     {
-        // TODO: Implement getPassword() method.
+        return $this->password;
+    }
+
+    public function setPassword($password): void
+    {
+        $this->password = $password;
     }
 
     /**
@@ -90,17 +243,7 @@ class User implements UserInterface, \Serializable
      */
     public function getSalt()
     {
-        // TODO: Implement getSalt() method.
-    }
-
-    /**
-     * Returns the username used to authenticate the user.
-     *
-     * @return string The username
-     */
-    public function getUsername()
-    {
-        // TODO: Implement getUsername() method.
+        return null;
     }
 
     /**
@@ -111,6 +254,38 @@ class User implements UserInterface, \Serializable
      */
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
+    }
+
+    /**
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     * @since 5.1.0
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+            $this->username,
+            $this->password,
+        ));
+    }
+
+    /**
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            $this->username,
+            $this->password,
+            ) = unserialize($serialized);
     }
 }

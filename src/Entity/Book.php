@@ -35,7 +35,7 @@ class Book
     private $title;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Author" @fixme)
+     * @ORM\ManyToMany(targetEntity="App\Entity\Author", mappedBy="books")
      */
     private $authors;
 
@@ -50,7 +50,8 @@ class Book
     private $language;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Enity\Genre" @fixme)
+     * @ORM\ManyToMany(targetEntity="App\Entity\Genre", inversedBy="books")
+     * @ORM\JoinTable(name="books_genres")
      */
     private $genres;
 
@@ -95,17 +96,18 @@ class Book
     private $timesBorrowed;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\BookSerie" @fixme)
+     * @ORM\ManyToOne(targetEntity="App\Entity\BookSerie", inversedBy="book")
+     * @ORM\JoinColumn(name="bookserie_id", referencedColumnName="id")
      */
     private $serie;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\BookReservation" @fixme)
+     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="book")
      */
     private $reservations;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment" @fixme)
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="book")
      */
     private $comments;
 
@@ -150,11 +152,6 @@ class Book
         return $this->authors;
     }
 
-    public function setAuthors($authors): void
-    {
-        $this->authors = $authors;
-    }
-
     public function addAuthor($author): void
     {
         $this->authors->add($author);
@@ -183,11 +180,6 @@ class Book
     public function getGenres()
     {
         return $this->genres;
-    }
-
-    public function setGenres($genres): void
-    {
-        $this->genres = $genres;
     }
 
     public function addGenre($genre): void
