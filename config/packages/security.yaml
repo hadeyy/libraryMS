@@ -1,13 +1,35 @@
 security:
     # https://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory: { memory: ~ }
+        db_provider:
+            entity:
+                class: App\Entity\User
+                property: username
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            pattern: ^/
             anonymous: ~
+            http_basic: ~
+            provider: db_provider
+            logout:
+                path: /logout
+                target: /
+
+    access_control:
+        # require ROLE_ADMIN for /admin*
+        - { path: ^/admin, roles: ROLE_ADMIN }
+
+    encoders:
+        App\Entity\User:
+            algorithm: bcrypt
+
+    role_hierarchy:
+        ROLE_READER: ROLE_USER
+        ROLE_LIBRARIAN: ROLE_READER
+        ROLE_ADMIN: ROLE_LIBRARIAN
 
             # activate different ways to authenticate
 

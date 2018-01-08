@@ -12,9 +12,13 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
+ * @UniqueEntity(fields="email", message="Email already taken")
+ * @UniqueEntity(fields="username", message="Username already taken")
  */
 class User implements UserInterface, \Serializable
 {
@@ -27,21 +31,25 @@ class User implements UserInterface, \Serializable
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      */
     protected $firstName;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      */
     protected $lastName;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=25, unique=true)
+     * @Assert\NotBlank()
      */
     protected $username;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=60, unique=true)
+     * @Assert\NotBlank()
      */
     protected $email;
 
@@ -70,13 +78,20 @@ class User implements UserInterface, \Serializable
      */
     private $comments;
 
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Length(max=4096)
+     */
     protected $plainPassword;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      */
     protected $password;
 
+    /**
+     * @ORM\Column(type="json_array")
+     */
     protected $roles;
 
 
@@ -85,6 +100,7 @@ class User implements UserInterface, \Serializable
         $this->notifications = new ArrayCollection();
         $this->bookReservations = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->roles = ['ROLE_USER'];
     }
 
     public function getId()
@@ -214,6 +230,11 @@ class User implements UserInterface, \Serializable
     public function getRoles(): array
     {
         return $this->roles;
+    }
+
+    public function addRole($role): void
+    {
+        $this->roles[] = $role;
     }
 
     /**
