@@ -12,7 +12,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Table(name="app_book_reservations")
+ * @ORM\Entity(repositoryClass="App\Repository\BookReservationRepository")
  */
 class BookReservation
 {

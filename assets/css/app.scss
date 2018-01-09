@@ -1,13 +1,17 @@
+div#content {
+  display: flex;
+  justify-content: center;
+}
+
 div.container {
   background-color: powderblue;
   height: 100%;
-  width: 98%;
   padding-bottom: 5vh;
 }
 
 form {
   width: 50%;
-  margin-top: 10px;
+  padding-top: 10px;
 }
 
 form > div div {

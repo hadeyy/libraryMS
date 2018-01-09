@@ -13,7 +13,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Table(name="app_books")
+ * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
  */
 class Book
 {
