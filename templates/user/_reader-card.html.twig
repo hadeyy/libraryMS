@@ -1,0 +1,15 @@
+<div id="userCard" class="card border-info">
+    <div class="card-header">Reader Card</div>
+    <div class="card-body text-info">
+        <img id="userPhoto" src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="User photo">
+        <div id="readerInfo">
+            <h5 class="card-title">
+                {{ user.firstName }} {{ user.lastName }}
+            </h5>
+            <h6>Email:</h6>
+            <p>{{ user.email }}</p>
+            <h6>Member since:</h6>
+            <p>{{ user.registeredAt|date('d.m.Y') }}</p>
+        </div>
+    </div>
+</div>

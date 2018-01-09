@@ -6,7 +6,6 @@ body {
   margin-top: 2vh;
 }
 
-/** FORM elements --- **/
 form {
   padding-top: 10px;
   text-align: center;
@@ -64,9 +63,7 @@ button[type=submit] {
   margin: 40px 2px 4px 2px;
   cursor: pointer;
 }
-/** --- FORM end. **/
 
-/** LINKS --- **/
 a:hover {
   text-decoration: none;
 }
@@ -75,7 +72,6 @@ a#logout button {
   width: 80%;
   margin: 0 10%;
 }
-/** --- LINK end. **/
 
 .plus {
   font-weight: bold;
@@ -92,4 +88,23 @@ a#logout button {
   left: unset;
   right: 0;
   border: 1px solid deepskyblue;
+}
+
+#userCard {
+  max-width: 35rem;
+}
+
+#userPhoto {
+  float: left;
+  margin-right: 25px;
+}
+
+#readerInfo {
+  display: inline;
+  clear: left;
+  width: 25vw;
+}
+
+#userCard h6 {
+  margin-bottom: 0;
 }

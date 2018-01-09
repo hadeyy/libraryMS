@@ -2,5 +2,36 @@
 
 {% block title %}Profile{% endblock %}
 {% block content %}
-    <h2>profile page</h2>
+<div class="row">
+    <div class="col-md-6">
+        {% include 'user/_reader-card.html.twig' with {'user': app.user } %}
+        <br>
+
+        <h2>Favorites</h2>
+        <hr>
+        {% if app.user.favorites|length == 0 %}
+        <p>Nothing to display.</p>
+        {% else %}
+            {% include 'user/_favorites.html.twig' with {'favorites': app.user.favorites } %}
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h2>Currently reading</h2>
+        <hr>
+        {% if app.user.bookReservations|length == 0 %}
+            <p>Nothing to display.</p>
+        {% else %}
+            {% include 'user/_currently-reading.html.twig' with {'reservations': app.user.bookReservations } %}
+        {% endif %}
+        <br>
+
+        <h2>Reading history</h2>
+        <hr>
+        {% if app.user.bookReservations|length == 0 %}
+            <p>Nothing to display.</p>
+        {% else %}
+            {% include 'user/_currently-reading.html.twig' with {'reservations': app.user.bookReservations } %}
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
