@@ -1,6 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Notifications{% endblock %}
+{% block title %}Activity{% endblock %}
 {% block content %}
-    <h2>Notification page</h2>
+    <h2>Notifications</h2>
+    <hr>
+    {% if app.user.notifications|length == 0 %}
+        <h5>Nothing to display.</h5>
+    {% else %}
+        {% for notification in user.notifications %}
+            {% include 'user/_notification.html.twig' with {'notification': notification } %}
+        {% endfor %}
+    {% endif %}
 {% endblock %}
