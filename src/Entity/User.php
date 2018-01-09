@@ -28,31 +28,31 @@ class User implements UserInterface, \Serializable
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    protected $id;
+    private $id;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
      */
-    protected $firstName;
+    private $firstName;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
      */
-    protected $lastName;
+    private $lastName;
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
      * @Assert\NotBlank()
      */
-    protected $username;
+    private $username;
 
     /**
      * @ORM\Column(type="string", length=60, unique=true)
      * @Assert\NotBlank()
      */
-    protected $email;
+    private $email;
 
     /**
      * @ORM\Column(type="datetime")
@@ -85,20 +85,29 @@ class User implements UserInterface, \Serializable
     private $comments;
 
     /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Book")
+     * @ORM\JoinTable(name="users_books",
+     *     joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="book_id", referencedColumnName="id", unique=true)}
+     * )
+     */
+    private $favorites;
+
+    /**
      * @Assert\NotBlank()
      * @Assert\Length(max=4096)
      */
-    protected $plainPassword;
+    private $plainPassword;
 
     /**
      * @ORM\Column(type="string", length=64)
      */
-    protected $password;
+    private $password;
 
     /**
      * @ORM\Column(type="json_array")
      */
-    protected $roles;
+    private $roles;
 
     public function __construct()
     {
@@ -108,6 +117,7 @@ class User implements UserInterface, \Serializable
         $this->activities = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->roles = ['ROLE_USER'];
+        $this->favorites = new ArrayCollection();
     }
 
     public function getId()
@@ -228,6 +238,16 @@ class User implements UserInterface, \Serializable
     public function addComment($comment): void
     {
         $this->comments->add($comment);
+    }
+
+    public function getFavorites()
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite($favorite): void
+    {
+        $this->favorites->add($favorite);
     }
 
     /**
