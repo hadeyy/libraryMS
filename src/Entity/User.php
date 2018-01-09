@@ -75,6 +75,11 @@ class User implements UserInterface, \Serializable
     private $notifications;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="user")
+     */
+    private $activities;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author")
      */
     private $comments;
@@ -95,12 +100,12 @@ class User implements UserInterface, \Serializable
      */
     protected $roles;
 
-
     public function __construct()
     {
         $this->registeredAt = new \DateTime(date('d-m-Y'));
         $this->notifications = new ArrayCollection();
         $this->bookReservations = new ArrayCollection();
+        $this->activities = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->roles = ['ROLE_USER'];
     }
@@ -203,6 +208,16 @@ class User implements UserInterface, \Serializable
     public function addNotification($notification): void
     {
         $this->notifications->add($notification);
+    }
+
+    public function getActivities()
+    {
+        return $this->activities;
+    }
+
+    public function addActivity($activity): void
+    {
+        $this->activities->add($activity);
     }
 
     public function getComments()

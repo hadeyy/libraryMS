@@ -112,10 +112,16 @@ class Book
      */
     private $comments;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="book")
+     */
+    private $activities;
+
     public function __construct()
     {
         $this->authors = new ArrayCollection();
         $this->genres = new ArrayCollection();
+        $this->activities = new ArrayCollection();
     }
 
     public function getId(): int
@@ -296,5 +302,15 @@ class Book
     public function setComments($comments): void
     {
         $this->comments = $comments;
+    }
+
+    public function getActivities()
+    {
+        return $this->activities;
+    }
+
+    public function addActivity($activity): void
+    {
+        $this->activities->add($activity);
     }
 }

@@ -11,7 +11,7 @@
             </li>
             {% if app.user %}
                 <li class="nav-item">
-                    <a class="nav-link text-light" href="">Activity</a>
+                    <a class="nav-link text-light" href="{{ path('activity') }}">Activity</a>
                 </li>
             {% endif %}
         </ul>
@@ -36,8 +36,9 @@
                     </button>
                     <div id="profileMenu" class="dropdown-menu bg-dark">
                         <h6 class="dropdown-header text-light">{{ app.user.firstName }} {{ app.user.lastName }}</h6>
-                        <a class="dropdown-item" href="#">Profile</a>
-                        <a class="dropdown-item" href="#">
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ path('profile') }}">Profile</a>
+                        <a class="dropdown-item" href="{{ path('notifications') }}">
                             Notifications
                             <span class="badge badge-pill badge-info">0</span>
                         </a>

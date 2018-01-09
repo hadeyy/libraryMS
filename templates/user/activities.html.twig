@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity{% endblock %}
+{% block content %}
+    <h2>Recent activity</h2>
+    <hr>
+    {% if app.user.activities|length == 0 %}
+        <h5>No recent activity.</h5>
+    {% else %}
+        {% for activity in user.activities %}
+            {% include 'user/_activity.html.twig' with {'activity': activity } %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}
