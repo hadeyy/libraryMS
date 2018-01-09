@@ -98,6 +98,7 @@ class User implements UserInterface, \Serializable
 
     public function __construct()
     {
+        $this->registeredAt = new \DateTime(date('d-m-Y'));
         $this->notifications = new ArrayCollection();
         $this->bookReservations = new ArrayCollection();
         $this->comments = new ArrayCollection();

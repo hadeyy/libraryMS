@@ -40,6 +40,16 @@ class Notification
      */
     private $receiver;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $isSeen;
+
+    public function __construct()
+    {
+        $this->isSeen = false;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -78,6 +88,16 @@ class Notification
     public function setReceiver($receiver): void
     {
         $this->receiver = $receiver;
+    }
+
+    public function getIsSeen(): bool
+    {
+        return $this->isSeen;
+    }
+
+    public function setIsSeen($isSeen): void
+    {
+        $this->isSeen = $isSeen;
     }
 
 

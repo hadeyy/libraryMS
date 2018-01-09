@@ -7,11 +7,13 @@
                 <a class="nav-link text-light" href="{{ path('index') }}">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-light" href="">smth</a>
+                <a class="nav-link text-light" href="">Catalog</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link text-light" href="">smth</a>
-            </li>
+            {% if app.user %}
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="">Activity</a>
+                </li>
+            {% endif %}
         </ul>
         <div class="form-inline my-2 my-lg-0">
             {% if not app.user %}
@@ -27,9 +29,24 @@
                     </button>
                 </a>
             {% else %}
-                <a href="{{ path('logout') }}">
-                    <button type="button" class="btn btn-outline-danger text-light">LOGOUT</button>
-                </a>
+                <div class="dropdown">
+                    <button class="btn btn-outline-info text-light dropdown-toggle" type="button" id="profileMenu"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ app.user.username }}
+                    </button>
+                    <div id="profileMenu" class="dropdown-menu bg-dark">
+                        <h6 class="dropdown-header text-light">{{ app.user.firstName }} {{ app.user.lastName }}</h6>
+                        <a class="dropdown-item" href="#">Profile</a>
+                        <a class="dropdown-item" href="#">
+                            Notifications
+                            <span class="badge badge-pill badge-info">0</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a id="logout" href="{{ path('logout') }}">
+                            <button type="button" class="btn btn-small btn-outline-danger text-light">LOGOUT</button>
+                        </a>
+                    </div>
+                </div>
             {% endif %}
         </div>
     </div>

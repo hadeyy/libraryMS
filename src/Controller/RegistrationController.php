@@ -48,7 +48,6 @@ class RegistrationController extends Controller
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
             $user->addRole('ROLE_READER');
-            $user->setRegisteredAt(new \DateTime(date('d-m-Y')));
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
