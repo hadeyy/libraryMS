@@ -20,8 +20,8 @@ class Book
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      */
     private $id;
 
@@ -52,7 +52,10 @@ class Book
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Genre", inversedBy="books")
-     * @ORM\JoinTable(name="books_genres")
+     * @ORM\JoinTable(name="books_and_genres",
+     *     joinColumns={@ORM\JoinColumn(name="bookId", referencedColumnName="id", unique=false)},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="genreId", referencedColumnName="id", unique=false)}
+     * )
      */
     private $genres;
 
@@ -87,17 +90,17 @@ class Book
     private $annotation;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="json_array")
      */
-    private $rating;
+    private $ratings;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $timesBorrowed;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\BookSerie", inversedBy="book")
+     * @ORM\ManyToOne(targetEntity="App\Entity\BookSerie", inversedBy="books")
      * @ORM\JoinColumn(name="bookserie_id", referencedColumnName="id")
      */
     private $serie;
@@ -121,6 +124,11 @@ class Book
     {
         $this->authors = new ArrayCollection();
         $this->genres = new ArrayCollection();
+        $this->ratings = [];
+        $this->reservedCopies = 0;
+        $this->timesBorrowed = 0;
+        $this->reservations = new ArrayCollection();
+        $this->comments = new ArrayCollection();
         $this->activities = new ArrayCollection();
     }
 
@@ -254,17 +262,17 @@ class Book
         $this->annotation = $annotation;
     }
 
-    public function getRating():float
+    public function getRatings(): array
     {
-        return $this->rating;
+        return $this->ratings;
     }
 
-    public function setRating(float $rating): void
+    public function addRating(float $rating): void
     {
-        $this->rating = $rating;
+        $this->ratings[] = $rating;
     }
 
-    public function getTimesBorrowed():int
+    public function getTimesBorrowed(): int
     {
         return $this->timesBorrowed;
     }
@@ -289,9 +297,9 @@ class Book
         return $this->reservations;
     }
 
-    public function setReservations($reservations): void
+    public function addReservation($reservation): void
     {
-        $this->reservations = $reservations;
+        $this->reservations->add($reservation);
     }
 
     public function getComments()
@@ -299,9 +307,9 @@ class Book
         return $this->comments;
     }
 
-    public function setComments($comments): void
+    public function addComment($comment): void
     {
-        $this->comments = $comments;
+        $this->comments->add($comment);
     }
 
     public function getActivities()

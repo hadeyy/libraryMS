@@ -25,18 +25,54 @@ class UserFixtures extends Fixture
     
     public function load(ObjectManager $manager)
     {
+        $admin = new User();
+        $admin->setFirstName('John');
+        $admin->setLastName('Wine');
+        $admin->setUsername('admin');
+        $admin->setEmail('JohnHWine@jourrapide.com');
+        $admin->setPhoto('silhouette.png');
+        $password = $this->encoder->encodePassword($admin, 'kitten');
+        $admin->setPassword($password);
+        $admin->addRole('ROLE_ADMIN');
+        $manager->persist($admin);
+        $this->addReference('user0', $admin);
+
+        $librarian = new User();
+        $librarian->setFirstName('Melinda');
+        $librarian->setLastName('Stephens');
+        $librarian->setUsername('librarian');
+        $librarian->setEmail('MelindaRStephens@teleworm.us');
+        $librarian->setPhoto('silhouette.png');
+        $password = $this->encoder->encodePassword($librarian, 'kitten');
+        $librarian->setPassword($password);
+        $librarian->addRole('ROLE_LIBRARIAN');
+        $manager->persist($librarian);
+        $this->addReference('user1', $librarian);
+
         $user = new User();
-        
-        $user->setFirstName('John');
-        $user->setLastName('Wine');
-        $user->setUsername('admin');
-        $user->setEmail('JohnHWine@jourrapide.com');
+        $user->setFirstName('Athena');
+        $user->setLastName('Carswell');
+        $user->setUsername('user1');
+        $user->setEmail('AthenaMCarswell@rhyta.com');
         $user->setPhoto('silhouette.png');
         $password = $this->encoder->encodePassword($user, 'kitten');
         $user->setPassword($password);
-        $user->addRole('ROLE_ADMIN');
-
+        $user->addRole('ROLE_USER');
         $manager->persist($user);
+        $this->addReference('user2', $user);
+
+        $user1 = new User();
+        $user1->setFirstName('Wayne');
+        $user1->setLastName('Gutierrez');
+        $user1->setUsername('user2');
+        $user1->setEmail('WayneTGutierrez@rhyta.com');
+        $user1->setPhoto('silhouette.png');
+        $password = $this->encoder->encodePassword($user1, 'kitten');
+        $user1->setPassword($password);
+        $user1->addRole('ROLE_USER');
+        $manager->persist($user1);
+        $this->addReference('user3', $user1);
+
         $manager->flush();
     }
 }

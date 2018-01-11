@@ -26,23 +26,13 @@ class BookSerie
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Author", mappedBy="bookSeries")
-     */
-    private $authors;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="serie")
      */
-    private $book;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $part;
+    private $books;
 
     public function __construct()
     {
-        $this->authors = new ArrayCollection();
+        $this->books = new ArrayCollection();
     }
 
     public function getId()
@@ -55,34 +45,14 @@ class BookSerie
         $this->id = $id;
     }
 
-    public function getAuthors()
+    public function getBooks()
     {
-        return $this->authors;
+        return $this->books;
     }
 
-    public function addAuthors($author): void
+    public function addBook($book): void
     {
-        $this->authors->add($author);
-    }
-
-    public function getBook()
-    {
-        return $this->book;
-    }
-
-    public function setBook($book): void
-    {
-        $this->book = $book;
-    }
-
-    public function getPart()
-    {
-        return $this->part;
-    }
-
-    public function setPart($part): void
-    {
-        $this->part = $part;
+        $this->books->add($book);
     }
 
 }

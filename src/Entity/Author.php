@@ -42,12 +42,6 @@ class Author
     private $books;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\BookSerie", inversedBy="authors")
-     * @ORM\JoinTable(name="authors_bookseries")
-     */
-    private $bookSeries;
-
-    /**
      * @ORM\Column(type="string")
      */
     private $country;
@@ -96,16 +90,6 @@ class Author
     public function addBook($book): void
     {
         $this->books->add($book);
-    }
-
-    public function getBookSeries()
-    {
-        return $this->bookSeries;
-    }
-
-    public function addBookSeries($bookSerie): void
-    {
-        $this->bookSeries->add($bookSerie);
     }
 
     public function getCountry()

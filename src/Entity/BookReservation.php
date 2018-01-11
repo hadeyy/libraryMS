@@ -56,6 +56,12 @@ class BookReservation
      */
     private $fine;
 
+    public function __construct()
+    {
+        $this->status = 'reserved';
+        $this->fine = 0;
+    }
+
     public function getId()
     {
         return $this->id;

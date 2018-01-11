@@ -51,7 +51,7 @@ class Activity
 
     public function __construct()
     {
-        $this->time = new \DateTime('now');
+        $this->time = new \DateTime();
     }
 
     public function getId()
