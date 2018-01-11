@@ -1,0 +1,40 @@
+<div id="accordion" role="tablist" class="filters">
+    <div role="tab" id="authorHeading">
+        <h2>
+            <a class="collapsed" data-toggle="collapse" href="#authors" aria-expanded="false"
+               aria-controls="authors">
+                Authors <span class="fa fa-angle-down"></span>
+            </a>
+        </h2>
+    </div>
+    <hr>
+    <div id="authors" class="collapse" role="tabpanel" aria-labelledby="authorHeading" data-parent="#accordion">
+        <ul id="authorList">
+            {% for author in authors %}
+                <li class="d-flex justify-content-between align-items-center">
+                    <a href="">{{ author.firstName }} {{ author.lastName }}</a>
+                    <span class="badge badge-info badge-pill">{{ author.books|length }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div role="tab" id="genreHeading">
+        <h2>
+            <a class="collapsed" data-toggle="collapse" href="#genres" aria-expanded="false" aria-controls="genres">
+                Genres <span class="fa fa-angle-down"></span>
+            </a>
+        </h2>
+    </div>
+    <hr>
+    <div id="genres" class="collapse" role="tabpanel" aria-labelledby="genreHeading" data-parent="#accordion">
+        <ul id="genreList">
+            {% for genre in genres %}
+                <li class="d-flex justify-content-between align-items-center">
+                    <a href="">{{ genre.name }}</a>
+                    <span class="badge badge-info badge-pill">{{ genre.books|length }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

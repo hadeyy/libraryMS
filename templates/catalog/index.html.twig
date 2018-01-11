@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalog{% endblock %}
+{% block content %}
+    <div class="col-md-9">
+        <h2>All books</h2>
+        <hr>
+        <div class="row book-list">
+            {% for book in books %}
+                {% include 'catalog/_book_preview.html.twig' with {'book': book } %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        {% include 'catalog/_filters.html.twig' with {'authors': authors, 'genres': genres } %}
+    </div>
+{% endblock %}

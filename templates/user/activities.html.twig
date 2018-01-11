@@ -7,7 +7,7 @@
     {% if app.user.activities|length == 0 %}
         <h5>No recent activity.</h5>
     {% else %}
-        {% for activity in user.activities %}
+        {% for activity in app.user.activities %}
             {% include 'user/_activity.html.twig' with {'activity': activity } %}
         {% endfor %}
     {% endif %}

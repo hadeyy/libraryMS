@@ -9,6 +9,9 @@
 namespace App\Controller;
 
 
+use App\Entity\Author;
+use App\Entity\Book;
+use App\Entity\Genre;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -20,5 +23,25 @@ class DefaultController extends Controller
     public function index()
     {
         return $this->render('index.html.twig');
+    }
+
+    /**
+     * @Route("/catalog", name="catalog")
+     */
+    public function catalog()
+    {
+        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
+        $authorRepo = $this->getDoctrine()->getRepository(Author::class);
+        $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
+
+        $allBooks = $bookRepo->findAll();
+        $allAuthors = $authorRepo->findAll();
+        $allGenres = $genreRepo->findAll();
+
+        return $this->render('catalog/index.html.twig', [
+            'books' => $allBooks,
+            'authors' => $allAuthors,
+            'genres' => $allGenres,
+        ]);
     }
 }

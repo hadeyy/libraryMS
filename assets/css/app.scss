@@ -1,9 +1,9 @@
 body {
-  background-color: powderblue;
+  background-color: rgba(176, 224, 230, 0.5);
 }
 
-.container {
-  margin-top: 2vh;
+.content {
+  margin: 2vh 5vw;
 }
 
 form {
@@ -107,4 +107,45 @@ a#logout button {
 
 #userCard h6 {
   margin-bottom: 0;
+}
+
+.book-preview {
+  height: 180px;
+  position: relative;
+}
+.preview-cover {
+  width: 70%;
+  object-fit: contain;
+  box-shadow: 3px 6px gray;
+}
+
+.preview-book-card {
+  background-color: rgba(245, 245, 220,0.95);
+  width: 350px;
+  position: absolute;
+  z-index: 999;
+  top: 0;
+  left: 71%;
+}
+.filters a {
+  color: #343a40;
+}
+.filters ul {
+  padding-left: 0;
+}
+.filters li {
+  font-variant-caps: all-small-caps;
+  padding: 0 5px;
+  list-style: none;
+  margin-bottom: 5px;
+  &:hover {
+    border: 2px deepskyblue;
+    border-style: none solid;
+    background-color: rgba(0, 191, 255, 0.1);
+  }
+}
+
+hr {
+  border: 1px solid rgba(0, 191, 255, 0.7);
+  margin-top: 5px;
 }

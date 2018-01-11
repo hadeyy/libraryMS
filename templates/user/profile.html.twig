@@ -4,7 +4,7 @@
 {% block content %}
 <div class="row">
     <div class="col-md-6">
-        {% include 'user/_reader-card.html.twig' with {'user': app.user } %}
+        {% include 'user/_reader_card.html.twig' with {'user': app.user } %}
         <br>
 
         <h2>Favorites</h2>
@@ -21,7 +21,7 @@
         {% if app.user.bookReservations|length == 0 %}
             <p>Nothing to display.</p>
         {% else %}
-            {% include 'user/_currently-reading.html.twig' with {'reservations': app.user.bookReservations } %}
+            {% include 'user/_currently_reading.html.twig' with {'reservations': app.user.bookReservations } %}
         {% endif %}
         <br>
 
@@ -30,7 +30,7 @@
         {% if app.user.bookReservations|length == 0 %}
             <p>Nothing to display.</p>
         {% else %}
-            {% include 'user/_currently-reading.html.twig' with {'reservations': app.user.bookReservations } %}
+            {% include 'user/_currently_reading.html.twig' with {'reservations': app.user.bookReservations } %}
         {% endif %}
     </div>
 </div>
