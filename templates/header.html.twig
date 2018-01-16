@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg">
     <a class="navbar-brand" href="{{ path('index') }}">libraryMS</a>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -34,7 +34,7 @@
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ app.user.username }}
                     </button>
-                    <div id="profileMenu" class="dropdown-menu bg-dark">
+                    <div id="profileMenu" class="dropdown-menu">
                         <h6 class="dropdown-header text-light">{{ app.user.firstName }} {{ app.user.lastName }}</h6>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ path('profile') }}">Profile</a>

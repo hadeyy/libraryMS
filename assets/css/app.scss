@@ -1,9 +1,23 @@
+// color palette
+$palette-dark: #373737;
+$palette-medium-dark: #C0B283;
+$palette-medium-light: #DCD0C0;
+$palette-light: #F4F4F4;
+
 body {
-  background-color: rgba(176, 224, 230, 0.5);
+  background-color: $palette-light;
 }
 
 .content {
   margin: 2vh 5vw;
+}
+
+nav.navbar {
+  background-color: $palette-dark;
+}
+
+a.navbar-brand {
+  color: $palette-medium-dark;
 }
 
 form {
@@ -85,13 +99,16 @@ a#logout button {
 }
 
 #profileMenu {
+  background-color: $palette-dark;
   left: unset;
   right: 0;
-  border: 1px solid deepskyblue;
+  border: 1px solid $palette-medium-dark;
 }
 
 #userCard {
-  max-width: 35rem;
+  border: 1px solid $palette-medium-dark;
+  color: $palette-dark;
+  background-color: rgba($palette-medium-light, 0.1);
 }
 
 #userPhoto {
@@ -120,7 +137,7 @@ a#logout button {
 }
 
 .preview-book-card {
-  background-color: rgba(245, 245, 220,0.95);
+  background-color: rgba($palette-medium-light, 0.95);
   width: 350px;
   position: absolute;
   z-index: 999;
@@ -128,7 +145,7 @@ a#logout button {
   left: 71%;
 }
 .filters a {
-  color: #343a40;
+  color: $palette-dark;
 }
 .filters ul {
   padding-left: 0;
@@ -139,13 +156,18 @@ a#logout button {
   list-style: none;
   margin-bottom: 5px;
   &:hover {
-    border: 2px deepskyblue;
+    border: 2px $palette-medium-dark;
     border-style: none solid;
-    background-color: rgba(0, 191, 255, 0.1);
+    background-color: $palette-medium-light;
   }
 }
 
 hr {
-  border: 1px solid rgba(0, 191, 255, 0.7);
+  border: 1px solid $palette-medium-dark;
   margin-top: 5px;
+}
+
+span.badge {
+  background-color: $palette-medium-dark;
+  color: $palette-light;
 }
