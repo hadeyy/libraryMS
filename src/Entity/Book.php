@@ -36,9 +36,10 @@ class Book
     private $title;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Author", mappedBy="books")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Author", inversedBy="books")
+     * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
      */
-    private $authors;
+    private $author;
 
     /**
      * @ORM\Column(type="integer")
@@ -100,12 +101,6 @@ class Book
     private $timesBorrowed;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\BookSerie", inversedBy="books")
-     * @ORM\JoinColumn(name="bookserie_id", referencedColumnName="id")
-     */
-    private $serie;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="book")
      */
     private $reservations;
@@ -122,7 +117,6 @@ class Book
 
     public function __construct()
     {
-        $this->authors = new ArrayCollection();
         $this->genres = new ArrayCollection();
         $this->ratings = [];
         $this->reservedCopies = 0;
@@ -162,14 +156,14 @@ class Book
         $this->title = $title;
     }
 
-    public function getAuthors()
+    public function getAuthor()
     {
-        return $this->authors;
+        return $this->author;
     }
 
-    public function addAuthor($author): void
+    public function setAuthor($author): void
     {
-        $this->authors->add($author);
+        $this->author = $author;
     }
 
     public function getPages(): int

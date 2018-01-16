@@ -36,8 +36,7 @@ class Author
     private $lastName; // optional (in case of one name alias)
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Book", inversedBy="authors")
-     * @ORM\JoinTable(name="authors_books")
+     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="author")
      */
     private $books;
 

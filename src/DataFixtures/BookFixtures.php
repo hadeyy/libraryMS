@@ -31,7 +31,7 @@ class BookFixtures extends Fixture implements DependentFixtureInterface
             $book->setTitle($lipsum->words(mt_rand(1, 4)));
             /** @var Author $author */
             $author = $this->getReference('author' . mt_rand(0, 19));
-            $book->addAuthor($author);
+            $book->setAuthor($author);
             $book->setPages(mt_rand(20, 1024));
             $book->setLanguage($languages[mt_rand(0, count($languages) - 1)]);
             /** @var Genre $genre */

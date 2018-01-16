@@ -9,11 +9,9 @@
             </span>
             <br>
             <small>by</small>
-            {% for author in book.authors %}
-                <span class="preview-author">
-                    {{ author.firstName }} {{ author.lastName }}
-                </span>
-            {% endfor %}
+            <span class="preview-author">
+                {{ book.author.firstName }} {{ book.author.lastName }}
+            </span>
         </h5>
         <h6 class="card-subtitle mb-2 text-muted">
             {% for genre in book.genres %}
