@@ -276,16 +276,6 @@ class Book
         $this->timesBorrowed = $timesBorrowed;
     }
 
-    public function getSerie()
-    {
-        return $this->serie;
-    }
-
-    public function setSerie($serie): void
-    {
-        $this->serie = $serie;
-    }
-
     public function getReservations()
     {
         return $this->reservations;
