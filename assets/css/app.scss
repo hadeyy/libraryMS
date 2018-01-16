@@ -16,31 +16,72 @@ nav.navbar {
   background-color: $palette-dark;
 }
 
-a.navbar-brand {
+.navbar #brandName {
   color: $palette-medium-dark;
+}
+
+.navbar-nav a {
+  color: $palette-medium-light;
+}
+
+.dropdown-item {
+  color: $palette-medium-light;
+}
+
+#profileMenu {
+  background-color: $palette-dark;
+  left: unset;
+  right: 0;
+  border: 1px solid $palette-medium-dark;
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+button#profileMenu {
+  color: $palette-medium-light;
+}
+
+a #loginButton, a #registerButton {
+  background-color: $palette-dark;
+  border: 1px solid $palette-medium-dark;
+  &:hover {
+    background-color: $palette-medium-dark;
+  }
+}
+
+#registerButton {
+  margin-left: 10px;
+}
+
+a#logout button {
+  width: 80%;
+  margin: 0 10%;
 }
 
 form {
   padding-top: 10px;
   text-align: center;
+  width: 50%;
 }
 
 input[type=text], input[type=email], input[type=number], input[type=password] {
   padding: 5px;
-  margin: 0;
+  margin-bottom: 15px;
   box-sizing: border-box;
   width: 50%;
 }
 
 input:focus {
-  border: 3px solid yellow;
+  border: 3px solid $palette-medium-dark;
+  outline: none;
 }
 
 label {
   display: block;
   text-transform: uppercase;
   font-weight: bold;
-  margin-top: 15px;
+  margin-bottom: 1px;
   padding: 0;
 }
 
@@ -67,14 +108,14 @@ select {
 
 button[type=submit] {
   width: 50%;
-  background-color: gray;
+  background-color: rgba($palette-dark, 1);
   border: none;
-  color: white;
+  color: $palette-medium-dark;
   text-transform: uppercase;
   font-weight: bold;
   padding: 16px 32px;
   text-decoration: none;
-  margin: 40px 2px 4px 2px;
+  margin-top: 20px;
   cursor: pointer;
 }
 
@@ -82,33 +123,20 @@ a:hover {
   text-decoration: none;
 }
 
-a#logout button {
-  width: 80%;
-  margin: 0 10%;
-}
-
 .plus {
   font-weight: bold;
   color: lime;
-  font-size: 1.2em;
   padding-right: 5px;
-}
-
-.dropdown-item {
-  color: white;
-}
-
-#profileMenu {
-  background-color: $palette-dark;
-  left: unset;
-  right: 0;
-  border: 1px solid $palette-medium-dark;
 }
 
 #userCard {
   border: 1px solid $palette-medium-dark;
   color: $palette-dark;
   background-color: rgba($palette-medium-light, 0.1);
+}
+
+#userCard h6 {
+  margin-bottom: 0;
 }
 
 #userPhoto {
@@ -122,18 +150,15 @@ a#logout button {
   width: 25vw;
 }
 
-#userCard h6 {
-  margin-bottom: 0;
-}
-
 .book-preview {
   height: 180px;
   position: relative;
 }
+
 .preview-cover {
   width: 70%;
   object-fit: contain;
-  box-shadow: 3px 6px gray;
+  box-shadow: 6px 3px gray;
 }
 
 .preview-book-card {
@@ -144,12 +169,48 @@ a#logout button {
   top: 0;
   left: 71%;
 }
+
+#bookInfo {
+  font-family: serif;
+}
+
+.preview-title {
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.preview-author {
+  text-transform: capitalize;
+  font-weight: 400;
+}
+
+.preview-genre {
+  font-variant-caps: all-small-caps;
+  padding-right: 15px;
+}
+
+.preview-annotation {
+  text-align: justify;
+}
+
+.preview-link {
+  color: $palette-dark;
+  text-shadow: 1px 1px 20px $palette-medium-dark;
+  font-weight: bold;
+  &:hover {
+    color: inherit;
+  }
+}
+
 .filters a {
   color: $palette-dark;
 }
+
 .filters ul {
   padding-left: 0;
 }
+
 .filters li {
   font-variant-caps: all-small-caps;
   padding: 0 5px;
@@ -170,4 +231,9 @@ hr {
 span.badge {
   background-color: $palette-medium-dark;
   color: $palette-light;
+}
+
+#newBookLink button {
+  background-color: $palette-dark;
+  color: $palette-medium-light;
 }

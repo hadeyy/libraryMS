@@ -3,7 +3,14 @@
 {% block title %}Catalog{% endblock %}
 {% block content %}
     <div class="col-md-9">
-        <h2>All books</h2>
+        <h2>
+            All books
+            {% if is_granted("ROLE_LIBRARIAN") %}
+                <a href="" id="newBookLink">
+                    <button class="btn float-right"><span class="plus">+</span>NEW</button>
+                </a>
+            {% endif %}
+        </h2>
         <hr>
         <div class="row book-list">
             {% for book in books %}
