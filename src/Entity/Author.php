@@ -48,7 +48,6 @@ class Author
     public function __construct()
     {
         $this->books = new ArrayCollection();
-        $this->bookSeries = new ArrayCollection();
     }
 
     public function getId()
@@ -101,4 +100,8 @@ class Author
         $this->country = $country;
     }
 
+    public function __toString()
+    {
+        return $this->firstName . ' ' . $this->lastName;
+    }
 }

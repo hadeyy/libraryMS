@@ -6,7 +6,7 @@
         <h2>
             All books
             {% if is_granted("ROLE_LIBRARIAN") %}
-                <a href="" id="newBookLink">
+                <a href="{{ path('new-book') }}" id="newBookLink">
                     <button class="btn float-right"><span class="plus">+</span>NEW</button>
                 </a>
             {% endif %}

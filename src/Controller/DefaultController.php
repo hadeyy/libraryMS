@@ -27,6 +27,7 @@ class DefaultController extends Controller
 
     /**
      * @Route("/catalog", name="catalog")
+     * @Route("/catalog/books", name="catalog-books")
      */
     public function catalog()
     {

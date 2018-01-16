@@ -70,4 +70,9 @@ class Genre
         $this->books->add($book);
     }
 
+    public function __toString()
+    {
+        return $this->name;
+    }
+
 }

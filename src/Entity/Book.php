@@ -11,10 +11,13 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="app_books")
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
+ * @UniqueEntity(fields="ISBN", message="Book with this ISBN already exists.")
  */
 class Book
 {
@@ -27,27 +30,47 @@ class Book
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="10",
+     *     max="13",
+     *     exactMessage="ISBN must be either 10 or 13 characters long."
+     * )
      */
     private $ISBN;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 1,
+     *     max = 140,
+     *     minMessage="Title must be at least {{ limit }} characters long.",
+     *     maxMessage="Title cannot be longer than {{ limit }} characters."
+     * )
      */
     private $title;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Author", inversedBy="books")
      * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
+     * @Assert\NotBlank()
      */
     private $author;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\GreaterThanOrEqual(
+     *     value = 10,
+     *     message="This value should be greater than or equal to {{ compared_value }}."
+     * )
      */
     private $pages;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      */
     private $language;
 
@@ -57,21 +80,37 @@ class Book
      *     joinColumns={@ORM\JoinColumn(name="bookId", referencedColumnName="id", unique=false)},
      *     inverseJoinColumns={@ORM\JoinColumn(name="genreId", referencedColumnName="id", unique=false)}
      * )
+     * @Assert\NotBlank()
      */
     private $genres;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 2,
+     *     max = 140,
+     *     minMessage="Publisher name must be at least {{ limit }} characters long.",
+     *     maxMessage="Publisher name cannot be longer than {{ limit }} characters."
+     * )
      */
     private $publisher;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank()
+     * @Assert\Date()
+     * @Assert\LessThan("today")
      */
     private $publicationDate;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\GreaterThanOrEqual(
+     *     value = 1,
+     *     message="This value should be greater than or equal to {{ compared_value }}."
+     * )
      */
     private $availableCopies;
 
@@ -82,11 +121,28 @@ class Book
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Image(
+     *     minWidth = 50,
+     *     maxWidth = 2000,
+     *     minHeight = 50,
+     *     maxHeight = 2000,
+     *     minWidthMessage="Minimum width expected is {{ min_width }}px.",
+     *     maxWidthMessage="Allowed maximum width is {{ max_width }}px.",
+     *     minHeightMessage="Minimum height expected is {{ min_height }}px.",
+     *     maxHeightMessage="Allowed maximum height is {{ max_height }}px."
+     * )
      */
     private $cover;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\Length(
+     *     min = 140,
+     *     max = 2000,
+     *     minMessage="Annotation must be at least {{ limit }} characters long.",
+     *     maxMessage="Annotation cannot be longer than {{ limit }} characters.",
+     * )
      */
     private $annotation;
 
@@ -136,7 +192,7 @@ class Book
         $this->id = $id;
     }
 
-    public function getISBN(): string
+    public function getISBN()
     {
         return $this->ISBN;
     }
@@ -146,7 +202,7 @@ class Book
         $this->ISBN = $ISBN;
     }
 
-    public function getTitle(): string
+    public function getTitle()
     {
         return $this->title;
     }
@@ -166,7 +222,7 @@ class Book
         $this->author = $author;
     }
 
-    public function getPages(): int
+    public function getPages()
     {
         return $this->pages;
     }
@@ -176,7 +232,7 @@ class Book
         $this->pages = $pages;
     }
 
-    public function getLanguage(): string
+    public function getLanguage()
     {
         return $this->language;
     }
@@ -196,7 +252,7 @@ class Book
         $this->genres->add($genre);
     }
 
-    public function getPublisher(): string
+    public function getPublisher()
     {
         return $this->publisher;
     }
@@ -216,7 +272,7 @@ class Book
         $this->publicationDate = $publicationDate;
     }
 
-    public function getAvailableCopies(): int
+    public function getAvailableCopies()
     {
         return $this->availableCopies;
     }
@@ -246,7 +302,7 @@ class Book
         $this->cover = $cover;
     }
 
-    public function getAnnotation(): string
+    public function getAnnotation()
     {
         return $this->annotation;
     }
@@ -256,7 +312,7 @@ class Book
         $this->annotation = $annotation;
     }
 
-    public function getRatings(): array
+    public function getRatings()
     {
         return $this->ratings;
     }
@@ -266,7 +322,7 @@ class Book
         $this->ratings[] = $rating;
     }
 
-    public function getTimesBorrowed(): int
+    public function getTimesBorrowed()
     {
         return $this->timesBorrowed;
     }

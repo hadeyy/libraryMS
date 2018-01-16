@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New book{% endblock %}
+{% block content %}
+    {{ form_start(form, {'attr': {'class': 'container'}}) }}
+    <div class="row">
+        <div class="col-md-6 book-form-col">
+            {{ form_label(form.title) }}
+            {{ form_errors(form.title) }}
+            {{ form_widget(form.title) }}
+
+            {{ form_label(form.author) }}
+            {{ form_errors(form.author) }}
+            {{ form_widget(form.author) }}
+
+            {{ form_label(form.pages) }}
+            {{ form_errors(form.pages) }}
+            {{ form_widget(form.pages) }}
+
+            {{ form_label(form.cover) }}
+            {{ form_errors(form.cover) }}
+            {{ form_widget(form.cover) }}
+
+            {{ form_label(form.ISBN) }}
+            {{ form_errors(form.ISBN) }}
+            {{ form_widget(form.ISBN) }}
+
+            {{ form_label(form.publicationDate) }}
+            {{ form_errors(form.publicationDate) }}
+            {{ form_widget(form.publicationDate) }}
+
+            {{ form_label(form.annotation) }}
+            {{ form_errors(form.annotation) }}
+            {{ form_widget(form.annotation) }}
+        </div>
+        <div class="col-md-6 book-form-col">
+            {{ form_label(form.publisher) }}
+            {{ form_errors(form.publisher) }}
+            {{ form_widget(form.publisher) }}
+
+            {{ form_label(form.availableCopies) }}
+            {{ form_errors(form.availableCopies) }}
+            {{ form_widget(form.availableCopies) }}
+
+            {{ form_label(form.language) }}
+            {{ form_errors(form.language) }}
+            {{ form_widget(form.language) }}
+
+            {{ form_label(form.genres) }}
+            {{ form_errors(form.genres) }}
+
+            <div id="formGenreList">
+                {% for genre in form.genres %}
+                    <div class="genre-row d-flex align-items-center">
+                        {{ form_widget(genre, {'attr': {'class': 'float-left'}}) }}
+                        {{ form_label(genre) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {{ form_widget(form.save, {'attr': {'class': 'book-form-btn'}}) }}
+    </div>
+    {{ form_end(form) }}
+{% endblock %}
