@@ -8,8 +8,9 @@ body {
   background-color: $palette-light;
 }
 
-.content {
+.container {
   margin: 2vh 5vw;
+  max-width: 90vw !important;
 }
 
 nav.navbar {
@@ -134,16 +135,13 @@ a:hover {
   color: $palette-dark;
   background-color: rgba($palette-medium-light, 0.1);
 }
-
 #userCard h6 {
   margin-bottom: 0;
 }
-
 #userPhoto {
   float: left;
   margin-right: 25px;
 }
-
 #readerInfo {
   display: inline;
   clear: left;
@@ -151,54 +149,47 @@ a:hover {
 }
 
 .book-preview {
-  height: 180px;
-  position: relative;
+  margin-bottom: 25px;
 }
-
+.preview-button {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  vertical-align: top;
+  width: 95%;
+  border: none;
+}
 .preview-cover {
-  width: 70%;
-  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
   box-shadow: 6px 3px gray;
 }
-
-.preview-book-card {
-  background-color: rgba($palette-medium-light, 0.95);
-  width: 350px;
-  position: absolute;
-  z-index: 999;
-  top: 0;
-  left: 71%;
+.preview-modal-cover {
+  width: 100%;
 }
-
-#bookInfo {
-  font-family: serif;
-}
-
 .preview-title {
   font-family: 'Courier New', monospace;
   text-transform: uppercase;
   font-weight: 700;
   overflow-wrap: break-word;
+  margin-right: 15px;
 }
-
 .preview-author {
   text-transform: capitalize;
   font-weight: 400;
 }
-
 .preview-genre {
   font-variant-caps: all-small-caps;
   padding-right: 15px;
+  margin-right: 15px;
 }
-
 .preview-annotation {
   text-align: justify;
   overflow-wrap: break-word;
+  margin-right: 15px;
 }
-
 .preview-link {
   color: $palette-dark;
-  text-shadow: 1px 1px 20px $palette-medium-dark;
   font-weight: bold;
   &:hover {
     color: inherit;
@@ -208,11 +199,9 @@ a:hover {
 .filters a {
   color: $palette-dark;
 }
-
 .filters ul {
   padding-left: 0;
 }
-
 .filters li {
   font-variant-caps: all-small-caps;
   padding: 0 5px;
@@ -286,4 +275,8 @@ option {
 ::-webkit-scrollbar-thumb
 {
   background-color: $palette-medium-dark;
+}
+
+span.fa-bars {
+  color: $palette-medium-light;
 }
