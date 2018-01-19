@@ -5,7 +5,7 @@
     <div id="bookInfo{{ book.id }}" class="collapse card-body preview-book-card">
         <h5 class="card-title">
             <span class="preview-title">
-                {{ book.title }}
+                {{ book.title|length > 50 ? book.title|slice(0,47) ~ '..' : book.title }}
             </span>
             <br>
             <small>by</small>
