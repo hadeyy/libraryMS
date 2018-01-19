@@ -44,6 +44,7 @@ class BookType extends AbstractType
                 'class' => Genre::class,
                 'multiple' => true,
                 'expanded' => true,
+                'required' => true,
                 'placeholder' => '- Choose genre(s) -'
             ])
             ->add('publisher', TextType::class)

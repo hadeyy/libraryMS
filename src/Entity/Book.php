@@ -61,9 +61,11 @@ class Book
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
-     * @Assert\GreaterThanOrEqual(
-     *     value = 10,
-     *     message="This value should be greater than or equal to {{ compared_value }}."
+     * @Assert\Range(
+     *     min = 10,
+     *     max = 13095,
+     *     minMessage="This value should be greater than or equal to {{ limit }}.",
+     *     maxMessage="This value should be less than or equal to {{ limit }}."
      * )
      */
     private $pages;
@@ -71,6 +73,7 @@ class Book
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
+     * @Assert\Language()
      */
     private $language;
 
@@ -80,7 +83,13 @@ class Book
      *     joinColumns={@ORM\JoinColumn(name="bookId", referencedColumnName="id", unique=false)},
      *     inverseJoinColumns={@ORM\JoinColumn(name="genreId", referencedColumnName="id", unique=false)}
      * )
-     * @Assert\NotBlank()
+     * @Assert\NotNull()
+     * @Assert\Count(
+     *     min="1",
+     *     max="5",
+     *     minMessage="You must specify at least one genre.",
+     *     maxMessage="You cannot specify more than {{ limit }} genres."
+     * )
      */
     private $genres;
 
@@ -107,9 +116,11 @@ class Book
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
-     * @Assert\GreaterThanOrEqual(
-     *     value = 1,
-     *     message="This value should be greater than or equal to {{ compared_value }}."
+     * @Assert\Range(
+     *     min = 1,
+     *     max = 100,
+     *     minMessage="This value should be greater than or equal to {{ limit }}.",
+     *     maxMessage="This value should be less than or equal to {{ limit }}."
      * )
      */
     private $availableCopies;
