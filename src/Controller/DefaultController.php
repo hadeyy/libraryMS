@@ -13,6 +13,7 @@ use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\Genre;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends Controller
@@ -44,5 +45,22 @@ class DefaultController extends Controller
             'authors' => $allAuthors,
             'genres' => $allGenres,
         ]);
+    }
+
+    /**
+     * @Route("/catalog/books/{id}", name="show-book")
+     *
+     * @param int $id Book id.
+     *
+     * @return Response
+     */
+    public function showBook(int $id): Response
+    {
+        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
+
+        /** @var Book $book */
+        $book = $bookRepo->find($id);
+
+        return $this->render('catalog/book/show.html.twig', ['book' => $book]);
     }
 }

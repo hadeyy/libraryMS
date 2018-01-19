@@ -130,7 +130,7 @@ a:hover {
   padding-right: 5px;
 }
 
-#userCard {
+#userCard, #bookCard {
   border: 1px solid $palette-medium-dark;
   color: $palette-dark;
   background-color: rgba($palette-medium-light, 0.1);
@@ -138,14 +138,14 @@ a:hover {
 #userCard h6 {
   margin-bottom: 0;
 }
-#userPhoto {
-  float: left;
-  margin-right: 25px;
+#userPhoto, #bookPhoto {
+  max-width: 100%;
 }
 #readerInfo {
-  display: inline;
-  clear: left;
-  width: 25vw;
+}
+
+#bookCoverEnlarged {
+  height: 95vh;
 }
 
 .book-preview {
@@ -279,4 +279,75 @@ option {
 
 span.fa-bars {
   color: $palette-medium-light;
+}
+
+.left-side {
+  font-weight: bold;
+  font-family: monospace;
+  text-transform: uppercase;
+  text-align: right;
+  padding-right: 10px;
+  &:after {
+    content: ':';
+  }
+}
+.right-side {
+  font-family: monospace;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+span.genre {
+  margin-right: 10px;
+}
+
+h4 a {
+  color: $palette-dark;
+  &:hover {
+    color: $palette-medium-dark;
+  }
+}
+
+span#bookTitle {
+  font-family: monospace;
+  text-transform: uppercase;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+span#bookAuthor {
+  text-transform: capitalize;
+  font-family: sans-serif;
+  font-weight: 300;
+}
+div#bookAnnotation {
+  text-align: justify;
+}
+
+a.book-action button, #commentBtn {
+  width: 100%;
+  margin-bottom: 3px;
+  background-color: $palette-medium-dark;
+  color: $palette-dark;
+  font-weight: bold;
+  &:hover {
+    cursor: pointer;
+  }
+  &#loginBtn {
+    width: unset;
+  }
+}
+#commentBtn {
+  margin: 0;
+}
+
+form#commentForm {
+  width: 100%;
+  margin-bottom: 35px;
+  & textarea {
+    width: 100%;
+  }
+}
+
+div.comment {
+  margin-top: 10px;
 }

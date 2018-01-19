@@ -1,0 +1,128 @@
+<div id="bookCard" class="card">
+    <div class="card-body">
+        <div id="bookInfo">
+            <!-- Book info -->
+            <div class="row">
+                <!-- Book cover -->
+                <div id="bookImage" class="col-md-3">
+                    <!-- Modal trigger -->
+                    <button class="preview-button" data-toggle="modal" data-target="#bookCover">
+                        <img id="bookPhoto" src="{{ asset('uploads/covers/' ~ book.cover) }}" alt="Book cover">
+                        <br>
+                        <span class="fa fa-search-plus"></span>
+                        <small>click to enlarge</small>
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="bookCover" tabindex="-1" role="dialog"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-lg d-flex justify-content-center" role="document">
+                            <img id="bookCoverEnlarged" src="{{ asset('uploads/covers/' ~ book.cover) }}"
+                                 alt="Book cover">
+                        </div>
+                    </div>
+                    <!-- modal end. -->
+                </div>
+                <!-- book cover end. -->
+
+                <div class="col-md-9">
+                    <h5 class="card-title">
+                        <span id="bookTitle">{{ book.title }}</span>
+                        <small>({{ book.publicationDate|date('Y') }})</small>
+                    </h5>
+                    <h6 class="card-subtitle mb-2">
+                        <small>by</small>
+                        <span id="bookAuthor">{{ book.author.firstName }} {{ book.author.lastName }}</span>
+                    </h6>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ book.pages }} pages | {{ book.language }}</h6>
+
+                    <br>
+
+                    <!-- Genres -->
+                    <span class="left-side">genres</span>
+                    <span class="right-side">
+                            {% for genre in book.genres %}
+                                <span class="genre">{{ genre }}</span>
+                            {% endfor %}
+                        </span>
+                    <!-- genres end. -->
+
+                    <br><br>
+
+                    <!-- Book stats and additional info -->
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <table>
+                                <tr>
+                                    <td class="left-side">available copies</td>
+                                    <td class="right-side">{{ book.availableCopies }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="left-side">average rating</td>
+                                    <td class="right-side">
+                                        {% if book.ratings|length > 0 %}
+                                            {% set avg = 0 %}
+                                            {% for rating in book.ratings %}
+                                                {% set avg = avg + rating %}
+                                            {% endfor %}
+                                            {% set avg = avg / book.ratings|length %}
+                                            {{ avg|round(2) }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="left-side">times borrowed</td>
+                                    <td class="right-side">
+                                        {% if book.timesBorrowed > 0 %}
+                                            {{ book.timesBorrowed }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <table>
+                                <tr>
+                                    <td class="left-side">publication date</td>
+                                    <td class="right-side">{{ book.publicationDate|date('d-m-Y') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="left-side">publisher</td>
+                                    <td class="right-side">{{ book.publisher }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="left-side">ISBN</td>
+                                    <td class="right-side">{{ book.ISBN }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- book stats and additional info end. -->
+                </div>
+            </div>
+            <!-- book info end. -->
+        </div>
+
+        <br>
+
+        <!-- Book annotation -->
+        <div class="row">
+            <div class="col-md-12">
+                <h4>
+                    <a class="collapsed" data-toggle="collapse" href="#bookAnnotation" aria-expanded="false"
+                       aria-controls="authors">
+                        Read annotation <span class="fa fa-angle-down"></span>
+                    </a>
+                </h4>
+                <hr>
+                <div id="bookAnnotation" class="collapse">
+                    {{ book.annotation }}
+                </div>
+            </div>
+        </div>
+        <!-- book annotation end. -->
+    </div>
+</div>

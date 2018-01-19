@@ -73,7 +73,6 @@ class Book
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
-     * @Assert\Language()
      */
     private $language;
 

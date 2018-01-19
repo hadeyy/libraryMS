@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+    <div class="col-xs-12 col-sm-12 col-md-8">
+        {% include 'catalog/book/_book_card.html.twig' with {'book': book } %}
+        <br>
+
+        <h2>Comments</h2>
+        <hr>
+        {% if not app.user %}
+            You need to
+            <a href="{{ path('login') }}" class="book-action">
+                <button id="loginBtn" class="btn">LOG IN</button>
+            </a>
+            to leave a comment.
+        {% else %}
+            <form id="commentForm" action="">
+                <div class="row">
+                    <div class="col-md-10 d-flex align-items-center">
+                        <textarea name="comment" id="" cols="30" rows="10" title=""></textarea>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center">
+                        <button id="commentBtn" type="submit" class="btn">POST</button>
+                    </div>
+                </div>
+            </form>
+            {% for comment in book.comments %}
+                {% include 'catalog/book/_book_comment.html.twig' with {'comment': comment } %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-4">
+        <h2>Actions</h2>
+        <hr>
+        {% include 'catalog/book/_book_actions.html.twig' with {'book': book } %}
+    </div>
+{% endblock %}

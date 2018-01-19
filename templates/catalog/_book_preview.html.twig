@@ -46,7 +46,7 @@
                                 {{ book.annotation|length > 400 ? book.annotation|slice(0,400) ~ '...' : book.annotation }}
                             </p>
 
-                            <a href="#" class="card-link preview-link">
+                            <a href="{{ path('show-book', {id: book.id}) }}" class="card-link preview-link">
                                 Book page
                                 <span class="fa fa-angle-right"></span>
                             </a>
@@ -55,10 +55,11 @@
                                 <span class="fa fa-angle-right"></span>
                             </a>
                         </div>
-                        <!-- Book info end. -->
+                        <!-- book info end. -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- modal end. -->
 </div>
