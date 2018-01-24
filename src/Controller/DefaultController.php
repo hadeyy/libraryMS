@@ -132,4 +132,25 @@ class DefaultController extends Controller
             ]
         );
     }
+
+    /**
+     * @Route("catalog/authors/{id}", name="show-author", requirements={"id"="\d+"})
+     *
+     * @param int $id Author id.
+     *
+     * @return Response
+     */
+    public function showAuthor(int $id)
+    {
+        $authorRepo = $this->getDoctrine()->getRepository(Author::class);
+        /** @var Author $author */
+        $author = $authorRepo->find($id);
+
+        return $this->render(
+            'catalog/author/show.html.twig',
+            [
+                'author' => $author,
+            ]
+        );
+    }
 }

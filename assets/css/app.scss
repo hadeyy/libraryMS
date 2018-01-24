@@ -130,7 +130,7 @@ a:hover {
   padding-right: 5px;
 }
 
-#userCard, #bookCard {
+#userCard, #bookCard, #authorCard {
   border: 1px solid $palette-medium-dark;
   color: $palette-dark;
   background-color: rgba($palette-medium-light, 0.1);
@@ -308,13 +308,15 @@ h4 a {
   }
 }
 
-span#bookTitle {
+span#bookTitle,
+span#authorName {
   font-family: monospace;
   text-transform: uppercase;
   font-size: 1.2em;
   font-weight: bold;
 }
-span#bookAuthor {
+span#bookAuthor,
+span#authorCountry {
   text-transform: capitalize;
   font-family: sans-serif;
   font-weight: 300;
@@ -351,7 +353,8 @@ form#commentForm {
   }
 }
 
-div.comment {
+div.comment,
+div.author-book {
   margin-top: 10px;
 }
 
@@ -374,4 +377,46 @@ span.fa {
 .no-data {
   margin-left: 20px;
   color: rgba($palette-dark, 0.8);
+}
+
+div.author-book {
+  max-height: 150px;
+  & div.card-body {
+    padding: 5px 0;
+    position: relative;
+  }
+  & div.row div {
+    max-height: 180px
+  }
+}
+div img.author-book-cover {
+  max-height: 100%;
+}
+a.author-book-link {
+  color: $palette-medium-dark;
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+}
+
+div#authorCard {
+  position: relative;
+  text-align: center;
+  width: 300px;
+}
+a#editAuthorLink {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+.author-book-title,
+.author-book-info {
+  font-family: monospace;
+  text-transform: uppercase;
+}
+.author-book-info {
+  font-weight: lighter;
+}
+.author-book-genres {
+  font-variant-caps: all-small-caps;
 }

@@ -23,6 +23,6 @@
     <br><br>
 {% endif %}
 
-<a class="book-action" href="" target="_blank">
+<a class="book-action" href="{{ path('show-author', {id: book.author.id}) }}">
     <button type="button" class="btn">SEE AUTHOR PAGE</button>
 </a>

@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ author.firstName }} {{ author.lastName }}{% endblock %}
+{% block content %}
+    <div>
+        {% include 'catalog/author/_author_card.html.twig' with {'author': author } %}
+    </div>
+
+    <div>
+        <h4>Books ({{ author.books|length }})</h4>
+        <hr>
+        <div class="row">
+            {% for book in author.books %}
+                {% include 'catalog/author/_book_card.html.twig' with {'book': book } %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
