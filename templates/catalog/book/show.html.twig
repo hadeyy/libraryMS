@@ -13,18 +13,21 @@
             <a href="{{ path('login') }}" class="book-action">
                 <button id="loginBtn" class="btn">LOG IN</button>
             </a>
-            to leave a comment.
+            to access comment section.
         {% else %}
-            <form id="commentForm" action="">
+            {{ form_start(form, {'attr': {'id': 'commentForm'}}) }}
+                <div class="row">
+                    {{ form_errors(form.content) }}
+                </div>
                 <div class="row">
                     <div class="col-md-10 d-flex align-items-center">
-                        <textarea name="comment" id="" cols="30" rows="10" title=""></textarea>
+                        {{ form_widget(form.content) }}
                     </div>
                     <div class="col-md-2 d-flex align-items-center">
                         <button id="commentBtn" type="submit" class="btn">POST</button>
                     </div>
                 </div>
-            </form>
+            {{ form_end(form) }}
             {% for comment in book.comments %}
                 {% include 'catalog/book/_book_comment.html.twig' with {'comment': comment } %}
             {% endfor %}
@@ -35,4 +38,11 @@
         <hr>
         {% include 'catalog/book/_book_actions.html.twig' with {'book': book } %}
     </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $(function() {
+            $('#commentForm').find("textarea").val("");
+        });
+    </script>
 {% endblock %}

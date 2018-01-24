@@ -332,6 +332,9 @@ a.book-action button, #commentBtn {
   &:hover {
     cursor: pointer;
   }
+  &:disabled {
+    cursor: not-allowed;
+  }
   &#loginBtn {
     width: unset;
   }

@@ -15,15 +15,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Security("has_role('ROLE_LIBRARIAN')")
- */
 class LibraryController extends Controller
 {
     /**
      * @Route("/catalog/books/new", name="new-book")
+     *
+     * @Security("has_role('ROLE_LIBRARIAN')")
+     * @param Request $request
+     * @return Response
      */
     public function newBook(Request $request)
     {
