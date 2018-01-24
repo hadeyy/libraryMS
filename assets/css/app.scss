@@ -363,3 +363,15 @@ div.comment {
 #registrationForm {
   width: 100%;
 }
+
+span.fa {
+  color: $palette-medium-dark;
+}
+.filter-title {
+  text-transform: uppercase;
+}
+
+.no-data {
+  margin-left: 20px;
+  color: rgba($palette-dark, 0.8);
+}

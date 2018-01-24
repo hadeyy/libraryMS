@@ -1,0 +1,9 @@
+{% extends 'catalog/index.html.twig' %}
+
+{% block catalogTitle %}
+    <a href="{{ path('catalog') }}"><span class="fa fa-angle-left"></span></a>
+    <span class="float-right">
+        <small>books by </small>
+        <span class="filter-title">{{ author.firstName }} {{ author.lastName }}</span>
+    </span>
+{% endblock %}

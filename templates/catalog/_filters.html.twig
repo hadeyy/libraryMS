@@ -11,10 +11,12 @@
     <div id="authors" class="collapse" role="tabpanel" aria-labelledby="authorHeading" data-parent="#accordion">
         <ul id="authorList">
             {% for author in authors %}
-                <li class="d-flex justify-content-between align-items-center">
-                    <a href="">{{ author.firstName }} {{ author.lastName }}</a>
-                    <span class="badge badge-info badge-pill">{{ author.books|length }}</span>
-                </li>
+                <a href="{{ path('books-by-author', {id: author.id}) }}">
+                    <li class="d-flex justify-content-between align-items-center">
+                        {{ author.firstName }} {{ author.lastName }}
+                        <span class="badge badge-info badge-pill">{{ author.books|length }}</span>
+                    </li>
+                </a>
             {% endfor %}
         </ul>
     </div>
@@ -30,10 +32,12 @@
     <div id="genres" class="collapse" role="tabpanel" aria-labelledby="genreHeading" data-parent="#accordion">
         <ul id="genreList">
             {% for genre in genres %}
-                <li class="d-flex justify-content-between align-items-center">
-                    <a href="">{{ genre.name }}</a>
-                    <span class="badge badge-pill">{{ genre.books|length }}</span>
-                </li>
+                <a href="{{ path('books-by-genre', {id: genre.id}) }}">
+                    <li class="d-flex justify-content-between align-items-center">
+                        {{ genre.name }}
+                        <span class="badge badge-pill">{{ genre.books|length }}</span>
+                    </li>
+                </a>
             {% endfor %}
         </ul>
     </div>

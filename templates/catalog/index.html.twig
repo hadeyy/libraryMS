@@ -4,18 +4,24 @@
 {% block content %}
     <div class="col-xs-12 col-sm-12 col-md-9">
         <h2>
-            All books
-            {% if is_granted("ROLE_LIBRARIAN") %}
-                <a href="{{ path('new-book') }}" id="newBookLink">
-                    <button class="btn float-right"><span class="plus">+</span>NEW</button>
-                </a>
-            {% endif %}
+            {% block catalogTitle %}
+                All books
+                {% if is_granted("ROLE_LIBRARIAN") %}
+                    <a href="{{ path('new-book') }}" id="newBookLink">
+                        <button class="btn float-right"><span class="plus">+</span>NEW</button>
+                    </a>
+                {% endif %}
+            {% endblock %}
         </h2>
         <hr>
         <div class="row book-list">
-            {% for book in books %}
-                {% include 'catalog/_book_preview.html.twig' with {'book': book } %}
-            {% endfor %}
+            {% if books|length > 0 %}
+                {% for book in books %}
+                    {% include 'catalog/_book_preview.html.twig' with {'book': book } %}
+                {% endfor %}
+            {% else %}
+                <h4 class="no-data">Nothing to display.</h4>
+            {% endif %}
         </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-3">

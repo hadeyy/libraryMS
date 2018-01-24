@@ -40,14 +40,56 @@ class DefaultController extends Controller
         $authorRepo = $this->getDoctrine()->getRepository(Author::class);
         $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
 
-        $allBooks = $bookRepo->findAll();
-        $allAuthors = $authorRepo->findAll();
-        $allGenres = $genreRepo->findAll();
-
         return $this->render('catalog/index.html.twig', [
-            'books' => $allBooks,
-            'authors' => $allAuthors,
-            'genres' => $allGenres,
+            'books' => $bookRepo->findAll(),
+            'authors' => $authorRepo->findAll(),
+            'genres' => $genreRepo->findAll(),
+        ]);
+    }
+
+    /**
+     * @Route("/catalog/author/{id}", name="books-by-author", requirements={"id"="\d+"})
+     *
+     * @param int $id Author id.
+     *
+     * @return Response
+     */
+    public function authorCatalog(int $id)
+    {
+        $authorRepo = $this->getDoctrine()->getRepository(Author::class);
+        $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
+
+        /** @var Author $author */
+        $author = $authorRepo->find($id);
+
+        return $this->render('catalog/_books_by_author.html.twig', [
+            'authors' => $authorRepo->findAll(),
+            'genres' => $genreRepo->findAll(),
+            'author' => $author,
+            'books' => $author->getBooks(),
+        ]);
+    }
+
+    /**
+     * @Route("/catalog/genre/{id}", name="books-by-genre", requirements={"id"="\d+"})
+     *
+     * @param int $id Genre id.
+     *
+     * @return Response
+     */
+    public function genreCatalog(int $id)
+    {
+        $authorRepo = $this->getDoctrine()->getRepository(Author::class);
+        $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
+
+        /** @var Genre $genre */
+        $genre = $genreRepo->find($id);
+
+        return $this->render('catalog/_books_by_genre.html.twig', [
+            'authors' => $authorRepo->findAll(),
+            'genres' => $genreRepo->findAll(),
+            'genre' => $genre,
+            'books' => $genre->getBooks(),
         ]);
     }
 
