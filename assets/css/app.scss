@@ -354,3 +354,12 @@ form#commentForm {
 div.comment {
   margin-top: 10px;
 }
+
+#loginForm input,
+#loginForm button,
+#registrationForm input,
+#registrationForm button,
+#loginForm,
+#registrationForm {
+  width: 100%;
+}
