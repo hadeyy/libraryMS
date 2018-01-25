@@ -15,6 +15,7 @@ use App\Entity\Comment;
 use App\Entity\Genre;
 use App\Entity\User;
 use App\Form\CommentType;
+use App\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,19 @@ class DefaultController extends Controller
      */
     public function index()
     {
-        return $this->render('index.html.twig');
+        /** @var BookRepository $bookRepo */
+        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
+
+        $popularBooks = $bookRepo->findAllOrderedByTimesBorrowed();
+        $newBooks = $bookRepo->findAllOrderedByPublicationDate();
+
+        return $this->render(
+            'index.html.twig',
+            [
+                'popularBooks' => $popularBooks,
+                'newBooks' => $newBooks,
+            ]
+        );
     }
 
     /**

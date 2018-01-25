@@ -1,0 +1,15 @@
+<div class="flip-card-container">
+    <div class="flip-card">
+        <div class="face front-face">
+            <img src="{{ asset('uploads/covers/' ~ book.cover) }}"/>
+        </div>
+        <div class="face back-face">
+            <h5>{{ book.title }}</h5>
+            <h6><small>by</small> {{ book.Author }}</h6>
+            <br><br>
+            <a href="{{ path('show-book', {id: book.id}) }}">
+                see more <span class="fa fa-angle-right"></span>
+            </a>
+        </div>
+    </div>
+</div>

@@ -2,5 +2,29 @@
 
 {% block title %}Home{% endblock %}
 {% block content %}
- <h2>home page</h2>
+    <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+        <h2>Newest books</h2>
+        <hr>
+        {% set new = newBooks|slice(0,5) %}
+        <div class="row">
+            {% for book in new %}
+                {% include '_featured_book.html.twig' with {'book': book} %}
+            {% endfor %}
+        </div>
+
+        <h2>Most popular books</h2>
+        <hr>
+        {% set popular = popularBooks|slice(0,5) %}
+        <div class="row">
+            {% for book in popular %}
+                {% include '_featured_book.html.twig' with {'book': book} %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+        <h2>sidebar</h2>
+        <hr>
+        ...
+    </div>
 {% endblock %}
