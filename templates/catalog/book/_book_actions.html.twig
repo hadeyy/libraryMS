@@ -1,5 +1,5 @@
 {% if book.availableCopies > 0 %}
-    <a class="book-action" href="">
+    <a class="book-action" href="{{ path('reserve-book', {id: book.id}) }}">
         <button type="button" class="btn">RESERVE BOOK</button>
     </a>
 {% else %}

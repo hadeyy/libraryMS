@@ -10,10 +10,15 @@ namespace App\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="app_book_reservations")
  * @ORM\Entity(repositoryClass="App\Repository\BookReservationRepository")
+ * @Assert\Expression(
+ *     "this.getDateFrom() <= this.getDateTo()",
+ *     message="End date cannot be before start date!"
+ * )
  */
 class BookReservation
 {
@@ -32,11 +37,21 @@ class BookReservation
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\Date()
+     * @Assert\GreaterThan(
+     *     value="today",
+     *     message="Earliest book reservation start date can be the next day."
+     * )
      */
     private $dateFrom;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\Date()
+     * @Assert\GreaterThanOrEqual(
+     *     value="+2 days",
+     *     message="Earliest book reservation end date can be 2 days from today."
+     * )
      */
     private $dateTo;
 

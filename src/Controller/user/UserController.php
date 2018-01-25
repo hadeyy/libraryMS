@@ -12,12 +12,15 @@ namespace App\Controller\user;
 use App\Entity\BookReservation;
 use App\Entity\User;
 use App\Repository\BookReservationRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/user")
+ *
+ * @Security("has_role('ROLE_USER')")
  */
 class UserController extends Controller
 {

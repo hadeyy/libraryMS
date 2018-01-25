@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book reservation{% endblock %}
+
+{% block content %}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h2>
+            Reserving:
+            <span class="all-caps">"{{ book.title }}"</span> by
+            <span class="capital">{{ book.author }}</span>
+        </h2>
+        <hr>
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button type="submit" class="book-form-btn">SUBMIT</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
