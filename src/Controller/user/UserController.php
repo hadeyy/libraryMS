@@ -9,6 +9,9 @@
 namespace App\Controller\user;
 
 
+use App\Entity\BookReservation;
+use App\Entity\User;
+use App\Repository\BookReservationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,9 +26,21 @@ class UserController extends Controller
      */
     public function profileAction(): Response
     {
+        /** @var BookReservationRepository $reservationRepo */
+        $reservationRepo = $this->getDoctrine()->getRepository(BookReservation::class);
+        /** @var User $user */
+        $user = $this->getUser();
 
+        $activeReservations = $reservationRepo->findCurrentReservations($user);
+        $closedReservations = $reservationRepo->findPastReservations($user);
 
-        return $this->render('user/profile.html.twig');
+        return $this->render(
+            'user/profile.html.twig',
+            [
+                'activeReservations' => $activeReservations,
+                'closedReservations' => $closedReservations,
+            ]
+        );
     }
 
     /**

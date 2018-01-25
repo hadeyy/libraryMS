@@ -2,34 +2,42 @@
 
 {% block title %}Profile{% endblock %}
 {% block content %}
-<div class="col-md-6">
+<div class="col-md-12 col-lg-6">
     {% include 'user/_reader_card.html.twig' with {'user': app.user } %}
     <br>
 
     <h2>Favorites</h2>
     <hr>
     {% if app.user.favorites|length == 0 %}
-    <p>Nothing to display.</p>
+    <p class="no-data">Nothing to display.</p>
     {% else %}
     {% include 'user/_favorites.html.twig' with {'favorites': app.user.favorites } %}
     {% endif %}
 </div>
-<div class="col-md-6">
+<div class="col-md-12 col-lg-6">
     <h2>Currently reading</h2>
     <hr>
     {% if app.user.bookReservations|length == 0 %}
-    <p>Nothing to display.</p>
+    <p class="no-data">Nothing to display.</p>
     {% else %}
-    {% include 'user/_currently_reading.html.twig' with {'reservations': app.user.bookReservations } %}
+    <div class="row d-flex justify-content-center">
+        {% for reservation in activeReservations %}
+            {% include 'user/_featured_book.html.twig' with {'book': reservation.book } %}
+        {% endfor %}
+    </div>
     {% endif %}
     <br>
 
     <h2>Reading history</h2>
     <hr>
     {% if app.user.bookReservations|length == 0 %}
-    <p>Nothing to display.</p>
+    <p class="no-data">Nothing to display.</p>
     {% else %}
-    {% include 'user/_currently_reading.html.twig' with {'reservations': app.user.bookReservations } %}
+        <div class="row d-flex justify-content-center">
+            {% for reservation in closedReservations %}
+                {% include 'user/_featured_book.html.twig' with {'book': reservation.book } %}
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
 {% endblock %}

@@ -141,8 +141,6 @@ a:hover {
 #userPhoto, #bookPhoto {
   max-width: 100%;
 }
-#readerInfo {
-}
 
 #bookCoverEnlarged {
   height: 95vh;
@@ -469,3 +467,27 @@ a#editAuthorLink {
   }
 }
 
+.profile-featured-book {
+  border: 1px solid $palette-medium-dark;
+  border-radius: 10px;
+  height: 100px;
+  font-family: monospace;
+  margin: 5px;
+  max-width: 45%;
+  & div.row {
+    height: 100%;
+  }
+  & div.row div img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  & span.title {
+    text-transform: uppercase;
+  }
+  & span.author {
+    text-transform: capitalize;
+  }
+  & span.fa {
+    font-size: 2em;
+  }
+}
