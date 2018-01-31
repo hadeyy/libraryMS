@@ -10,10 +10,15 @@ namespace App\Controller\librarian;
 
 
 use App\Entity\Book;
+use App\Entity\BookReservation;
 use App\Form\BookType;
+use App\Repository\BookReservationRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -56,4 +61,65 @@ class LibraryController extends Controller
 
         return $this->render('catalog/book/new.html.twig', ['form' => $form->createView()]);
     }
+
+    /**
+     * @Route("/reservations", name="reservations")
+     */
+    public function reservations()
+    {
+        /** @var BookReservationRepository $reservationRepo */
+        $reservationRepo = $this->getDoctrine()->getRepository(BookReservation::class);
+
+        $reserved = $reservationRepo->findReservationsByStatus('reserved');
+        $reading = $reservationRepo->findReservationsByStatus('reading');
+        $returned = $reservationRepo->findReservationsByStatus('returned');
+        $canceled = $reservationRepo->findReservationsByStatus('canceled');
+
+        return $this->render(
+            'librarian/reservations.html.twig',
+            [
+                'reserved' => $reserved,
+                'reading' => $reading,
+                'returned' => $returned,
+                'canceled' => $canceled,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/reservations/update/{id}/{status}", name="reservation-update", defaults={"id" = 1, "status" = "reserved"})
+     * @Method("GET")
+     *
+     * @param int $id Reservation id.
+     * @param string $status New reservation status.
+     *
+     * @return RedirectResponse
+     */
+    public function updateReservationStatus(int $id, string $status)
+    {
+        $em = $this->getDoctrine()->getManager();
+        /** @var BookReservation $reservation */
+        $reservation = $em->getRepository(BookReservation::class)->find($id);
+        $reservation->setStatus($status);
+
+        if ($status === 'returned' || 'canceled') {
+            /** @var Book $book */
+            $book = $reservation->getBook();
+
+            $this->updateBook($book);
+        }
+
+        $em->flush();
+
+        return $this->redirectToRoute('reservations');
+    }
+
+    private function updateBook(Book $book)
+    {
+        $availableCopies = $book->getAvailableCopies();
+        $book->setAvailableCopies($availableCopies + 1);
+        $reservedCopies = $book->getReservedCopies();
+        $book->setReservedCopies($reservedCopies - 1);
+    }
+
 }

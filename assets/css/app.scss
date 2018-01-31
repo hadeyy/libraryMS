@@ -63,7 +63,7 @@ a#logout button {
 form {
   padding-top: 10px;
   text-align: center;
-  width: 50%;
+  width: 100%;
 }
 
 input[type=text], input[type=email], input[type=number], input[type=password], select {
@@ -351,8 +351,7 @@ form#commentForm {
   }
 }
 
-div.comment,
-div.author-book {
+div.comment {
   margin-top: 10px;
 }
 
@@ -491,10 +490,35 @@ a#editAuthorLink {
     font-size: 2em;
   }
 }
+.author-featured-book {
+  border: 1px solid $palette-medium-dark;
+  border-radius: 10px;
+  margin: 5px;
+  height: 150px;
+  & div.row {
+    max-height: 100%;
+  }
+  & div.row div img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  & span.fa {
+    font-size: 2em;
+  }
+}
 
 .all-caps {
   text-transform: uppercase;
 }
 .capital {
   text-transform: capitalize;
+}
+
+.drop-column {
+  padding-bottom: 10px;
+  height: 100%;
+}
+.draggable-element {
+  border: 1px solid;
+  margin: 10px 0;
 }

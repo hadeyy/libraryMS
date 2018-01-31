@@ -1,10 +1,10 @@
-<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 author-book card">
-    <div class="row card-body">
-        <div class="col-xs-12 col-sm-6 col-md-3">
-            <img class="author-book-cover" src="{{ asset('uploads/covers/sample.jpg') }}" alt="Book cover">
+<div class="author-featured-book col-xs-12 col-sm-12 col-md-3 col-lg-3">
+    <div class="row d-flex justify-content-center align-items-center">
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <img src="{{ asset('uploads/covers/' ~ book.cover) }}"/>
         </div>
-        <div class="col-xs-12 col-sm-6 col-md-9 card-text">
-            <h5 class="card-title author-book-title">
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+            <h5 class="author-book-title">
                 {{ book.title }}
                 <small>({{ book.publicationDate|date('Y') }})</small>
             </h5>
@@ -12,13 +12,12 @@
             <h6 class="card-subtitle mb-2 text-muted author-book-info">{{ book.pages }} pages | {{ book.language }}</h6>
 
             {% for genre in book.genres %}
-                <span class="author-book-genres">{{ genre }} |</span>
+                <span class="author-book-genres">{{ genre }}&nbsp;&nbsp;&nbsp;</span>
             {% endfor %}
-
-            <br><br>
-
-            <a class="card-link preview-link author-book-link" href="{{ path('show-book', {id: book.id}) }}">
-                see book page <span class="fa fa-angle-right"></span>
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+            <a href="{{ path('show-book', {id: book.id}) }}">
+                <span class="fa fa-angle-right"></span>
             </a>
         </div>
     </div>

@@ -51,4 +51,19 @@ class BookReservationRepository extends EntityRepository
 
         return $query->execute();
     }
+
+    public function findReservationsByStatus(string $status)
+    {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery(
+            'SELECT r 
+            FROM App\Entity\BookReservation r
+            WHERE r.status = :status
+            ORDER BY r.dateFrom DESC'
+        )->setParameter('status', $status);
+
+        return $query->execute();
+    }
+
 }

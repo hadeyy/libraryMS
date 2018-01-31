@@ -9,7 +9,7 @@
     <div>
         <h4>Books ({{ author.books|length }})</h4>
         <hr>
-        <div class="row">
+        <div class="row d-flex justify-content-center">
             {% for book in author.books %}
                 {% include 'catalog/author/_book_card.html.twig' with {'book': book } %}
             {% endfor %}

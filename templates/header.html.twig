@@ -12,9 +12,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ path('catalog') }}">Catalog</a>
             </li>
-            {% if app.user %}
+            {% if is_granted("ROLE_LIBRARIAN") %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('activity') }}">Activity</a>
+                    <a class="nav-link" href="{{ path('reservations') }}">Reservations</a>
                 </li>
             {% endif %}
         </ul>
@@ -41,6 +41,7 @@
                         <h6 class="dropdown-header">{{ app.user.firstName }} {{ app.user.lastName }}</h6>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ path('profile') }}">Profile</a>
+                        <a class="dropdown-item" href="{{ path('activity') }}">Activity</a>
                         <a class="dropdown-item" href="{{ path('notifications') }}">
                             Notifications
                             <span class="badge badge-pill">0</span>
