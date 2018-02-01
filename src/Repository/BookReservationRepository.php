@@ -60,7 +60,7 @@ class BookReservationRepository extends EntityRepository
             'SELECT r 
             FROM App\Entity\BookReservation r
             WHERE r.status = :status
-            ORDER BY r.dateFrom DESC'
+            ORDER BY r.updatedAt DESC'
         )->setParameter('status', $status);
 
         return $query->execute();

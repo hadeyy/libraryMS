@@ -101,6 +101,7 @@ class LibraryController extends Controller
         /** @var BookReservation $reservation */
         $reservation = $em->getRepository(BookReservation::class)->find($id);
         $reservation->setStatus($status);
+        $reservation->setUpdatedAt(new \DateTime());
 
         if ($status === 'returned' || 'canceled') {
             /** @var Book $book */

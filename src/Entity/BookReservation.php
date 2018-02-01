@@ -71,10 +71,17 @@ class BookReservation
      */
     private $fine;
 
+    /**
+     * @ORM\Column(type="datetime")
+     * @Assert\Date()
+     */
+    private $updatedAt;
+
     public function __construct()
     {
         $this->status = 'reserved';
         $this->fine = 0;
+        $this->updatedAt = new \DateTime();
     }
 
     public function getId()
@@ -147,4 +154,13 @@ class BookReservation
         $this->fine = $fine;
     }
 
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt($updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
 }

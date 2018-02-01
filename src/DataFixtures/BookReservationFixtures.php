@@ -38,6 +38,7 @@ class BookReservationFixtures extends Fixture implements DependentFixtureInterfa
                 $this->randomDate('+9 days', '+20 days'))
             );
             $reservation->setStatus($statuses[mt_rand(0, count($statuses) - 1)]);
+            $reservation->getStatus() !== 'reading' ?: $reservation->setFine(mt_rand(0, 50) / 10);
             /** @var User $user */
             $user = $this->getReference('user' . mt_rand(0, 3));
             $reservation->setReader($user);
