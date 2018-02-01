@@ -104,6 +104,8 @@ class LibraryController extends Controller
         $reservation->setUpdatedAt(new \DateTime());
 
         if ($status === 'returned' || 'canceled') {
+            $reservation->getFine() < 0 ?: $reservation->setFine(0);
+
             /** @var Book $book */
             $book = $reservation->getBook();
 
