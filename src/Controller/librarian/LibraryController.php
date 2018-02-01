@@ -106,7 +106,7 @@ class LibraryController extends Controller
             /** @var Book $book */
             $book = $reservation->getBook();
 
-            $this->updateBook($book);
+            $this->updateReservationBook($book);
         }
 
         $em->flush();
@@ -114,7 +114,7 @@ class LibraryController extends Controller
         return $this->redirectToRoute('reservations');
     }
 
-    private function updateBook(Book $book)
+    private function updateReservationBook(Book $book)
     {
         $availableCopies = $book->getAvailableCopies();
         $book->setAvailableCopies($availableCopies + 1);

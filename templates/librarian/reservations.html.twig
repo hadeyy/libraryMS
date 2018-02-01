@@ -7,10 +7,7 @@
         <hr>
         <div id="reserved" class="drop-column">
             {% for reservation in reserved %}
-                <div class="draggable-element" id="{{ reservation.id }}" draggable="true" ondrop="return false;">
-                    {{ reservation.book.title }} | {{ reservation.reader }}
-                    | {{ reservation.status }}
-                </div>
+                {% include 'librarian/_reservation_card.html.twig' with {'reservation': reservation} %}
             {% endfor %}
         </div>
     </div>
@@ -19,10 +16,7 @@
         <hr>
         <div id="reading" class="drop-column">
             {% for reservation in reading %}
-                <div class="draggable-element" id="{{ reservation.id }}" draggable="true" ondrop="return false;">
-                    {{ reservation.book.title }} | {{ reservation.reader }}
-                    | {{ reservation.status }}
-                </div>
+                {% include 'librarian/_reservation_card.html.twig' with {'reservation': reservation} %}
             {% endfor %}
         </div>
     </div>
@@ -31,10 +25,7 @@
         <hr>
         <div id="returned" class="drop-column">
             {% for reservation in returned %}
-                <div class="draggable-element" id="{{ reservation.id }}" draggable="true" ondrop="return false;">
-                    {{ reservation.book.title }} | {{ reservation.reader }}
-                    | {{ reservation.status }}
-                </div>
+                {% include 'librarian/_reservation_card.html.twig' with {'reservation': reservation} %}
             {% endfor %}
         </div>
     </div>
@@ -43,10 +34,7 @@
         <hr>
         <div id="canceled" class="drop-column">
             {% for reservation in canceled %}
-                <div class="draggable-element" id="{{ reservation.id }}" draggable="true" ondrop="return false;">
-                    {{ reservation.book.title }} | {{ reservation.reader }}
-                    | {{ reservation.status }}
-                </div>
+                {% include 'librarian/_reservation_card.html.twig' with {'reservation': reservation} %}
             {% endfor %}
         </div>
     </div>
@@ -54,33 +42,46 @@
 {% block javascripts %}
     <script>
         $(function () {
-            var currentStatus;
+            var activePortlet, portletID, startStatus, stopStatus;
 
-            $('.draggable-element')
-                .bind('dragstart', function (event) {
-                    event.originalEvent.dataTransfer.setData("text/plain", event.target.getAttribute('id'));
-                    currentStatus = event.target.parentNode.id;
-                });
-            $('.drop-column')
-                .bind('dragover', function (event) {
-                    event.preventDefault();
-                })
-                .bind('drop', function (event) {
-                    event.preventDefault();
-
-                    var card = event.originalEvent.dataTransfer.getData("text/plain");
-
-                    if ($(event.target).is(".drop-column") && currentStatus !== event.target.id) {
-                        status = event.target.id;
-                        event.target.appendChild(document.getElementById(card));
-
-                        var url = "{{ path('reservation-update', {'id': 'card', 'status': 'newStatus'}) }}";
-                        url = url.replace("card", card);
-                        url = url.replace("newStatus", status);
-                        console.log(url);
-                        window.location = url;
+            $(".drop-column").sortable({
+                connectWith: ".drop-column",
+                handle: ".portlet-header",
+                cancel: ".portlet-toggle",
+                placeholder: "portlet-placeholder ui-corner-all",
+                start: function (event, ui) {
+                    // selected portlet
+                    activePortlet = ui.item[0];
+                    // reservation's ID
+                    portletID = activePortlet.id;
+                    // selected portlet's original column name (id)
+                    startStatus = activePortlet.parentNode.id;
+                },
+                stop: function (event, ui) {
+                    stopStatus = ui.item[0].parentNode.id;
+                    if (stopStatus !== startStatus) {
+                        update(portletID, stopStatus);
                     }
-                });
+                }
+            });
+
+            $(".portlet")
+                .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+                .find(".portlet-header")
+                .addClass("ui-widget-header ui-corner-all");
+
+            $(".portlet-toggle").on("click", function () {
+                var icon = $(this);
+                icon.closest(".portlet").find(".portlet-content").toggle();
+            });
+
+            function update(id, status) {
+                var url = "{{ path('reservation-update', {'id': 'idPlaceholder', 'status': 'statusPlaceholder'}) }}";
+                url = url.replace("idPlaceholder", id);
+                url = url.replace("statusPlaceholder", status);
+                // page reload
+                window.location = url;
+            }
         });
     </script>
 {% endblock %}

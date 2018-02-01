@@ -135,9 +135,11 @@ a:hover {
   color: $palette-dark;
   background-color: rgba($palette-medium-light, 0.1);
 }
+
 #userCard h6 {
   margin-bottom: 0;
 }
+
 #userPhoto, #bookPhoto {
   max-width: 100%;
 }
@@ -149,6 +151,7 @@ a:hover {
 .book-preview {
   margin-bottom: 25px;
 }
+
 .preview-button {
   display: inline-block;
   padding: 0;
@@ -157,14 +160,17 @@ a:hover {
   width: 95%;
   border: none;
 }
+
 .preview-cover {
   max-width: 100%;
   max-height: 100%;
   box-shadow: 6px 3px gray;
 }
+
 .preview-modal-cover {
   width: 100%;
 }
+
 .preview-title {
   font-family: 'Courier New', monospace;
   text-transform: uppercase;
@@ -172,20 +178,24 @@ a:hover {
   overflow-wrap: break-word;
   margin-right: 15px;
 }
+
 .preview-author {
   text-transform: capitalize;
   font-weight: 400;
 }
+
 .preview-genre {
   font-variant-caps: all-small-caps;
   padding-right: 15px;
   margin-right: 15px;
 }
+
 .preview-annotation {
   text-align: justify;
   overflow-wrap: break-word;
   margin-right: 15px;
 }
+
 .preview-link {
   color: $palette-dark;
   font-weight: bold;
@@ -197,9 +207,11 @@ a:hover {
 .filters a {
   color: $palette-dark;
 }
+
 .filters ul {
   padding-left: 0;
 }
+
 .filters li {
   font-variant-caps: all-small-caps;
   padding: 0 5px;
@@ -235,6 +247,7 @@ span.badge {
 .book-form-col > * {
   width: 100% !important;
 }
+
 .book-form-btn {
   width: 100% !important;
 }
@@ -248,6 +261,7 @@ option {
   overflow-y: scroll;
   background-color: #f1f1f1;
 }
+
 .genre-row {
   text-align: left;
   input {
@@ -260,18 +274,17 @@ option {
   }
 }
 
-::-webkit-scrollbar-track
-{
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: $palette-light;
 }
-::-webkit-scrollbar
-{
+
+::-webkit-scrollbar {
   width: 6px;
   background-color: $palette-light;
 }
-::-webkit-scrollbar-thumb
-{
+
+::-webkit-scrollbar-thumb {
   background-color: $palette-medium-dark;
 }
 
@@ -289,6 +302,7 @@ span.fa-bars {
     content: ':';
   }
 }
+
 .right-side {
   font-family: monospace;
   text-transform: uppercase;
@@ -313,12 +327,14 @@ span#authorName {
   font-size: 1.2em;
   font-weight: bold;
 }
+
 span#bookAuthor,
 span#authorCountry {
   text-transform: capitalize;
   font-family: sans-serif;
   font-weight: 300;
 }
+
 div#bookAnnotation {
   text-align: justify;
 }
@@ -339,6 +355,7 @@ a.book-action button, #commentBtn {
     width: unset;
   }
 }
+
 #commentBtn {
   margin: 0;
 }
@@ -367,6 +384,7 @@ div.comment {
 span.fa {
   color: $palette-medium-dark;
 }
+
 .filter-title {
   text-transform: uppercase;
 }
@@ -386,9 +404,11 @@ div.author-book {
     max-height: 180px
   }
 }
+
 div img.author-book-cover {
   max-height: 100%;
 }
+
 a.author-book-link {
   color: $palette-medium-dark;
   position: absolute;
@@ -401,19 +421,23 @@ div#authorCard {
   text-align: center;
   width: 300px;
 }
+
 a#editAuthorLink {
   position: absolute;
   bottom: 10px;
   right: 10px;
 }
+
 .author-book-title,
 .author-book-info {
   font-family: monospace;
   text-transform: uppercase;
 }
+
 .author-book-info {
   font-weight: lighter;
 }
+
 .author-book-genres {
   font-variant-caps: all-small-caps;
 }
@@ -428,12 +452,14 @@ a#editAuthorLink {
     transform: rotateY(-180deg);
   }
 }
+
 .flip-card {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
   transition: all 1.0s linear;
 }
+
 .face {
   position: absolute;
   width: 100%;
@@ -490,6 +516,7 @@ a#editAuthorLink {
     font-size: 2em;
   }
 }
+
 .author-featured-book {
   border: 1px solid $palette-medium-dark;
   border-radius: 10px;
@@ -510,6 +537,7 @@ a#editAuthorLink {
 .all-caps {
   text-transform: uppercase;
 }
+
 .capital {
   text-transform: capitalize;
 }
@@ -518,7 +546,74 @@ a#editAuthorLink {
   padding-bottom: 10px;
   height: 100%;
 }
-.draggable-element {
-  border: 1px solid;
+
+.portlet {
+  position: relative;
+}
+.portlet-header {
+  position: relative;
+  padding: 0 10px;
+  margin-bottom: 5px;
+  background-color: rgba($palette-medium-dark, 0.5);
+  &:hover {
+    cursor: pointer;
+    background-color: $palette-medium-light;
+  }
+}
+.portlet-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -8px;
+}
+.portlet-content {
+  padding: 0 10px;
+  & p {
+    margin: 0;
+  }
+  & .book-title {
+    text-transform: uppercase;
+    font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+  }
+  & .book-author {
+    text-transform: capitalize;
+  }
+  & .from:after,
+  & .to:after,
+  & .fine span:after {
+    content: ":";
+  }
+  & .dates, & .date, & .fine {
+    text-transform: uppercase;
+    font-family: monospace;
+  }
+  & .dates {
+    margin: 10px 0 0 0;
+  }
+  & .by, & .from, & .to, & .fine {
+    font-weight: bold;
+  }
+  & .fine .amount {
+    color: darkred;
+    &:after {
+      content: ' \20AC';
+    }
+  }
+}
+.portlet-placeholder {
+  border: 2px dashed $palette-medium-light;
+  margin: 0 1em 1em 0;
+  height: 50px;
+  width: 100%;
+}
+.reservation-card, .ui-widget {
   margin: 10px 0;
+  padding: 10px;
+  border: 1px solid $palette-medium-dark !important;
+  border-radius: 5px;
+  background-color: $palette-light;
+  &:active {
+    background-color: $palette-medium-light;
+  }
+  & .reader {}
 }
