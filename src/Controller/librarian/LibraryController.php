@@ -9,8 +9,10 @@
 namespace App\Controller\librarian;
 
 
+use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\BookReservation;
+use App\Form\AuthorType;
 use App\Form\BookType;
 use App\Repository\BookReservationRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -32,6 +34,7 @@ class LibraryController extends Controller
      * @Route("/catalog/books/new", name="new-book")
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function newBook(Request $request)
@@ -60,6 +63,30 @@ class LibraryController extends Controller
         }
 
         return $this->render('catalog/book/new.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * @Route("/catalog/authors/new", name="new-author")
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse|Response
+     */
+    public function newAuthor(Request $request)
+    {
+        $author = new Author();
+
+        $form = $this->createForm(AuthorType::class, $author);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($author);
+            $em->flush();
+
+            return $this->redirectToRoute('catalog-books');
+        }
+
+        return $this->render('catalog/author/new.html.twig', ['form' => $form->createView()]);
     }
 
     /**
