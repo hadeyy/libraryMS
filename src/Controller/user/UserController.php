@@ -9,8 +9,10 @@
 namespace App\Controller\user;
 
 
+use App\Entity\Activity;
 use App\Entity\BookReservation;
 use App\Entity\User;
+use App\Repository\ActivityRepository;
 use App\Repository\BookReservationRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -51,9 +53,12 @@ class UserController extends Controller
      */
     public function activityAction(): Response
     {
+        /** @var ActivityRepository $activityRepo */
+        $activityRepo = $this->getDoctrine()->getRepository(Activity::class);
 
+        $activities = $activityRepo->findAllUserActivities($this->getUser());
 
-        return $this->render('user/activities.html.twig');
+        return $this->render('user/activities.html.twig', ['activities' => $activities]);
     }
 
     /**

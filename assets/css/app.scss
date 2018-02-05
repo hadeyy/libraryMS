@@ -689,3 +689,17 @@ a#toggleFavorite {
     right: -20px;
   }
 }
+
+.activity-card {
+  margin: 10px 5px;
+  & a {
+    color: $palette-medium-dark;
+    font-weight: bold;
+  }
+}
+a.activity-book-title {
+  text-transform: uppercase;
+}
+a.activity-book-author {
+  text-transform: capitalize;
+}

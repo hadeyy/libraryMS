@@ -9,6 +9,7 @@
 namespace App\Controller\reader;
 
 
+use App\Entity\Activity;
 use App\Entity\Book;
 use App\Entity\BookReservation;
 use App\Entity\User;
@@ -99,9 +100,26 @@ class LibraryController extends Controller
         /** @var bool $isAFavorite */
         $isAFavorite = $favorites->contains($book);
 
-        $isAFavorite ? $reader->removeFavorite($book) : $reader->addFavorite($book);
+        $action = $isAFavorite ?: 'add';
+
+        /** @var Activity $activity */
+        $activity = new Activity();
+        $activity->setBook($book);
+        $activity->setUser($reader);
+
+        if ('add' === $action) {
+            $activity->setTitle('Added a book to favorites');
+            $reader->addFavorite($book);
+        } else {
+            $activity->setTitle('Removed a book from favorites');
+            $reader->removeFavorite($book);
+        }
+
+        $book->addActivity($activity);
+        $reader->addActivity($activity);
 
         $em = $this->getDoctrine()->getManager();
+        $em->persist($activity);
         $em->flush();
 
         return $this->redirectToRoute('show-book', ['id' => $id]);

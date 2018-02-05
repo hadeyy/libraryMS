@@ -27,7 +27,6 @@ class ActivityFixtures extends Fixture implements DependentFixtureInterface
             $activity = new Activity();
 
             $activity->setTitle($lipsum->words(mt_rand(3, 6)));
-            $activity->setContent($lipsum->sentences(2));
             /** @var Book $book */
             $book = $this->getReference('book' . mt_rand(0, 99));
             $activity->setBook($book);

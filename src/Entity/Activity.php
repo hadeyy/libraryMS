@@ -29,11 +29,6 @@ class Activity
     private $title;
 
     /**
-     * @ORM\Column(type="string")
-     */
-    private $content;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Book", inversedBy="activities")
      */
     private $book;
@@ -72,16 +67,6 @@ class Activity
     public function setTitle($title): void
     {
         $this->title = $title;
-    }
-
-    public function getContent()
-    {
-        return $this->content;
-    }
-
-    public function setContent($content): void
-    {
-        $this->content = $content;
     }
 
     public function getBook()
