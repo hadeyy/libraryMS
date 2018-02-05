@@ -159,6 +159,7 @@ a:hover {
   vertical-align: top;
   width: 95%;
   border: none;
+  position: relative;
 }
 
 .preview-cover {
@@ -449,7 +450,7 @@ a#editAuthorLink {
   position: relative;
   margin: 10px auto;
   width: 200px;
-  height: 300px;
+  height: 250px;
   z-index: 1;
   &:hover .flip-card {
     transform: rotateY(-180deg);
@@ -457,7 +458,7 @@ a#editAuthorLink {
 }
 
 .flip-card {
-  width: 100%;
+  width: 90%;
   height: 100%;
   transform-style: preserve-3d;
   transition: all 1.0s linear;
@@ -468,6 +469,14 @@ a#editAuthorLink {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  &.front-face {
+    & img {
+      box-shadow: 6px 3px gray;
+    }
+    & .favorite-tag {
+      right: 8px;
+    }
+  }
   &.back-face {
     display: block;
     transform: rotateY(-180deg);
@@ -476,7 +485,7 @@ a#editAuthorLink {
     text-align: center;
     background-color: $palette-medium-dark;
     color: $palette-light;
-    padding: 50% 10px 10px;
+    padding: 40% 10px 10px;
     & h5 {
       font-variant-caps: all-small-caps;
     }
@@ -492,6 +501,25 @@ a#editAuthorLink {
         color: $palette-dark;
       }
     }
+  }
+  & img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+.user-favorite {
+  width: 150px !important;
+  height: 200px !important;
+  & img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  & .flip-card {
+    max-width: 90% !important;
+  }
+  & .back-face {
+    padding-top: 60% !important;
   }
 }
 
@@ -553,6 +581,7 @@ a#editAuthorLink {
 .portlet {
   position: relative;
 }
+
 .portlet-header {
   position: relative;
   padding: 0 10px;
@@ -563,12 +592,14 @@ a#editAuthorLink {
     background-color: $palette-medium-light;
   }
 }
+
 .portlet-toggle {
   position: absolute;
   top: 50%;
   right: 0;
   margin-top: -8px;
 }
+
 .portlet-content {
   padding: 0 10px;
   & p {
@@ -603,12 +634,14 @@ a#editAuthorLink {
     }
   }
 }
+
 .portlet-placeholder {
   border: 2px dashed $palette-medium-light;
   margin: 0 1em 1em 0;
   height: 50px;
   width: 100%;
 }
+
 .reservation-card, .ui-widget {
   margin: 10px 0;
   padding: 10px;
@@ -618,5 +651,38 @@ a#editAuthorLink {
   &:active {
     background-color: $palette-medium-light;
   }
-  & .reader {}
+  & .reader {
+  }
+}
+
+#bookCard div {
+  position: relative;
+}
+
+a#toggleFavorite {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 1.75rem;
+}
+
+.row {
+  margin-left: 0;
+}
+
+.favorite-tag {
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: -2px;
+  right: -2px;
+  border: 30px solid $palette-medium-dark;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  & span {
+    color: $palette-light;
+    position: absolute;
+    top: -20px;
+    right: -20px;
+  }
 }

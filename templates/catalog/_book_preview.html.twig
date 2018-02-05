@@ -2,6 +2,13 @@
     <!-- Modal trigger -->
     <button class="preview-button" data-toggle="modal" data-target="#bookInfo{{ book.id }}">
         <img class="preview-cover" src="{{ asset('uploads/covers/' ~ book.cover) }}" alt="Book cover">
+        <!-- Favorite tag -->
+        {% if book in app.user.favorites %}
+            <div class="favorite-tag">
+                <span class="fa fa-star"></span>
+            </div>
+        {% endif %}
+        <!-- favorite tag end. -->
     </button>
 
     <!-- Modal -->
@@ -13,7 +20,8 @@
                     <div class="row">
                         <!-- Book cover image -->
                         <div class="col-xs-12 col-sm-12 col-md-4 d-flex align-items-center">
-                            <img class="preview-modal-cover" src="{{ asset('uploads/covers/' ~ book.cover) }}" alt="Book cover">
+                            <img class="preview-modal-cover" src="{{ asset('uploads/covers/' ~ book.cover) }}"
+                                 alt="Book cover">
                         </div>
                         <!-- Book info -->
                         <div class="col-xs-12 col-sm-12 col-md-8">

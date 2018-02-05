@@ -1,7 +1,14 @@
 <div class="flip-card-container">
     <div class="flip-card">
-        <div class="face front-face">
+        <div class="face front-face d-flex justify-content-center align-items-center">
             <img src="{{ asset('uploads/covers/' ~ book.cover) }}"/>
+            <!-- Favorite tag -->
+            {% if book in app.user.favorites %}
+                <div class="favorite-tag">
+                    <span class="fa fa-star"></span>
+                </div>
+            {% endif %}
+            <!-- favorite tag end. -->
         </div>
         <div class="face back-face">
             <h5>{{ book.title }}</h5>

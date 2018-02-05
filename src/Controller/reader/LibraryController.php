@@ -13,8 +13,10 @@ use App\Entity\Book;
 use App\Entity\BookReservation;
 use App\Entity\User;
 use App\Form\BookReservationType;
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -76,5 +78,32 @@ class LibraryController extends Controller
         $book->setReservedCopies($reservedCopies + 1);
         $timesBorrowed = $book->getTimesBorrowed();
         $book->setTimesBorrowed($timesBorrowed + 1);
+    }
+
+    /**
+     * @Route("/catalog/books/{id}/toggle-favorite", name="toggle-favorite", requirements={"id"="\d+"})
+     *
+     * @param int $id Book ID
+     *
+     * @return RedirectResponse
+     */
+    public function toggleFavorite(int $id)
+    {
+        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
+        /** @var Book $book */
+        $book = $bookRepo->find($id);
+        /** @var User $reader */
+        $reader = $this->getUser();
+        /** @var ArrayCollection $favorites */
+        $favorites = $reader->getFavorites();
+        /** @var bool $isAFavorite */
+        $isAFavorite = $favorites->contains($book);
+
+        $isAFavorite ? $reader->removeFavorite($book) : $reader->addFavorite($book);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+
+        return $this->redirectToRoute('show-book', ['id' => $id]);
     }
 }

@@ -245,9 +245,14 @@ class User implements UserInterface, \Serializable
         return $this->favorites;
     }
 
-    public function addFavorite($favorite): void
+    public function addFavorite($book): void
     {
-        $this->favorites->add($favorite);
+        $this->favorites->add($book);
+    }
+
+    public function removeFavorite($book): void
+    {
+        $this->favorites->removeElement($book);
     }
 
     /**
