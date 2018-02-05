@@ -54,9 +54,11 @@ class LibraryController extends Controller
             $reader->addBookReservation($reservation);
 
             $this->updateBookAfterReservation($book);
+            $activity = $this->createReservationActivity($book, $this->getUser());
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($reservation);
+            $em->persist($activity);
             $em->flush();
 
             return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
@@ -79,6 +81,19 @@ class LibraryController extends Controller
         $book->setReservedCopies($reservedCopies + 1);
         $timesBorrowed = $book->getTimesBorrowed();
         $book->setTimesBorrowed($timesBorrowed + 1);
+    }
+
+    private function createReservationActivity(Book $book, User $user)
+    {
+        /** @var Activity $activity */
+        $activity = new Activity();
+        $activity->setBook($book);
+        $activity->setUser($user);
+        $activity->setTitle('Reserved a book');
+        $book->addActivity($activity);
+        $user->addActivity($activity);
+
+        return $activity;
     }
 
     /**
