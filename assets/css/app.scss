@@ -703,3 +703,11 @@ a.activity-book-title {
 a.activity-book-author {
   text-transform: capitalize;
 }
+
+div.activity-card {
+  position: relative;
+}
+
+.btn:focus {
+  box-shadow: none;
+}
