@@ -3,7 +3,7 @@
         <div class="face front-face d-flex justify-content-center align-items-center">
             <img src="{{ asset('uploads/covers/' ~ book.cover) }}"/>
             <!-- Favorite tag -->
-            {% if book in app.user.favorites %}
+            {% if app.user and book in app.user.favorites %}
                 <div class="favorite-tag">
                     <span class="fa fa-star"></span>
                 </div>
