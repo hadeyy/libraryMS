@@ -5,7 +5,7 @@
                aria-controls="authors">
                 Authors <span class="fa fa-angle-down"></span>
                 {% if is_granted("ROLE_LIBRARIAN") %}
-                    <a href="{{ path('new-author') }}" id="newAuthorLink">
+                    <a href="{{ path('new-author') }}" id="newAuthorLink" class="new-btn">
                         <button class="btn float-right"><span class="plus">+</span>NEW</button>
                     </a>
                 {% endif %}
@@ -30,6 +30,11 @@
         <h2>
             <a class="collapsed" data-toggle="collapse" href="#genres" aria-expanded="false" aria-controls="genres">
                 Genres <span class="fa fa-angle-down"></span>
+                {% if is_granted("ROLE_LIBRARIAN") %}
+                    <a href="{{ path('new-genre') }}" id="newGenreLink" class="new-btn">
+                        <button class="btn float-right"><span class="plus">+</span>NEW</button>
+                    </a>
+                {% endif %}
             </a>
         </h2>
     </div>

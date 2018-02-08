@@ -238,8 +238,7 @@ span.badge {
   color: $palette-light;
 }
 
-#newBookLink button,
-#newAuthorLink button {
+.new-btn button {
   background-color: $palette-light;
   border: 1px solid $palette-dark;
   color: $palette-dark;
@@ -384,7 +383,9 @@ div.comment {
 #loginForm,
 #registrationForm,
 #authorForm input,
-#authorForm button {
+#authorForm button,
+#genreForm input,
+#genreForm button {
   width: 100%;
 }
 
