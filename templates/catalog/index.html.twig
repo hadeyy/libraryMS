@@ -27,7 +27,15 @@
         <!-- Page navigation -->
         {% if maxPages > 1 %}
             <ul class="row d-flex justify-content-center align-items-center pagination">
-                <a href="{{ path('catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}"
+                <a href="
+                    {% if filter == 'author' %}
+                        {{ path('books-by-author', {page: currentPage-1 < 1 ? 1 : currentPage-1, id: author.id}) }}
+                    {% elseif filter == 'genre' %}
+                        {{ path('catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}
+                    {% else %}
+                        {{ path('catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}
+                    {% endif %}
+                    "
                    class="d-flex align-items-center {{ currentPage == 1 ? 'disabled' }}">
                     <li>
                         <span class="fa fa-angle-left"></span>
@@ -35,7 +43,15 @@
                 </a>
 
                 {% for i in 1..maxPages %}
-                    <a href="{{ path('catalog', {page: i}) }}"
+                    <a href="
+                        {% if filter == 'author' %}
+                            {{ path('books-by-author', {page: i, id: author.id}) }}
+                        {% elseif filter == 'genre' %}
+                            {{ path('catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}
+                        {% else %}
+                            {{ path('catalog', {page: i}) }}
+                        {% endif %}
+                        "
                        class="d-flex align-items-center {{ currentPage == i ? 'active disabled' }}">
                         <li>
                             {{ i }}
@@ -43,7 +59,15 @@
                     </a>
                 {% endfor %}
 
-                <a href="{{ path('catalog', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage}) }}"
+                <a href="
+                    {% if filter == 'author' %}
+                        {{ path('books-by-author', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, id: author.id}) }}
+                    {% elseif filter == 'genre' %}
+                        {{ path('catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}
+                    {% else %}
+                        {{ path('catalog', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage}) }}
+                    {% endif %}
+                    "
                    class="d-flex align-items-center {{ currentPage == maxPages ? 'disabled' }}">
                     <li>
                         <span class="fa fa-angle-right"></span>

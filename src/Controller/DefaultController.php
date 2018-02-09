@@ -15,6 +15,7 @@ use App\Entity\Comment;
 use App\Entity\Genre;
 use App\Entity\User;
 use App\Form\CommentType;
+use App\Repository\AuthorRepository;
 use App\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,8 +58,8 @@ class DefaultController extends Controller
      *     defaults={"page":"1"}
      * )
      *
-     * @param int $page
-     * @param int $limit
+     * @param int $page Result page number.
+     * @param int $limit Result limit for a page.
      *
      * @return Response
      */
@@ -79,29 +80,45 @@ class DefaultController extends Controller
             'currentPage' => $page,
             'authors' => $authorRepo->findAll(),
             'genres' => $genreRepo->findAll(),
+            'filter' => 'main',
         ]);
     }
 
     /**
-     * @Route("/catalog/author/{id}", name="books-by-author", requirements={"id"="\d+"})
+     * @Route(
+     *     "/catalog/author/{id}/page/{page}",
+     *     name="books-by-author",
+     *     requirements={"id"="\d+", "page"="\d+"},
+     *     defaults={"page":"1"}
+     * )
      *
      * @param int $id Author id.
+     * @param int $page Result page number.
+     * @param int $limit Result limit for a page.
      *
      * @return Response
      */
-    public function authorCatalog(int $id)
+    public function authorCatalog(int $id, $page = 1, $limit = 18)
     {
+        /** @var AuthorRepository $authorRepo */
         $authorRepo = $this->getDoctrine()->getRepository(Author::class);
         $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
 
         /** @var Author $author */
         $author = $authorRepo->find($id);
 
+        $books = $authorRepo->findAuthorBooksAndPaginate($author, $page, $limit);
+        $allBooks = $author->getBooks()->count();
+        $maxPages = ceil($allBooks / $limit);
+
         return $this->render('catalog/_books_by_author.html.twig', [
             'authors' => $authorRepo->findAll(),
             'genres' => $genreRepo->findAll(),
             'author' => $author,
-            'books' => $author->getBooks(),
+            'books' => $books,
+            'maxPages' => $maxPages,
+            'currentPage' => $page,
+            'filter' => 'author',
         ]);
     }
 
@@ -125,6 +142,7 @@ class DefaultController extends Controller
             'genres' => $genreRepo->findAll(),
             'genre' => $genre,
             'books' => $genre->getBooks(),
+            'filter' => 'genre',
         ]);
     }
 

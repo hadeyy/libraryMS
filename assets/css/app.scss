@@ -756,6 +756,9 @@ span.next {
     padding: 0 1em;
     font-size: 1em;
     font-weight: bold;
+    &:hover {
+      background-color: rgba($palette-medium-light, 0.1);
+    }
   }
   & .active {
     background-color: rgba($palette-medium-light, 0.2);
