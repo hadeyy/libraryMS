@@ -41,9 +41,9 @@
 
             $('span.next').on("click", function () {
                 activeModal = $(this)[0].parentNode.parentNode.parentNode;
-                currentIDNumber = parseInt(activeModal.id.replace("bookInfo", ""));
-                currentModal = $(document.getElementById("bookInfo" + currentIDNumber));
-                nextModal = $(document.getElementById("bookInfo" + (currentIDNumber + 1)));
+                currentIDNumber = jQuery.inArray(activeModal, modals);
+                currentModal = $(modals[currentIDNumber]);
+                nextModal = $(modals[currentIDNumber + 1]);
 
                 currentModal.modal("hide");
                 nextModal.modal("show");
@@ -51,9 +51,9 @@
 
             $('span.prev').on("click", function () {
                 activeModal = $(this)[0].parentNode.parentNode.parentNode;
-                currentIDNumber = parseInt(activeModal.id.replace("bookInfo", ""));
-                currentModal = $(document.getElementById("bookInfo" + currentIDNumber));
-                prevModal = $(document.getElementById("bookInfo" + (currentIDNumber - 1)));
+                currentIDNumber = jQuery.inArray(activeModal, modals);
+                currentModal = $(modals[currentIDNumber]);
+                prevModal = $(modals[currentIDNumber - 1]);
 
                 currentModal.modal("hide");
                 prevModal.modal("show");
