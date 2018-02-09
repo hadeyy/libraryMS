@@ -32,6 +32,12 @@
     <script>
         $(function () {
             var activeModal, currentIDNumber, currentModal, nextModal, prevModal;
+            var modals = $(document.getElementsByClassName('modal'));
+            var firstModal = $(modals[0]);
+            var lastModal = $(modals[modals.length - 1]);
+
+            firstModal.find("span.prev").css("display", "none");
+            lastModal.find("span.next").css("display", "none");
 
             $('span.next').on("click", function () {
                 activeModal = $(this)[0].parentNode.parentNode.parentNode;
