@@ -739,3 +739,28 @@ span.prev {
 span.next {
   right: -50px;
 }
+
+.pagination {
+  margin: 0;
+  border-top: 2px solid $palette-medium-dark;
+  border-bottom: 2px solid $palette-medium-dark;
+  background-color: $palette-dark;
+  height: 50px;
+  & a {
+    color: $palette-medium-dark;
+  }
+  & li {
+    list-style: none;
+    display: inline-block;
+    padding: 0 1em;
+    font-size: 1em;
+    font-weight: bold;
+  }
+  & .active {
+    background-color: rgba($palette-medium-light, 0.2);
+  }
+  & .disabled {
+    pointer-events: none;
+    cursor: default;
+  }
+}

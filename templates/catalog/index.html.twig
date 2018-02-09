@@ -23,6 +23,35 @@
                 <h4 class="no-data">Nothing to display.</h4>
             {% endif %}
         </div>
+
+        <!-- Page navigation -->
+        {% if maxPages > 1 %}
+            <ul class="row d-flex justify-content-center align-items-center pagination">
+                <a href="{{ path('catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}"
+                   class="d-flex align-items-center {{ currentPage == 1 ? 'disabled' }}">
+                    <li>
+                        <span class="fa fa-angle-left"></span>
+                    </li>
+                </a>
+
+                {% for i in 1..maxPages %}
+                    <a href="{{ path('catalog', {page: i}) }}"
+                       class="d-flex align-items-center {{ currentPage == i ? 'active disabled' }}">
+                        <li>
+                            {{ i }}
+                        </li>
+                    </a>
+                {% endfor %}
+
+                <a href="{{ path('catalog', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage}) }}"
+                   class="d-flex align-items-center {{ currentPage == maxPages ? 'disabled' }}">
+                    <li>
+                        <span class="fa fa-angle-right"></span>
+                    </li>
+                </a>
+            </ul>
+        {% endif %}
+        <!-- page navigation end. -->
     </div>
     <div class="col-xs-12 col-sm-12 col-md-3">
         {% include 'catalog/_filters.html.twig' with {'authors': authors, 'genres': genres } %}
@@ -31,10 +60,10 @@
 {% block javascripts %}
     <script>
         $(function () {
-            var activeModal, currentIDNumber, currentModal, nextModal, prevModal;
-            var modals = $(document.getElementsByClassName('modal'));
-            var firstModal = $(modals[0]);
-            var lastModal = $(modals[modals.length - 1]);
+            let activeModal, currentIDNumber, currentModal, nextModal, prevModal;
+            let modals = $(document.getElementsByClassName('modal'));
+            let firstModal = $(modals[0]);
+            let lastModal = $(modals[modals.length - 1]);
 
             firstModal.find("span.prev").css("display", "none");
             lastModal.find("span.next").css("display", "none");

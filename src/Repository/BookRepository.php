@@ -10,9 +10,32 @@ namespace App\Repository;
 
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class BookRepository extends EntityRepository
 {
+    public function findAllAndPaginate($currentPage = 1, $limit = 18)
+    {
+        $query = $this->createQueryBuilder('b')
+            ->orderBy('b.title', 'ASC')
+            ->getQuery();
+
+        $paginator = $this->paginate($query, $currentPage, $limit);
+
+        return $paginator;
+    }
+
+    private function paginate($query, $page, $limit)
+    {
+        $paginator = new Paginator($query);
+
+        $paginator->getQuery()
+            ->setFirstResult($limit * ($page - 1))
+            ->setMaxResults($limit);
+
+        return $paginator;
+    }
+
     public function findAllOrderedByTimesBorrowed()
     {
         $em = $this->getEntityManager();

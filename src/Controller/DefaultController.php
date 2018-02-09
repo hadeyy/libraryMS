@@ -44,17 +44,39 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/catalog", name="catalog")
-     * @Route("/catalog/books", name="catalog-books")
+     * @Route(
+     *     "/catalog/page/{page}",
+     *     name="catalog",
+     *     requirements={"page"="\d+"},
+     *     defaults={"page":"1"}
+     * )
+     * @Route(
+     *     "/catalog/books/page/{page}",
+     *     name="catalog-books",
+     *     requirements={"page"="\d+"},
+     *     defaults={"page":"1"}
+     * )
+     *
+     * @param int $page
+     * @param int $limit
+     *
+     * @return Response
      */
-    public function catalog()
+    public function catalog($page = 1, $limit = 18)
     {
+        /** @var BookRepository $bookRepo */
         $bookRepo = $this->getDoctrine()->getRepository(Book::class);
         $authorRepo = $this->getDoctrine()->getRepository(Author::class);
         $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
 
+        $books = $bookRepo->findAllAndPaginate($page, $limit);
+        $allBooks = $books->count();
+        $maxPages = ceil($allBooks / $limit);
+
         return $this->render('catalog/index.html.twig', [
-            'books' => $bookRepo->findAll(),
+            'books' => $books,
+            'maxPages' => $maxPages,
+            'currentPage' => $page,
             'authors' => $authorRepo->findAll(),
             'genres' => $genreRepo->findAll(),
         ]);
