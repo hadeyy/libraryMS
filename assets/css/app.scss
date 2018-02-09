@@ -208,15 +208,16 @@ a:hover {
   }
 }
 
-.filters a {
+#filters a {
   color: $palette-dark;
 }
 
-.filters ul {
+#filters ul {
   padding-left: 0;
 }
 
-.filters li {
+#filters li {
+  min-width: 300px;
   font-variant-caps: all-small-caps;
   padding: 0 5px;
   list-style: none;
@@ -763,4 +764,18 @@ span.next {
     pointer-events: none;
     cursor: default;
   }
+}
+
+#authors, #genres {
+  max-height: 45vh;
+  & .filter-list {
+    max-height: 35vh;
+    overflow: auto;
+  }
+}
+#authors {
+  margin-bottom: 20px;
+}
+#filters {
+  position: fixed;
 }
