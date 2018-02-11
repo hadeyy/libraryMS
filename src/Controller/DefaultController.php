@@ -98,16 +98,17 @@ class DefaultController extends Controller
      *
      * @return Response
      */
-    public function authorCatalog(int $id, $page = 1, $limit = 18)
+    public function authorCatalog(int $id, $page = 1, $limit = 12)
     {
-        /** @var AuthorRepository $authorRepo */
+        /** @var BookRepository $bookRepo */
+        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
         $authorRepo = $this->getDoctrine()->getRepository(Author::class);
         $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
 
         /** @var Author $author */
         $author = $authorRepo->find($id);
 
-        $books = $authorRepo->findAuthorBooksAndPaginate($author, $page, $limit);
+        $books = $bookRepo->findAuthorBooksAndPaginate($author, $page, $limit);
         $allBooks = $author->getBooks()->count();
         $maxPages = ceil($allBooks / $limit);
 
@@ -123,25 +124,41 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/catalog/genre/{id}", name="books-by-genre", requirements={"id"="\d+"})
+     * @Route(
+     *     "/catalog/genre/{id}/page/{page}",
+     *     name="books-by-genre",
+     *     requirements={"id"="\d+", "page"="\d+"},
+     *     defaults={"page":"1"}
+     *
+     * )
      *
      * @param int $id Genre id.
+     * @param int $page Result page number.
+     * @param int $limit Result limit for a page.
      *
      * @return Response
      */
-    public function genreCatalog(int $id)
+    public function genreCatalog(int $id, $page = 1, $limit = 12)
     {
+        /** @var BookRepository $bookRepo */
+        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
         $authorRepo = $this->getDoctrine()->getRepository(Author::class);
         $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
 
         /** @var Genre $genre */
         $genre = $genreRepo->find($id);
 
+        $books = $bookRepo->findGenreBooksAndPaginate($genre, $page, $limit);
+        $allBooks = $genre->getBooks()->count();
+        $maxPages = ceil($allBooks / $limit);
+
         return $this->render('catalog/_books_by_genre.html.twig', [
             'authors' => $authorRepo->findAll(),
             'genres' => $genreRepo->findAll(),
             'genre' => $genre,
-            'books' => $genre->getBooks(),
+            'books' => $books,
+            'maxPages' => $maxPages,
+            'currentPage' => $page,
             'filter' => 'genre',
         ]);
     }

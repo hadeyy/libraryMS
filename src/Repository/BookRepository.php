@@ -9,7 +9,10 @@
 namespace App\Repository;
 
 
+use App\Entity\Author;
+use App\Entity\Genre;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class BookRepository extends EntityRepository
@@ -18,6 +21,31 @@ class BookRepository extends EntityRepository
     {
         $query = $this->createQueryBuilder('b')
             ->orderBy('b.title', 'ASC')
+            ->getQuery();
+
+        $paginator = $this->paginate($query, $currentPage, $limit);
+
+        return $paginator;
+    }
+
+    public function findAuthorBooksAndPaginate(Author $author, $currentPage = 1, $limit = 18)
+    {
+        $query = $this->createQueryBuilder('b')
+            ->where('b.author = :author')
+            ->setParameter('author', $author)
+            ->getQuery();
+
+        $paginator = $this->paginate($query, $currentPage, $limit);
+
+        return $paginator;
+    }
+
+    public function findGenreBooksAndPaginate(Genre $genre, $currentPage = 1, $limit = 18)
+    {
+        $query = $this->createQueryBuilder('b')
+            ->join('b.genres', 'g')
+            ->where('g = :genre')
+            ->setParameter('genre', $genre)
             ->getQuery();
 
         $paginator = $this->paginate($query, $currentPage, $limit);
