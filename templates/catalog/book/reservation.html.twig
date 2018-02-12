@@ -4,7 +4,9 @@
 
 {% block content %}
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-        <h2>
+        <a id="reservationBackLink" href="{{ path('show-book', {id: book.id}) }}"><span class="fa fa-angle-left"></span>
+        </a>
+        <h2 id="reservationTitle">
             Reserving:
             <span class="all-caps">"{{ book.title }}"</span> by
             <span class="capital">{{ book.author }}</span>

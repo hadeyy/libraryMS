@@ -1,5 +1,6 @@
 {% if book.availableCopies > 0 %}
     <a class="book-action" href="{{ path('reserve-book', {id: book.id}) }}">
+        <!-- Reservation modal trigger -->
         <button type="button" class="btn">RESERVE BOOK</button>
     </a>
 {% else %}
@@ -7,8 +8,11 @@
         <button type="button" class="btn" disabled>RESERVE BOOK</button>
     </a>
 {% endif %}
-<a class="book-action" href="{{ path('rate-book', {id: book.id}) }}">
-    <button type="button" class="btn">RATE BOOK</button>
+<a class="book-action">
+    <!-- Rating modal trigger -->
+    <button type="button" class="btn" data-toggle="modal" data-target="#ratingModal">
+        RATE BOOK
+    </button>
 </a>
 
 <br><br>
@@ -26,3 +30,9 @@
 <a class="book-action" href="{{ path('show-author', {id: book.author.id}) }}">
     <button type="button" class="btn">SEE AUTHOR PAGE</button>
 </a>
+
+<!-- Rating modal -->
+<div class="modal" id="ratingModal" tabindex="-1" role="dialog" aria-hidden="true">
+    {% include 'catalog/book/_rating.html.twig' with {'book': book, 'ratingForm': ratingForm} %}
+</div>
+<!-- rating modal end. -->

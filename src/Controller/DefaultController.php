@@ -15,9 +15,9 @@ use App\Entity\Comment;
 use App\Entity\Genre;
 use App\Entity\User;
 use App\Form\CommentType;
-use App\Repository\AuthorRepository;
 use App\Repository\BookRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -183,9 +183,10 @@ class DefaultController extends Controller
         $comment->setAuthor($user);
         $comment->setBook($book);
 
-        $form = $this->createForm(CommentType::class, $comment);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+//        Comment form
+        $commentForm = $this->createForm(CommentType::class, $comment);
+        $commentForm->handleRequest($request);
+        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
             $book->addComment($comment);
             $user->addComment($comment);
 
@@ -194,11 +195,38 @@ class DefaultController extends Controller
             $em->flush();
         }
 
+//        Rating form
+        $defaultData = ['message' => 'Select rating'];
+        $ratingForm = $this->createFormBuilder($defaultData)
+            ->add('rating', ChoiceType::class, [
+                'placeholder' => '- Choose rating -',
+                'choices' => [
+                    '5' => '5',
+                    '4' => '4',
+                    '3' => '3',
+                    '2' => '2',
+                    '1' => '1',
+                ],
+            ])
+            ->getForm();
+
+        $ratingForm->handleRequest($request);
+        if ($ratingForm->isSubmitted() && $ratingForm->isValid()) {
+            $formData = $ratingForm->getData();
+            $rating = (int)$formData['rating'];
+
+            $book->addRating($rating);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+
         return $this->render(
             'catalog/book/show.html.twig',
             [
                 'book' => $book,
-                'form' => $form->createView(),
+                'commentForm' => $commentForm->createView(),
+                'ratingForm' => $ratingForm->createView(),
             ]
         );
     }

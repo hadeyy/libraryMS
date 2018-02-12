@@ -17,7 +17,6 @@ use App\Form\BookReservationType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -139,54 +138,5 @@ class LibraryController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('show-book', ['id' => $id]);
-    }
-
-    /**
-     * @Route("/catalog/books/{id}/rate", name="rate-book", requirements={"id"="\d+"})
-     *
-     * @param Request $request
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function rateBook(Request $request, int $id)
-    {
-        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
-        /** @var Book $book */
-        $book = $bookRepo->find($id);
-
-        $defaultData = ['message' => 'Select rating'];
-        $form = $this->createFormBuilder($defaultData)
-            ->add('rating', ChoiceType::class, [
-                'choices' => [
-                    '5' => '5',
-                    '4' => '4',
-                    '3' => '3',
-                    '2' => '2',
-                    '1' => '1',
-                ],
-            ])
-            ->getForm();
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $formData = $form->getData();
-            $rating = (int)$formData['rating'];
-
-            $book->addRating($rating);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
-
-            return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
-        }
-
-        return $this->render(
-            'catalog/book/rating.html.twig',
-            [
-                'book' => $book,
-                'form' => $form->createView(),
-            ]
-        );
     }
 }

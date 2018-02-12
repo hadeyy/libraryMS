@@ -15,19 +15,19 @@
             </a>
             to access comment section.
         {% else %}
-            {{ form_start(form, {'attr': {'id': 'commentForm'}}) }}
+            {{ form_start(commentForm, {'attr': {'id': 'commentForm'}}) }}
                 <div class="row">
-                    {{ form_errors(form.content) }}
+                    {{ form_errors(commentForm.content) }}
                 </div>
                 <div class="row">
                     <div class="col-md-10 d-flex align-items-center">
-                        {{ form_widget(form.content) }}
+                        {{ form_widget(commentForm.content) }}
                     </div>
                     <div class="col-md-2 d-flex align-items-center">
                         <button id="commentBtn" type="submit" class="btn">POST</button>
                     </div>
                 </div>
-            {{ form_end(form) }}
+            {{ form_end(commentForm) }}
             {% for comment in book.comments %}
                 {% include 'catalog/book/_book_comment.html.twig' with {'comment': comment } %}
             {% endfor %}

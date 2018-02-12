@@ -782,3 +782,15 @@ span.next {
 #filters {
   position: fixed;
 }
+
+#reservationBackLink,
+#reservationTitle {
+  display: inline-block;
+}
+#reservationTitle {
+  width: 94%;
+}
+#reservationBackLink {
+  width: 5%;
+  font-size: 2rem;
+}
