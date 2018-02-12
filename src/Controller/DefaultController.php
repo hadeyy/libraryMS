@@ -9,6 +9,7 @@
 namespace App\Controller;
 
 
+use App\Entity\Activity;
 use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\Comment;
@@ -216,8 +217,10 @@ class DefaultController extends Controller
             $rating = (int)$formData['rating'];
 
             $book->addRating($rating);
+            $activity = $this->createRatingActivity($book, $user);
 
             $em = $this->getDoctrine()->getManager();
+            $em->persist($activity);
             $em->flush();
         }
 
@@ -229,6 +232,19 @@ class DefaultController extends Controller
                 'ratingForm' => $ratingForm->createView(),
             ]
         );
+    }
+
+    public function createRatingActivity(Book $book, User $user)
+    {
+        /** @var Activity $activity */
+        $activity = new Activity();
+        $activity->setBook($book);
+        $activity->setUser($user);
+        $activity->setTitle('Rated a book');
+        $book->addActivity($activity);
+        $user->addActivity($activity);
+
+        return $activity;
     }
 
     /**
