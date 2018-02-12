@@ -7,7 +7,7 @@
         <button type="button" class="btn" disabled>RESERVE BOOK</button>
     </a>
 {% endif %}
-<a class="book-action" href="">
+<a class="book-action" href="{{ path('rate-book', {id: book.id}) }}">
     <button type="button" class="btn">RATE BOOK</button>
 </a>
 
