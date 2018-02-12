@@ -27,6 +27,7 @@
         <!-- Page navigation -->
         {% if maxPages > 1 %}
             <ul class="row d-flex justify-content-center align-items-center pagination">
+                <!-- Previous link -->
                 <a href="
                     {% if filter == 'author' %}
                         {{ path('books-by-author', {page: currentPage-1 < 1 ? 1 : currentPage-1, id: author.id}) }}
@@ -42,6 +43,7 @@
                     </li>
                 </a>
 
+                <!-- Link by page number -->
                 {% for i in 1..maxPages %}
                     <a href="
                         {% if filter == 'author' %}
@@ -59,6 +61,7 @@
                     </a>
                 {% endfor %}
 
+                <!-- Next link -->
                 <a href="
                     {% if filter == 'author' %}
                         {{ path('books-by-author', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, id: author.id}) }}
@@ -84,33 +87,39 @@
 {% block javascripts %}
     <script>
         $(function () {
-            let activeModal, currentIDNumber, currentModal, nextModal, prevModal;
-            let modals = $(document.getElementsByClassName('modal'));
+            let activeModal, currentIndex, currentModal, nextModal, prevModal;
+            // all modals in current page
+            let modals = $('.modal');
             let firstModal = $(modals[0]);
             let lastModal = $(modals[modals.length - 1]);
 
+            // disable 'previous' navigation for first and 'next' for last modals
             firstModal.find("span.prev").css("display", "none");
             lastModal.find("span.next").css("display", "none");
 
+            <!-- Navigation to next -->
             $('span.next').on("click", function () {
-                activeModal = $(this)[0].parentNode.parentNode.parentNode;
-                currentIDNumber = jQuery.inArray(activeModal, modals);
-                currentModal = $(modals[currentIDNumber]);
-                nextModal = $(modals[currentIDNumber + 1]);
+                findCurrentModal($(this));
+                nextModal = $(modals[currentIndex + 1]);
 
                 currentModal.modal("hide");
                 nextModal.modal("show");
             });
 
+            <!-- Navigation to previous -->
             $('span.prev').on("click", function () {
-                activeModal = $(this)[0].parentNode.parentNode.parentNode;
-                currentIDNumber = jQuery.inArray(activeModal, modals);
-                currentModal = $(modals[currentIDNumber]);
-                prevModal = $(modals[currentIDNumber - 1]);
+                findCurrentModal($(this));
+                prevModal = $(modals[currentIndex - 1]);
 
                 currentModal.modal("hide");
                 prevModal.modal("show");
             });
+
+            function findCurrentModal(trigger) {
+                activeModal = trigger[0].parentNode.parentNode.parentNode;
+                currentIndex = jQuery.inArray(activeModal, modals);
+                currentModal = $(modals[currentIndex]);
+            }
         });
     </script>
 {% endblock %}
