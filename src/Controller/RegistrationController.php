@@ -11,23 +11,48 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Service\EntityManager;
+use App\Service\FileManager;
+use App\Service\PasswordManager;
+use App\Service\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class RegistrationController extends Controller
 {
+    private $user;
+    protected $container;
+
+    public function __construct()
+    {
+        $this->user = new User();
+        $this->container = new ContainerBuilder();
+    }
+
     /**
      * @param Request $request
-     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param UserManager $userManager
+     * @param PasswordManager $passwordManager
+     * @param FileManager $fileManager
+     * @param EntityManager $entityManager
+     * @param string $role
      *
      * @return Response
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        $user = new User();
+    public function register(
+        Request $request,
+        UserManager $userManager,
+        PasswordManager $passwordManager,
+        FileManager $fileManager,
+        EntityManager $entityManager,
+        string $role = 'ROLE_READER'
+    ) {
+        $user = $this->user;
+        $container = $this->container;
+
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
@@ -35,26 +60,19 @@ class RegistrationController extends Controller
             /** @var UploadedFile $file */
             $file = $user->getPhoto();
 
-            $extension = $file->guessExtension();
-            $filename = md5(uniqid()) . '_' . (string)date('dmYHms') . '.' . $extension;
-            $path = $this->getParameter('user_photo_directory');
+            $filename = $fileManager->upload($file, $container->getParameter('user_photo_directory'));
+            $password = $passwordManager->encode($user);
 
-            $file->move($path, $filename);
-
-            $user->setPhoto($filename);
-
-            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
-            $user->setPassword($password);
-            $user->addRole('ROLE_READER');
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
+            $userManager->register($user, $filename, $password, $role);
+            $entityManager->save($user);
 
             return $this->redirectToRoute('registered');
         }
 
-        return $this->render('registration/registration.html.twig', ['form' => $form->createView()]);
+        return $this->render(
+            'registration/registration.html.twig',
+            ['form' => $form->createView()]
+        );
     }
 
     public function registrationSuccess()
