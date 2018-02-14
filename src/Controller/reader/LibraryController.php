@@ -20,7 +20,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Security("has_role('ROLE_READER')")
@@ -28,8 +27,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class LibraryController extends Controller
 {
     /**
-     * @Route("/catalog/books/{id}/reserve", name="reserve-book", requirements={"id"="\d+"})
-     *
      * @param Request $request
      * @param int $id Book id.
      *
@@ -97,8 +94,6 @@ class LibraryController extends Controller
     }
 
     /**
-     * @Route("/catalog/books/{id}/toggle-favorite", name="toggle-favorite", requirements={"id"="\d+"})
-     *
      * @param int $id Book ID
      *
      * @return RedirectResponse

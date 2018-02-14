@@ -1,2 +1,107 @@
+register:
+    path: /register
+    controller: App\Controller\RegistrationController::register
+registered:
+    path: /register/success
+    controller: App\Controller\RegistrationController::registrationSuccess
+login:
+    path: /login
+    controller: App\Controller\security\SecurityController::login
 logout:
     path: /logout
+profile:
+    path: /user/profile
+    controller: App\Controller\user\UserController::profile
+edit-profile:
+    path: /user/profile/edit
+    controller: App\Controller\user\UserController::editProfile
+activity:
+    path: /user/activity
+    controller: App\Controller\user\UserController::activity
+notifications:
+    path: /user/notifications
+    controller: App\Controller\user\UserController::notifications
+index:
+    path: /
+    controller: App\Controller\DefaultController::index
+catalog:
+    path: /catalog/page/{page}
+    controller: App\Controller\DefaultController::catalog
+    defaults:
+        page: 1
+    requirements:
+        page: '\d+'
+catalog-books:
+    path: /catalog/books/page/{page}
+    controller: App\Controller\DefaultController::catalog
+    defaults:
+        page: 1
+    requirements:
+        page: '\d+'
+books-by-author:
+    path: /catalog/author/{id}/page/{page}
+    controller: App\Controller\DefaultController::authorCatalog
+    defaults:
+        id: 1
+        page: 1
+    requirements:
+        id: '\d+'
+        page: '\d+'
+books-by-genre:
+    path: /catalog/genre/{id}/page/{page}
+    controller: App\Controller\DefaultController::genreCatalog
+    defaults:
+        id: 1
+        page: 1
+    requirements:
+        id: '\d+'
+        page: '\d+'
+show-book:
+    path: /catalog/books/{id}
+    controller: App\Controller\DefaultController::showBook
+    defaults:
+        id: 1
+    requirements:
+        id: '\d+'
+show-author:
+    path: /catalog/authors/{id}
+    controller: App\Controller\DefaultController::showAuthor
+    defaults:
+        id: 1
+    requirements:
+        id: '\d+'
+reserve-book:
+    path: /catalog/books/{id}/reserve
+    controller: App\Controller\reader\LibraryController::reserveBook
+    defaults:
+        id: 1
+    requirements:
+        id: '\d+'
+toggle-favorite:
+    path: /catalog/books/{id}/toggle-favorite
+    controller: App\Controller\reader\LibraryController::toggleFavorite
+    defaults:
+        id: 1
+    requirements:
+        id: '\d+'
+new-book:
+    path: /catalog/books/new
+    controller: App\Controller\librarian\LibraryController::newBook
+new-author:
+    path: /catalog/authors/new
+    controller: App\Controller\librarian\LibraryController::newAuthor
+new-genre:
+    path: /catalog/genres/new
+    controller: App\Controller\librarian\LibraryController::newGenre
+reservations:
+    path: /reservations
+    controller: App\Controller\librarian\LibraryController::reservations
+reservation-update:
+    path: /reservations/update/id/{id}/{status}
+    controller: App\Controller\librarian\LibraryController::updateReservationStatus
+    methods: [GET]
+    defaults:
+        id: 1
+        status: 'reserved'
+    requirements:
+        id: '\d+'

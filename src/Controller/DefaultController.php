@@ -21,13 +21,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends Controller
 {
-    /**
-     * @Route("/", name="index")
-     */
     public function index()
     {
         /** @var BookRepository $bookRepo */
@@ -46,19 +42,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route(
-     *     "/catalog/page/{page}",
-     *     name="catalog",
-     *     requirements={"page"="\d+"},
-     *     defaults={"page":"1"}
-     * )
-     * @Route(
-     *     "/catalog/books/page/{page}",
-     *     name="catalog-books",
-     *     requirements={"page"="\d+"},
-     *     defaults={"page":"1"}
-     * )
-     *
      * @param int $page Result page number.
      * @param int $limit Result limit for a page.
      *
@@ -86,13 +69,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route(
-     *     "/catalog/author/{id}/page/{page}",
-     *     name="books-by-author",
-     *     requirements={"id"="\d+", "page"="\d+"},
-     *     defaults={"page":"1"}
-     * )
-     *
      * @param int $id Author id.
      * @param int $page Result page number.
      * @param int $limit Result limit for a page.
@@ -125,14 +101,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route(
-     *     "/catalog/genre/{id}/page/{page}",
-     *     name="books-by-genre",
-     *     requirements={"id"="\d+", "page"="\d+"},
-     *     defaults={"page":"1"}
-     *
-     * )
-     *
      * @param int $id Genre id.
      * @param int $page Result page number.
      * @param int $limit Result limit for a page.
@@ -165,8 +133,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/catalog/books/{id}", name="show-book", requirements={"id"="\d+"})
-     *
      * @param Request $request
      * @param int $id Book id.
      *
@@ -248,8 +214,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("catalog/authors/{id}", name="show-author", requirements={"id"="\d+"})
-     *
      * @param int $id Author id.
      *
      * @return Response

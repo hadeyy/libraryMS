@@ -15,16 +15,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class RegistrationController extends Controller
 {
     /**
-     * @Route("/register", name="registration")
-     *
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
+     *
      * @return Response
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
@@ -59,9 +57,6 @@ class RegistrationController extends Controller
         return $this->render('registration/registration.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/registration/success", name="registered")
-     */
     public function registrationSuccess()
     {
         return $this->render('registration/registered.html.twig');

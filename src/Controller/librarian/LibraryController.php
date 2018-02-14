@@ -19,7 +19,6 @@ use App\Form\GenreType;
 use App\Repository\BookReservationRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -33,8 +32,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class LibraryController extends Controller
 {
     /**
-     * @Route("/catalog/books/new", name="new-book")
-     *
      * @param Request $request
      *
      * @return Response
@@ -68,8 +65,6 @@ class LibraryController extends Controller
     }
 
     /**
-     * @Route("/catalog/authors/new", name="new-author")
-     *
      * @param Request $request
      *
      * @return RedirectResponse|Response
@@ -92,8 +87,6 @@ class LibraryController extends Controller
     }
 
     /**
-     * @Route("/catalog/genres/new", name="new-genre")
-     *
      * @param Request $request
      *
      * @return RedirectResponse|Response
@@ -116,7 +109,7 @@ class LibraryController extends Controller
     }
 
     /**
-     * @Route("/reservations", name="reservations")
+     * @return Response
      */
     public function reservations()
     {
@@ -140,9 +133,6 @@ class LibraryController extends Controller
     }
 
     /**
-     * @Route("/reservations/update/{id}/{status}", name="reservation-update", defaults={"id" = 1, "status" = "reserved"})
-     * @Method("GET")
-     *
      * @param int $id Reservation id.
      * @param string $status New reservation status.
      *
