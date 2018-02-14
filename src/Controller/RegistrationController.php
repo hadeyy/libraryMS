@@ -15,13 +15,13 @@ use App\Service\EntityManager;
 use App\Service\FileManager;
 use App\Service\PasswordManager;
 use App\Service\UserManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RegistrationController extends Controller
+class RegistrationController extends AbstractController
 {
     private $user;
     protected $container;
@@ -29,7 +29,6 @@ class RegistrationController extends Controller
     public function __construct()
     {
         $this->user = new User();
-        $this->container = new ContainerBuilder();
     }
 
     /**
@@ -39,6 +38,7 @@ class RegistrationController extends Controller
      * @param FileManager $fileManager
      * @param EntityManager $entityManager
      * @param string $role
+     * @param ContainerInterface $container
      *
      * @return Response
      */
@@ -48,10 +48,10 @@ class RegistrationController extends Controller
         PasswordManager $passwordManager,
         FileManager $fileManager,
         EntityManager $entityManager,
-        string $role = 'ROLE_READER'
+        string $role = 'ROLE_READER',
+        ContainerInterface $container
     ) {
         $user = $this->user;
-        $container = $this->container;
 
         $form = $this->createForm(UserType::class, $user);
 

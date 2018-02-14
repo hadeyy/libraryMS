@@ -13,13 +13,19 @@ use App\Entity\User;
 
 class UserManager
 {
+    /**
+     * @param User $user Created user object.
+     * @param string $filename Uploaded photo file name and extension.
+     * @param string $password User's encoded password.
+     * @param string $role User's role.
+     */
     public function register(
         User $user,
-        string $photoPath,
+        string $filename,
         string $password,
         string $role
     ) {
-        $user->setPhoto($photoPath);
+        $user->setPhoto($filename);
         $user->setPassword($password);
         $user->addRole($role);
     }

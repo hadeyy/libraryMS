@@ -17,7 +17,7 @@ class FileManager
      * @param UploadedFile $file
      * @param string $path Directory to upload the file to.
      *
-     * @return string Uploaded file name.
+     * @return string Uploaded file name and extension.
      */
     public function upload(UploadedFile $file, string $path)
     {
