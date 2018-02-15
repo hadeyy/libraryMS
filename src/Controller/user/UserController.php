@@ -27,14 +27,12 @@ class UserController extends AbstractController
 {
     private $user;
     private $userManager;
-    private $doctrine;
     protected $container;
 
     public function __construct(UserManager $userManager, ContainerInterface $container)
     {
         $this->userManager = $userManager;
         $this->container = $container;
-        $this->doctrine = $container->get('doctrine');
         $this->user = $container->get('security.token_storage')->getToken()->getUser();
     }
 
