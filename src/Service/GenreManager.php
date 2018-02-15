@@ -45,4 +45,9 @@ class GenreManager extends EntityManager
 
         return $bookRepository->findGenreBooksAndPaginate($genre, $currentPage, $booksPerPage);
     }
+
+    public function create()
+    {
+        return new Genre();
+    }
 }

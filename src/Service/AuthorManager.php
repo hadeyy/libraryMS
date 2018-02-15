@@ -45,4 +45,9 @@ class AuthorManager extends EntityManager
 
         return $bookRepository->findAuthorBooksAndPaginate($author, $currentPage, $booksPerPage);
     }
+
+    public function create()
+    {
+        return new Author();
+    }
 }

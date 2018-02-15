@@ -17,14 +17,15 @@ use App\Form\AuthorType;
 use App\Form\BookType;
 use App\Form\GenreType;
 use App\Repository\BookReservationRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use App\Service\AuthorManager;
+use App\Service\BookManager;
+use App\Service\BookReservationManager;
+use App\Service\GenreManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Security("has_role('ROLE_LIBRARIAN')")
@@ -33,101 +34,92 @@ class LibraryController extends Controller
 {
     /**
      * @param Request $request
+     * @param BookManager $bookManager
      *
      * @return Response
      */
-    public function newBook(Request $request)
-    {
-        $book = new Book();
+    public function newBook(
+        Request $request,
+        BookManager $bookManager
+    ) {
+        $book = $bookManager->create();
 
         $form = $this->createForm(BookType::class, $book);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $file */
-            $file = $book->getCover();
-
-            $extension = $file->guessExtension();
-            $filename = md5(uniqid()) . '_' . (string)date('mdYHms') . '.' . $extension;
-            $path = $this->getParameter('book_cover_directory');
-
-            $file->move($path, $filename);
-
-            $book->setCover($filename);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($book);
-            $em->flush();
+            $bookManager->submit($book);
 
             return $this->redirectToRoute('catalog-books');
         }
 
-        return $this->render('catalog/book/new.html.twig', ['form' => $form->createView()]);
+        return $this->render(
+            'catalog/book/new.html.twig',
+            ['form' => $form->createView()]
+        );
     }
 
     /**
      * @param Request $request
+     * @param AuthorManager $authorManager
      *
      * @return RedirectResponse|Response
      */
-    public function newAuthor(Request $request)
+    public function newAuthor(Request $request, AuthorManager $authorManager)
     {
-        $author = new Author();
+        $author = $authorManager->create();
 
         $form = $this->createForm(AuthorType::class, $author);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($author);
-            $em->flush();
+            $authorManager->save($author);
 
             return $this->redirectToRoute('catalog-books');
         }
 
-        return $this->render('catalog/author/new.html.twig', ['form' => $form->createView()]);
+        return $this->render(
+            'catalog/author/new.html.twig',
+            ['form' => $form->createView()]
+        );
     }
 
     /**
      * @param Request $request
+     * @param GenreManager $genreManager
      *
      * @return RedirectResponse|Response
      */
-    public function newGenre(Request $request)
+    public function newGenre(Request $request, GenreManager $genreManager)
     {
-        $genre = new Genre();
+        $genre = $genreManager->create();
 
         $form = $this->createForm(GenreType::class, $genre);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($genre);
-            $em->flush();
+            $genreManager->save($genre);
 
             return $this->redirectToRoute('catalog-books');
         }
 
-        return $this->render('catalog/genre/new.html.twig', ['form' => $form->createView()]);
+        return $this->render(
+            'catalog/genre/new.html.twig',
+            ['form' => $form->createView()]
+        );
     }
 
     /**
+     * @param BookReservationManager $brm
+     *
      * @return Response
      */
-    public function reservations()
+    public function reservations(BookReservationManager $brm)
     {
-        /** @var BookReservationRepository $reservationRepo */
-        $reservationRepo = $this->getDoctrine()->getRepository(BookReservation::class);
-
-        $reserved = $reservationRepo->findReservationsByStatus('reserved');
-        $reading = $reservationRepo->findReservationsByStatus('reading');
-        $returned = $reservationRepo->findReservationsByStatus('returned');
-        $canceled = $reservationRepo->findReservationsByStatus('canceled');
-
         return $this->render(
             'librarian/reservations.html.twig',
             [
-                'reserved' => $reserved,
-                'reading' => $reading,
-                'returned' => $returned,
-                'canceled' => $canceled,
+                'reserved' => $brm->getByStatus('reserved'),
+                'reading' => $brm->getByStatus('reading'),
+                'returned' => $brm->getByStatus('returned'),
+                'canceled' => $brm->getByStatus('canceled'),
             ]
         );
     }
@@ -135,37 +127,17 @@ class LibraryController extends Controller
     /**
      * @param int $id Reservation id.
      * @param string $status New reservation status.
+     * @param BookReservationManager $brm
      *
      * @return RedirectResponse
      */
-    public function updateReservationStatus(int $id, string $status)
-    {
-        $em = $this->getDoctrine()->getManager();
-        /** @var BookReservation $reservation */
-        $reservation = $em->getRepository(BookReservation::class)->find($id);
-        $reservation->setStatus($status);
-        $reservation->setUpdatedAt(new \DateTime());
-
-        if ($status === 'returned' || 'canceled') {
-            $reservation->getFine() < 0 ?: $reservation->setFine(0);
-
-            /** @var Book $book */
-            $book = $reservation->getBook();
-
-            $this->updateReservationBook($book);
-        }
-
-        $em->flush();
+    public function updateReservationStatus(
+        int $id,
+        string $status,
+        BookReservationManager $brm
+    ) {
+        $brm->updateStatus($id, $status, new \DateTime());
 
         return $this->redirectToRoute('reservations');
     }
-
-    private function updateReservationBook(Book $book)
-    {
-        $availableCopies = $book->getAvailableCopies();
-        $book->setAvailableCopies($availableCopies + 1);
-        $reservedCopies = $book->getReservedCopies();
-        $book->setReservedCopies($reservedCopies - 1);
-    }
-
 }
