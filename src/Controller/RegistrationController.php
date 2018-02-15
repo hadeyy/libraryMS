@@ -23,14 +23,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RegistrationController extends AbstractController
 {
-    private $user;
-    protected $container;
-
-    public function __construct()
-    {
-        $this->user = new User();
-    }
-
     /**
      * @param Request $request
      * @param UserManager $userManager
@@ -48,10 +40,10 @@ class RegistrationController extends AbstractController
         PasswordManager $passwordManager,
         FileManager $fileManager,
         EntityManager $entityManager,
-        string $role = 'ROLE_READER',
-        ContainerInterface $container
+        ContainerInterface $container,
+        string $role = 'ROLE_READER'
     ) {
-        $user = $this->user;
+        $user = new User();
 
         $form = $this->createForm(UserType::class, $user);
 
