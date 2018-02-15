@@ -53,9 +53,9 @@ class RegistrationController extends AbstractController
             $file = $user->getPhoto();
 
             $filename = $fileManager->upload($file, $container->getParameter('user_photo_directory'));
-            $password = $passwordManager->encode($user);
+            $encodedPassword = $passwordManager->encode($user);
 
-            $userManager->register($user, $filename, $password, $role);
+            $userManager->register($user, $filename, $encodedPassword, $role);
             $entityManager->save($user);
 
             return $this->redirectToRoute('registered');

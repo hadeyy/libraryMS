@@ -9,89 +9,73 @@
 namespace App\Controller\user;
 
 
-use App\Entity\Activity;
-use App\Entity\BookReservation;
-use App\Entity\User;
 use App\Form\UserType;
-use App\Repository\ActivityRepository;
-use App\Repository\BookReservationRepository;
+use App\Service\FileManager;
+use App\Service\PasswordManager;
+use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @Security("has_role('ROLE_USER')")
  */
-class UserController extends Controller
+class UserController extends AbstractController
 {
+    private $user;
+    private $userManager;
+    private $doctrine;
+    protected $container;
+
+    public function __construct(UserManager $userManager, ContainerInterface $container)
+    {
+        $this->userManager = $userManager;
+        $this->container = $container;
+        $this->doctrine = $container->get('doctrine');
+        $this->user = $container->get('security.token_storage')->getToken()->getUser();
+    }
+
     /**
      * @return Response
      */
     public function profile()
     {
-        /** @var BookReservationRepository $reservationRepo */
-        $reservationRepo = $this->getDoctrine()->getRepository(BookReservation::class);
-        /** @var User $user */
-        $user = $this->getUser();
-
-        $activeReservations = $reservationRepo->findCurrentReservations($user);
-        $closedReservations = $reservationRepo->findPastReservations($user);
-
         return $this->render(
             'user/profile.html.twig',
             [
-                'activeReservations' => $activeReservations,
-                'closedReservations' => $closedReservations,
+                'activeReservations' => $this->userManager->getActiveReservations($this->user),
+                'closedReservations' => $this->userManager->getClosedReservations($this->user),
             ]
         );
     }
 
     /**
      * @param Request $request
-     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param FileManager $fileManager
+     * @param PasswordManager $passwordManager
      *
      * @return RedirectResponse|Response
      */
-    public function editProfile(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        /** @var BookReservationRepository $reservationRepo */
-        $reservationRepo = $this->getDoctrine()->getRepository(BookReservation::class);
-        /** @var User $user */
-        $user = $this->getUser();
+    public function editProfile(
+        Request $request,
+        FileManager $fileManager,
+        PasswordManager $passwordManager
+    ) {
+        $this->userManager->changePhotoFromPathToFile($this->user, $fileManager);
 
-        $userPhoto = $user->getPhoto();
-        $photoPath = $this->getParameter('user_photo_directory') . '/' . $userPhoto;
-        $user->setPhoto(new File($photoPath));
-
-        $activeReservations = $reservationRepo->findCurrentReservations($user);
-        $closedReservations = $reservationRepo->findPastReservations($user);
-
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $this->user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $file = $user->getPhoto();
-            if ($file instanceof UploadedFile) {
-                unlink($photoPath);
-                $this->uploadPhoto($file, $user);
-            } else {
-                $user->setPhoto($userPhoto);
-            }
-
-            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
-            $user->setPassword($password);
-
-            $this->getDoctrine()->getManager()->flush();
+            $this->userManager->updateProfile($this->user, $fileManager, $passwordManager);
 
             return $this->redirectToRoute(
                 'profile',
                 [
-                    'activeReservations' => $activeReservations,
-                    'closedReservations' => $closedReservations,
+                    'activeReservations' => $this->userManager->getActiveReservations($this->user),
+                    'closedReservations' => $this->userManager->getClosedReservations($this->user),
                 ]
             );
         }
@@ -99,26 +83,12 @@ class UserController extends Controller
         return $this->render('user/edit.html.twig', ['form' => $form->createView()]);
     }
 
-    private function uploadPhoto(UploadedFile $file, User $user)
-    {
-        $fileName = md5(uniqid()) . '_' . (string)date('dmYHms') . '.' . $file->guessExtension();
-        $file->move(
-            $this->getParameter('user_photo_directory'),
-            $fileName
-        );
-
-        $user->setPhoto($fileName);
-    }
-
     /**
      * @return Response
      */
     public function activity()
     {
-        /** @var ActivityRepository $activityRepo */
-        $activityRepo = $this->getDoctrine()->getRepository(Activity::class);
-
-        $activities = $activityRepo->findAllUserActivities($this->getUser());
+        $activities = $this->userManager->getActivity($this->user);
 
         return $this->render('user/activities.html.twig', ['activities' => $activities]);
     }

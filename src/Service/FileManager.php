@@ -9,6 +9,7 @@
 namespace App\Service;
 
 
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileManager
@@ -27,5 +28,10 @@ class FileManager
         $file->move($path, $filename);
 
         return $filename;
+    }
+
+    public function createFileFromPath(string $path)
+    {
+        return new File($path);
     }
 }
