@@ -9,14 +9,9 @@
 namespace App\Controller\librarian;
 
 
-use App\Entity\Author;
-use App\Entity\Book;
-use App\Entity\BookReservation;
-use App\Entity\Genre;
 use App\Form\AuthorType;
 use App\Form\BookType;
 use App\Form\GenreType;
-use App\Repository\BookReservationRepository;
 use App\Service\AuthorManager;
 use App\Service\BookManager;
 use App\Service\BookReservationManager;
