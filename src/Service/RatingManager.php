@@ -9,7 +9,12 @@
 namespace App\Service;
 
 
+use App\Entity\Book;
+
 class RatingManager
 {
-
+    public function rate(Book $book, int $rating)
+    {
+        $book->addRating($rating);
+    }
 }

@@ -9,34 +9,40 @@
 namespace App\Controller;
 
 
-use App\Entity\Activity;
 use App\Entity\Author;
 use App\Entity\Book;
-use App\Entity\Comment;
 use App\Entity\Genre;
-use App\Entity\User;
 use App\Form\CommentType;
-use App\Repository\BookRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use App\Service\ActivityManager;
+use App\Service\AuthorManager;
+use App\Service\CommentManager;
+use App\Service\GenreManager;
+use App\Service\LibraryManager;
+use App\Service\RatingManager;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
+    private $libraryManager;
+    private $user;
+
+    public function __construct(LibraryManager $libraryManager, ContainerInterface $container)
+    {
+        $this->libraryManager = $libraryManager;
+        $this->user = $container->get('security.token_storage')->getToken()->getUser();
+    }
+
     public function index()
     {
-        /** @var BookRepository $bookRepo */
-        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
-
-        $popularBooks = $bookRepo->findAllOrderedByTimesBorrowed();
-        $newBooks = $bookRepo->findAllOrderedByPublicationDate();
-
         return $this->render(
             'index.html.twig',
             [
-                'popularBooks' => $popularBooks,
-                'newBooks' => $newBooks,
+                'popularBooks' => $this->libraryManager->getPopularBooks(),
+                'newBooks' => $this->libraryManager->getNewestBooks(),
             ]
         );
     }
@@ -49,117 +55,113 @@ class DefaultController extends Controller
      */
     public function catalog($page = 1, $limit = 18)
     {
-        /** @var BookRepository $bookRepo */
-        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
-        $authorRepo = $this->getDoctrine()->getRepository(Author::class);
-        $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
+        $books = $this->libraryManager->getPaginatedBookCatalog($page, $limit);
 
-        $books = $bookRepo->findAllAndPaginate($page, $limit);
-        $allBooks = $books->count();
-        $maxPages = ceil($allBooks / $limit);
-
-        return $this->render('catalog/index.html.twig', [
-            'books' => $books,
-            'maxPages' => $maxPages,
-            'currentPage' => $page,
-            'authors' => $authorRepo->findAll(),
-            'genres' => $genreRepo->findAll(),
-            'filter' => 'main',
-        ]);
+        return $this->render(
+            'catalog/index.html.twig',
+            [
+                'books' => $books,
+                'maxPages' => $this->libraryManager->getMaxPages($books, $limit),
+                'currentPage' => $page,
+                'authors' => $this->libraryManager->getAllAuthors(),
+                'genres' => $this->libraryManager->getAllGenres(),
+                'filter' => 'main',
+            ]
+        );
     }
 
     /**
      * @param int $id Author id.
      * @param int $page Result page number.
      * @param int $limit Result limit for a page.
+     * @param AuthorManager $authorManager
+     * @param string $filter
      *
      * @return Response
      */
-    public function authorCatalog(int $id, $page = 1, $limit = 12)
-    {
-        /** @var BookRepository $bookRepo */
-        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
-        $authorRepo = $this->getDoctrine()->getRepository(Author::class);
-        $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
-
+    public function authorCatalog(
+        int $id,
+        int $page = 1,
+        int $limit = 12,
+        AuthorManager $authorManager,
+        string $filter = 'author'
+    ) {
         /** @var Author $author */
-        $author = $authorRepo->find($id);
+        $author = $authorManager->getAuthor($id);
+        $books = $authorManager->getPaginatedAuthorCatalog($author, $page, $limit);
 
-        $books = $bookRepo->findAuthorBooksAndPaginate($author, $page, $limit);
-        $allBooks = $author->getBooks()->count();
-        $maxPages = ceil($allBooks / $limit);
-
-        return $this->render('catalog/_books_by_author.html.twig', [
-            'authors' => $authorRepo->findAll(),
-            'genres' => $genreRepo->findAll(),
-            'author' => $author,
-            'books' => $books,
-            'maxPages' => $maxPages,
-            'currentPage' => $page,
-            'filter' => 'author',
-        ]);
+        return $this->render(
+            'catalog/_books_by_author.html.twig',
+            [
+                'authors' => $this->libraryManager->getAllAuthors(),
+                'genres' => $this->libraryManager->getAllGenres(),
+                'author' => $author,
+                'books' => $books,
+                'maxPages' => $this->libraryManager->getMaxPages($books, $limit),
+                'currentPage' => $page,
+                'filter' => $filter,
+            ]
+        );
     }
 
     /**
      * @param int $id Genre id.
      * @param int $page Result page number.
      * @param int $limit Result limit for a page.
+     * @param GenreManager $genreManager
+     * @param string $filter
      *
      * @return Response
      */
-    public function genreCatalog(int $id, $page = 1, $limit = 12)
-    {
-        /** @var BookRepository $bookRepo */
-        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
-        $authorRepo = $this->getDoctrine()->getRepository(Author::class);
-        $genreRepo = $this->getDoctrine()->getRepository(Genre::class);
-
+    public function genreCatalog(
+        int $id,
+        int $page = 1,
+        int $limit = 12,
+        GenreManager $genreManager,
+        string $filter = 'genre'
+    ) {
         /** @var Genre $genre */
-        $genre = $genreRepo->find($id);
-
-        $books = $bookRepo->findGenreBooksAndPaginate($genre, $page, $limit);
-        $allBooks = $genre->getBooks()->count();
-        $maxPages = ceil($allBooks / $limit);
+        $genre = $genreManager->getGenre($id);
+        $books = $genreManager->getPaginatedGenreCatalog($genre, $page, $limit);
 
         return $this->render('catalog/_books_by_genre.html.twig', [
-            'authors' => $authorRepo->findAll(),
-            'genres' => $genreRepo->findAll(),
+            'authors' => $this->libraryManager->getAllAuthors(),
+            'genres' => $this->libraryManager->getAllGenres(),
             'genre' => $genre,
             'books' => $books,
-            'maxPages' => $maxPages,
+            'maxPages' => $this->libraryManager->getMaxPages($books, $limit),
             'currentPage' => $page,
-            'filter' => 'genre',
+            'filter' => $filter,
         ]);
     }
 
     /**
      * @param Request $request
      * @param int $id Book id.
+     * @param CommentManager $commentManager
+     * @param RatingManager $ratingManager
+     * @param ActivityManager $activityManager
      *
      * @return Response
      */
-    public function showBook(Request $request, int $id): Response
-    {
-        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
+    public function showBook(
+        Request $request,
+        int $id,
+        CommentManager $commentManager,
+        RatingManager $ratingManager,
+        ActivityManager $activityManager
+    ) {
         /** @var Book $book */
-        $book = $bookRepo->find($id);
+        $book = $this->libraryManager->getBook($id);
 
-        $comment = new Comment();
-        /** @var User $user */
-        $user = $this->getUser();
-        $comment->setAuthor($user);
-        $comment->setBook($book);
+        $comment = $commentManager->create($this->user, $book);
 
 //        Comment form
         $commentForm = $this->createForm(CommentType::class, $comment);
         $commentForm->handleRequest($request);
         if ($commentForm->isSubmitted() && $commentForm->isValid()) {
-            $book->addComment($comment);
-            $user->addComment($comment);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($comment);
-            $em->flush();
+            $commentManager->updateRelatedEntitiesAndSave($comment, $book, $this->user);
+            $activityManager->logCommenting($this->user, $book);
         }
 
 //        Rating form
@@ -182,12 +184,8 @@ class DefaultController extends Controller
             $formData = $ratingForm->getData();
             $rating = (int)$formData['rating'];
 
-            $book->addRating($rating);
-            $activity = $this->createRatingActivity($book, $user);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($activity);
-            $em->flush();
+            $ratingManager->rate($book, $rating);
+            $activityManager->logRating($this->user, $book);
         }
 
         return $this->render(
@@ -200,34 +198,18 @@ class DefaultController extends Controller
         );
     }
 
-    public function createRatingActivity(Book $book, User $user)
-    {
-        /** @var Activity $activity */
-        $activity = new Activity();
-        $activity->setBook($book);
-        $activity->setUser($user);
-        $activity->setTitle('Rated a book');
-        $book->addActivity($activity);
-        $user->addActivity($activity);
-
-        return $activity;
-    }
-
     /**
      * @param int $id Author id.
+     * @param AuthorManager $authorManager
      *
      * @return Response
      */
-    public function showAuthor(int $id)
+    public function showAuthor(int $id, AuthorManager $authorManager)
     {
-        $authorRepo = $this->getDoctrine()->getRepository(Author::class);
-        /** @var Author $author */
-        $author = $authorRepo->find($id);
-
         return $this->render(
             'catalog/author/show.html.twig',
             [
-                'author' => $author,
+                'author' => $authorManager->getAuthor($id),
             ]
         );
     }
