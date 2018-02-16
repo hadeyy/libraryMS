@@ -28,17 +28,7 @@ class GenreManager extends EntityManager
         $this->repository = $this->getRepository(Genre::class);
     }
 
-    /**
-     * @param int $id Genre ID.
-     *
-     * @return null|object
-     */
-    public function getGenre(int $id)
-    {
-        return $this->repository->find($id);
-    }
-
-    public function getPaginatedGenreCatalog(Genre $genre, int $currentPage, int $booksPerPage)
+    public function getPaginatedCatalog(Genre $genre, int $currentPage, int $booksPerPage)
     {
         /** @var BookRepository $bookRepository */
         $bookRepository = $this->getRepository(Book::class);

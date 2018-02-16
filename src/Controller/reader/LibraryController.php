@@ -15,6 +15,7 @@ use App\Service\ActivityManager;
 use App\Service\BookManager;
 use App\Service\BookReservationManager;
 use App\Service\LibraryManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -38,20 +39,20 @@ class LibraryController extends Controller
 
     /**
      * @param Request $request
-     * @param int $id Book id.
+     * @param Book $book
      * @param BookReservationManager $brm
      * @param ActivityManager $activityManager
+     *
+     * @ParamConverter("book", class="App\Entity\Book")
      *
      * @return Response
      */
     public function reserveBook(
         Request $request,
-        int $id,
+        Book $book,
         BookReservationManager $brm,
         ActivityManager $activityManager
     ) {
-        /** @var Book $book */
-        $book = $this->libraryManager->getBook($id);
         $reservation = $brm->createReservation($book, $this->user);
 
         $form = $this->createForm(BookReservationType::class, $reservation);
@@ -73,17 +74,17 @@ class LibraryController extends Controller
     }
 
     /**
-     * @param int $id Book ID
+     * @param Book $book
      * @param BookManager $bookManager
+     *
+     * @ParamConverter("book", class="App\Entity\Book")
      *
      * @return RedirectResponse
      */
-    public function toggleFavorite(int $id, BookManager $bookManager)
+    public function toggleFavorite(Book $book, BookManager $bookManager)
     {
-        /** @var Book $book */
-        $book = $this->libraryManager->getBook($id);
         $bookManager->toggleFavorite($this->user, $book);
 
-        return $this->redirectToRoute('show-book', ['id' => $id]);
+        return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
     }
 }

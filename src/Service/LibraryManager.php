@@ -78,9 +78,4 @@ class LibraryManager extends EntityManager
     {
         return ceil($books->count() / $limit);
     }
-
-    public function getBook(int $id)
-    {
-        return $this->bookRepository->find($id);
-    }
 }

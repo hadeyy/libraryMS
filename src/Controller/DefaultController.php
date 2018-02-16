@@ -19,6 +19,7 @@ use App\Service\CommentManager;
 use App\Service\GenreManager;
 use App\Service\LibraryManager;
 use App\Service\RatingManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -71,24 +72,24 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @param int $id Author id.
+     * @param Author $author
      * @param int $page Result page number.
      * @param int $limit Result limit for a page.
      * @param AuthorManager $authorManager
      * @param string $filter
      *
+     * @ParamConverter("author", class="App\Entity\Author")
+     *
      * @return Response
      */
     public function authorCatalog(
-        int $id,
+        Author $author,
         int $page = 1,
         int $limit = 12,
         AuthorManager $authorManager,
         string $filter = 'author'
     ) {
-        /** @var Author $author */
-        $author = $authorManager->getAuthor($id);
-        $books = $authorManager->getPaginatedAuthorCatalog($author, $page, $limit);
+        $books = $authorManager->getPaginatedCatalog($author, $page, $limit);
 
         return $this->render(
             'catalog/_books_by_author.html.twig',
@@ -105,24 +106,24 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @param int $id Genre id.
+     * @param Genre $genre
      * @param int $page Result page number.
      * @param int $limit Result limit for a page.
      * @param GenreManager $genreManager
      * @param string $filter
      *
+     * @ParamConverter("genre", class="App\Entity\Genre")
+     *
      * @return Response
      */
     public function genreCatalog(
-        int $id,
+        Genre $genre,
         int $page = 1,
         int $limit = 12,
         GenreManager $genreManager,
         string $filter = 'genre'
     ) {
-        /** @var Genre $genre */
-        $genre = $genreManager->getGenre($id);
-        $books = $genreManager->getPaginatedGenreCatalog($genre, $page, $limit);
+        $books = $genreManager->getPaginatedCatalog($genre, $page, $limit);
 
         return $this->render('catalog/_books_by_genre.html.twig', [
             'authors' => $this->libraryManager->getAllAuthors(),
@@ -137,23 +138,22 @@ class DefaultController extends AbstractController
 
     /**
      * @param Request $request
-     * @param int $id Book id.
+     * @param Book $book
      * @param CommentManager $commentManager
      * @param RatingManager $ratingManager
      * @param ActivityManager $activityManager
+     *
+     * @ParamConverter("book", class="App\Entity\Book")
      *
      * @return Response
      */
     public function showBook(
         Request $request,
-        int $id,
+        Book $book,
         CommentManager $commentManager,
         RatingManager $ratingManager,
         ActivityManager $activityManager
     ) {
-        /** @var Book $book */
-        $book = $this->libraryManager->getBook($id);
-
         $comment = $commentManager->create($this->user, $book);
 
 //        Comment form
@@ -178,7 +178,6 @@ class DefaultController extends AbstractController
                 ],
             ])
             ->getForm();
-
         $ratingForm->handleRequest($request);
         if ($ratingForm->isSubmitted() && $ratingForm->isValid()) {
             $formData = $ratingForm->getData();
@@ -199,17 +198,18 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @param int $id Author id.
-     * @param AuthorManager $authorManager
+     * @param Author $author
+     *
+     * @ParamConverter("author", class="App\Entity\Author")
      *
      * @return Response
      */
-    public function showAuthor(int $id, AuthorManager $authorManager)
+    public function showAuthor(Author $author)
     {
         return $this->render(
             'catalog/author/show.html.twig',
             [
-                'author' => $authorManager->getAuthor($id),
+                'author' => $author,
             ]
         );
     }

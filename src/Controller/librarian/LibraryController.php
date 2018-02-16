@@ -9,6 +9,7 @@
 namespace App\Controller\librarian;
 
 
+use App\Entity\BookReservation;
 use App\Form\AuthorType;
 use App\Form\BookType;
 use App\Form\GenreType;
@@ -120,18 +121,18 @@ class LibraryController extends Controller
     }
 
     /**
-     * @param int $id Reservation id.
+     * @param BookReservation $reservation
      * @param string $status New reservation status.
      * @param BookReservationManager $brm
      *
      * @return RedirectResponse
      */
     public function updateReservationStatus(
-        int $id,
+        BookReservation $reservation,
         string $status,
         BookReservationManager $brm
     ) {
-        $brm->updateStatus($id, $status, new \DateTime());
+        $brm->updateStatus($reservation, $status, new \DateTime());
 
         return $this->redirectToRoute('reservations');
     }

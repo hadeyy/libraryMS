@@ -28,20 +28,13 @@ class BookReservationManager extends EntityManager
         $this->repository = $this->getRepository(BookReservation::class);
     }
 
-    public function getBookReservation(int $id)
-    {
-        return $this->repository->find($id);
-    }
-
     public function getByStatus(string $status)
     {
         return $this->repository->findReservationsByStatus($status);
     }
 
-    public function updateStatus(int $id, string $status, \DateTime $updatedAt)
+    public function updateStatus(BookReservation $reservation, string $status, \DateTime $updatedAt)
     {
-        /** @var BookReservation $reservation */
-        $reservation = $this->getBookReservation($id);
         $reservation->setStatus($status);
         $reservation->setUpdatedAt($updatedAt);
 
