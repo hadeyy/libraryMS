@@ -15,20 +15,7 @@ use App\Entity\User;
 
 class ActivityManager extends EntityManager
 {
-    public function logCommenting(User $user, Book $book, string $title = "Commented on a book's page")
-    {
-        $activity = new Activity();
-
-        $activity->setUser($user);
-        $activity->setBook($book);
-        $activity->setTitle($title);
-        $book->addActivity($activity);
-        $user->addActivity($activity);
-
-        $this->save($activity);
-    }
-
-    public function logRating(User $user, Book $book, string $title = 'Rated a book')
+    public function log(User $user, Book $book, string $title)
     {
         $activity = new Activity();
 

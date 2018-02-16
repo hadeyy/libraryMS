@@ -161,7 +161,7 @@ class DefaultController extends AbstractController
         $commentForm->handleRequest($request);
         if ($commentForm->isSubmitted() && $commentForm->isValid()) {
             $commentManager->updateRelatedEntitiesAndSave($comment, $book, $this->user);
-            $activityManager->logCommenting($this->user, $book);
+            $activityManager->log($this->user, $book, "Commented on a book's page");
         }
 
 //        Rating form
@@ -185,7 +185,7 @@ class DefaultController extends AbstractController
             $rating = (int)$formData['rating'];
 
             $ratingManager->rate($book, $rating);
-            $activityManager->logRating($this->user, $book);
+            $activityManager->log($this->user, $book, 'Rated a book');
         }
 
         return $this->render(

@@ -11,6 +11,7 @@ namespace App\Service;
 
 use App\Entity\Book;
 use App\Entity\BookReservation;
+use App\Entity\User;
 use App\Repository\BookReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -61,5 +62,33 @@ class BookReservationManager extends EntityManager
         $book->setAvailableCopies($availableCopies + 1);
         $reservedCopies = $book->getReservedCopies();
         $book->setReservedCopies($reservedCopies - 1);
+    }
+
+    public function createReservation(Book $book, User $user)
+    {
+        $reservation = new BookReservation();
+        $reservation->setBook($book);
+        $reservation->setReader($user);
+
+        return $reservation;
+    }
+
+    public function reserve(BookReservation $reservation, Book $book, User $user)
+    {
+        $book->addReservation($reservation);
+        $user->addBookReservation($reservation);
+
+        $this->updateBookAfterReservation($book);
+        $this->save($reservation);
+    }
+
+    private function updateBookAfterReservation(Book $book)
+    {
+        $availableCopies = $book->getAvailableCopies();
+        $book->setAvailableCopies($availableCopies - 1);
+        $reservedCopies = $book->getReservedCopies();
+        $book->setReservedCopies($reservedCopies + 1);
+        $timesBorrowed = $book->getTimesBorrowed();
+        $book->setTimesBorrowed($timesBorrowed + 1);
     }
 }

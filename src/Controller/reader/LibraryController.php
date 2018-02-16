@@ -9,14 +9,15 @@
 namespace App\Controller\reader;
 
 
-use App\Entity\Activity;
 use App\Entity\Book;
-use App\Entity\BookReservation;
-use App\Entity\User;
 use App\Form\BookReservationType;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Service\ActivityManager;
+use App\Service\BookManager;
+use App\Service\BookReservationManager;
+use App\Service\LibraryManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,37 +27,38 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class LibraryController extends Controller
 {
+    private $user;
+    private $libraryManager;
+
+    public function __construct(ContainerInterface $container, LibraryManager $libraryManager)
+    {
+        $this->user = $container->get('security.token_storage')->getToken()->getUser();
+        $this->libraryManager = $libraryManager;
+    }
+
     /**
      * @param Request $request
      * @param int $id Book id.
+     * @param BookReservationManager $brm
+     * @param ActivityManager $activityManager
      *
      * @return Response
      */
-    public function reserveBook(Request $request, int $id)
-    {
-        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
+    public function reserveBook(
+        Request $request,
+        int $id,
+        BookReservationManager $brm,
+        ActivityManager $activityManager
+    ) {
         /** @var Book $book */
-        $book = $bookRepo->find($id);
-        /** @var User $reader */
-        $reader = $this->getUser();
-
-        $reservation = new BookReservation();
-        $reservation->setBook($book);
-        $reservation->setReader($reader);
+        $book = $this->libraryManager->getBook($id);
+        $reservation = $brm->createReservation($book, $this->user);
 
         $form = $this->createForm(BookReservationType::class, $reservation);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $book->addReservation($reservation);
-            $reader->addBookReservation($reservation);
-
-            $this->updateBookAfterReservation($book);
-            $activity = $this->createReservationActivity($book, $this->getUser());
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($reservation);
-            $em->persist($activity);
-            $em->flush();
+            $brm->reserve($reservation, $book, $this->user);
+            $activityManager->log($this->user, $book, 'Reserved a book');
 
             return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
         }
@@ -70,67 +72,17 @@ class LibraryController extends Controller
         );
     }
 
-    private function updateBookAfterReservation(Book $book)
-    {
-        $availableCopies = $book->getAvailableCopies();
-        $book->setAvailableCopies($availableCopies - 1);
-        $reservedCopies = $book->getReservedCopies();
-        $book->setReservedCopies($reservedCopies + 1);
-        $timesBorrowed = $book->getTimesBorrowed();
-        $book->setTimesBorrowed($timesBorrowed + 1);
-    }
-
-    private function createReservationActivity(Book $book, User $user)
-    {
-        /** @var Activity $activity */
-        $activity = new Activity();
-        $activity->setBook($book);
-        $activity->setUser($user);
-        $activity->setTitle('Reserved a book');
-        $book->addActivity($activity);
-        $user->addActivity($activity);
-
-        return $activity;
-    }
-
     /**
      * @param int $id Book ID
+     * @param BookManager $bookManager
      *
      * @return RedirectResponse
      */
-    public function toggleFavorite(int $id)
+    public function toggleFavorite(int $id, BookManager $bookManager)
     {
-        $bookRepo = $this->getDoctrine()->getRepository(Book::class);
         /** @var Book $book */
-        $book = $bookRepo->find($id);
-        /** @var User $reader */
-        $reader = $this->getUser();
-        /** @var ArrayCollection $favorites */
-        $favorites = $reader->getFavorites();
-        /** @var bool $isAFavorite */
-        $isAFavorite = $favorites->contains($book);
-
-        $action = $isAFavorite ?: 'add';
-
-        /** @var Activity $activity */
-        $activity = new Activity();
-        $activity->setBook($book);
-        $activity->setUser($reader);
-
-        if ('add' === $action) {
-            $activity->setTitle('Added a book to favorites');
-            $reader->addFavorite($book);
-        } else {
-            $activity->setTitle('Removed a book from favorites');
-            $reader->removeFavorite($book);
-        }
-
-        $book->addActivity($activity);
-        $reader->addActivity($activity);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($activity);
-        $em->flush();
+        $book = $this->libraryManager->getBook($id);
+        $bookManager->toggleFavorite($this->user, $book);
 
         return $this->redirectToRoute('show-book', ['id' => $id]);
     }
