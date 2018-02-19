@@ -16,3 +16,8 @@
 ###< symfony/webpack-encore-pack ###
 
 /public/uploads/
+
+###> symfony/phpunit-bridge ###
+.phpunit
+/phpunit.xml
+###< symfony/phpunit-bridge ###
