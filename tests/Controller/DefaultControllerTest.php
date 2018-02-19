@@ -9,23 +9,58 @@
 namespace App\Tests;
 
 
+use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {
+    /** @var Client */
+    private $client;
+
+    public function setUp()
+    {
+        $this->client = static::createClient();
+    }
+
+    /**
+     * @dataProvider uriProvider
+     *
+     * @param $uri
+     */
+    public function testDefaultRoutesAreSuccessful($uri)
+    {
+        $this->client->request('GET', $uri);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+    }
+
+    public function uriProvider()
+    {
+        return [
+            ['/'],
+            ['/register'],
+            ['/register/success'],
+            ['/login'],
+            ['/catalog/page/1'],
+            ['/catalog/books/page/1'],
+            ['/catalog/author/1/page/1'],
+            ['/catalog/genre/1/page/1'],
+            ['/catalog/authors/1'],
+            ['/catalog/books/1'],
+        ];
+    }
+
     public function testIndex()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/');
 
-        $crawler = $client->request('GET', '/');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals(3, $crawler->filter('h2')->count());
         $this->assertEquals(10, $crawler->filter('div.flip-card-container')->count());
         $this->assertGreaterThanOrEqual(4, $crawler->filter('a')->count());
-        $this->assertContains('Home', $client->getResponse()->getContent());
-        $this->assertContains('Catalog', $client->getResponse()->getContent());
-        $this->assertContains('Newest books', $client->getResponse()->getContent());
-        $this->assertContains('Most popular books', $client->getResponse()->getContent());
+        $this->assertContains('Home', $this->client->getResponse()->getContent());
+        $this->assertContains('Catalog', $this->client->getResponse()->getContent());
+        $this->assertContains('Newest books', $this->client->getResponse()->getContent());
+        $this->assertContains('Most popular books', $this->client->getResponse()->getContent());
     }
 }
