@@ -22,7 +22,12 @@ class UserFixtures extends Fixture
     {
         $this->encoder = $encoder;
     }
-    
+
+    /**
+     * @param ObjectManager $manager
+     *
+     * @throws \Doctrine\Common\DataFixtures\BadMethodCallException
+     */
     public function load(ObjectManager $manager)
     {
         $admin = new User();
@@ -49,29 +54,29 @@ class UserFixtures extends Fixture
         $manager->persist($librarian);
         $this->addReference('user1', $librarian);
 
+        $user1 = new User();
+        $user1->setFirstName('Wayne');
+        $user1->setLastName('Gutierrez');
+        $user1->setUsername('reader');
+        $user1->setEmail('WayneTGutierrez@rhyta.com');
+        $user1->setPhoto('silhouette.png');
+        $password = $this->encoder->encodePassword($user1, 'kitten');
+        $user1->setPassword($password);
+        $user1->addRole('ROLE_READER');
+        $manager->persist($user1);
+        $this->addReference('user2', $user1);
+
         $user = new User();
         $user->setFirstName('Athena');
         $user->setLastName('Carswell');
-        $user->setUsername('user1');
+        $user->setUsername('user');
         $user->setEmail('AthenaMCarswell@rhyta.com');
         $user->setPhoto('silhouette.png');
         $password = $this->encoder->encodePassword($user, 'kitten');
         $user->setPassword($password);
         $user->addRole('ROLE_USER');
         $manager->persist($user);
-        $this->addReference('user2', $user);
-
-        $user1 = new User();
-        $user1->setFirstName('Wayne');
-        $user1->setLastName('Gutierrez');
-        $user1->setUsername('user2');
-        $user1->setEmail('WayneTGutierrez@rhyta.com');
-        $user1->setPhoto('silhouette.png');
-        $password = $this->encoder->encodePassword($user1, 'kitten');
-        $user1->setPassword($password);
-        $user1->addRole('ROLE_USER');
-        $manager->persist($user1);
-        $this->addReference('user3', $user1);
+        $this->addReference('user3', $user);
 
         $manager->flush();
     }
