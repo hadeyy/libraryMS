@@ -14,7 +14,7 @@
                 <button id="loginBtn" class="btn">LOG IN</button>
             </a>
             to access comment section.
-        {% elseif null != commnetForm %}
+        {% elseif null != commentForm %}
             {{ form_start(commentForm, {'attr': {'id': 'commentForm'}}) }}
                 <div class="row">
                     {{ form_errors(commentForm.content) }}
