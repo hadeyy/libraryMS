@@ -20,7 +20,7 @@ class UserControllerTest extends WebTestCase
     public function setUp()
     {
         $this->client = static::createClient([],[
-            'PHP_AUTH_USER' => 'admin',
+            'PHP_AUTH_USER' => 'user1',
             'PHP_AUTH_PW' => 'kitten',
         ]);
     }
