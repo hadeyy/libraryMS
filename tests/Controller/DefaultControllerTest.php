@@ -30,7 +30,6 @@ class DefaultControllerTest extends WebTestCase
     public function testDefaultRoutesAreSuccessful($uri)
     {
         $this->client->request('GET', $uri);
-
         $this->assertTrue($this->client->getResponse()->isSuccessful());
     }
 
@@ -41,12 +40,12 @@ class DefaultControllerTest extends WebTestCase
             ['/register'],
             ['/register/success'],
             ['/login'],
-            ['/catalog/page/1'],
-            ['/catalog/books/page/1'],
-            ['/catalog/author/1/page/1'],
-            ['/catalog/genre/1/page/1'],
-            ['/catalog/authors/1'],
+            ['/catalog/1'],
             ['/catalog/books/1'],
+            ['/catalog/books-by-author/1/1'],
+            ['/catalog/books-by-genre/1/1'],
+            ['/catalog/author/1'],
+            ['/catalog/book/1'],
         ];
     }
 

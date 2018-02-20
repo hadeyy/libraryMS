@@ -27,13 +27,13 @@ class LibraryControllerTest extends WebTestCase
 
     public function testReaderRoutesAreSuccessful()
     {
-        $this->client->request('GET', '/catalog/books/1/reserve');
+        $this->client->request('GET', '/catalog/book/1/reserve');
         $this->assertTrue($this->client->getResponse()->isSuccessful());
     }
 
     public function testReaderRoutesAreRedirects()
     {
-        $this->client->request('GET', '/catalog/books/1/toggle-favorite');
+        $this->client->request('GET', '/catalog/book/1/toggle-favorite');
         $this->assertTrue($this->client->getResponse()->isRedirect());
     }
 }

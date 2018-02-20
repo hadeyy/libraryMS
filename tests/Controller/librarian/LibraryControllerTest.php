@@ -48,7 +48,7 @@ class LibraryControllerTest extends WebTestCase
 
     public function testLibrarianRoutesAreRedirects()
     {
-        $this->client->request('GET', '/reservations/update/id/1/reading');
+        $this->client->request('GET', '/reservations/update/1/reading');
         $this->assertTrue($this->client->getResponse()->isRedirect());
     }
 }

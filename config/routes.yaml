@@ -25,21 +25,21 @@ index:
     path: /
     controller: App\Controller\DefaultController::index
 catalog:
-    path: /catalog/page/{page}
+    path: /catalog/{page}
     controller: App\Controller\DefaultController::catalog
     defaults:
         page: 1
     requirements:
         page: '\d+'
 catalog-books:
-    path: /catalog/books/page/{page}
+    path: /catalog/books/{page}
     controller: App\Controller\DefaultController::catalog
     defaults:
         page: 1
     requirements:
         page: '\d+'
 books-by-author:
-    path: /catalog/author/{id}/page/{page}
+    path: /catalog/books-by-author/{id}/{page}
     controller: App\Controller\DefaultController::authorCatalog
     defaults:
         id: 1
@@ -48,7 +48,7 @@ books-by-author:
         id: '\d+'
         page: '\d+'
 books-by-genre:
-    path: /catalog/genre/{id}/page/{page}
+    path: /catalog/books-by-genre/{id}/{page}
     controller: App\Controller\DefaultController::genreCatalog
     defaults:
         id: 1
@@ -57,28 +57,28 @@ books-by-genre:
         id: '\d+'
         page: '\d+'
 show-book:
-    path: /catalog/books/{id}
+    path: /catalog/book/{id}
     controller: App\Controller\DefaultController::showBook
     defaults:
         id: 1
     requirements:
         id: '\d+'
 show-author:
-    path: /catalog/authors/{id}
+    path: /catalog/author/{id}
     controller: App\Controller\DefaultController::showAuthor
     defaults:
         id: 1
     requirements:
         id: '\d+'
 reserve-book:
-    path: /catalog/books/{id}/reserve
+    path: /catalog/book/{id}/reserve
     controller: App\Controller\reader\LibraryController::reserveBook
     defaults:
         id: 1
     requirements:
         id: '\d+'
 toggle-favorite:
-    path: /catalog/books/{id}/toggle-favorite
+    path: /catalog/book/{id}/toggle-favorite
     controller: App\Controller\reader\LibraryController::toggleFavorite
     defaults:
         id: 1
@@ -97,7 +97,7 @@ reservations:
     path: /reservations
     controller: App\Controller\librarian\LibraryController::reservations
 reservation-update:
-    path: /reservations/update/id/{id}/{status}
+    path: /reservations/update/{id}/{status}
     controller: App\Controller\librarian\LibraryController::updateReservationStatus
     methods: [GET]
     defaults:
