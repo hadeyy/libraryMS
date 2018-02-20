@@ -20,7 +20,7 @@ class UserControllerTest extends WebTestCase
     public function setUp()
     {
         $this->client = static::createClient([],[
-            'PHP_AUTH_USER' => 'user1',
+            'PHP_AUTH_USER' => 'user',
             'PHP_AUTH_PW' => 'kitten',
         ]);
     }
@@ -33,7 +33,6 @@ class UserControllerTest extends WebTestCase
     public function testUserRoutesAreSuccessful($uri)
     {
         $this->client->request('GET', $uri);
-
         $this->assertTrue($this->client->getResponse()->isSuccessful());
     }
 
@@ -45,5 +44,11 @@ class UserControllerTest extends WebTestCase
             ['/user/activity'],
             ['/user/notifications'],
         ];
+    }
+
+    public function testUserRoutesAreRedirects()
+    {
+        $this->client->request('GET', '/logout');
+        $this->assertTrue($this->client->getResponse()->isRedirect());
     }
 }
