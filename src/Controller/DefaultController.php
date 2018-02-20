@@ -12,6 +12,7 @@ namespace App\Controller;
 use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\Genre;
+use App\Entity\User;
 use App\Form\CommentType;
 use App\Service\ActivityManager;
 use App\Service\AuthorManager;
@@ -154,45 +155,47 @@ class DefaultController extends AbstractController
         RatingManager $ratingManager,
         ActivityManager $activityManager
     ) {
-        $comment = $commentManager->create($this->user, $book);
+        if ($this->user instanceof User) {
+            $comment = $commentManager->create($this->user, $book);
 
 //        Comment form
-        $commentForm = $this->createForm(CommentType::class, $comment);
-        $commentForm->handleRequest($request);
-        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
-            $commentManager->updateRelatedEntitiesAndSave($comment, $book, $this->user);
-            $activityManager->log($this->user, $book, "Commented on a book's page");
-        }
+            $commentForm = $this->createForm(CommentType::class, $comment);
+            $commentForm->handleRequest($request);
+            if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+                $commentManager->updateRelatedEntitiesAndSave($comment, $book, $this->user);
+                $activityManager->log($this->user, $book, "Commented on a book's page");
+            }
 
 //        Rating form
-        $defaultData = ['message' => 'Select rating'];
-        $ratingForm = $this->createFormBuilder($defaultData)
-            ->add('rating', ChoiceType::class, [
-                'placeholder' => '- Choose rating -',
-                'choices' => [
-                    '5' => '5',
-                    '4' => '4',
-                    '3' => '3',
-                    '2' => '2',
-                    '1' => '1',
-                ],
-            ])
-            ->getForm();
-        $ratingForm->handleRequest($request);
-        if ($ratingForm->isSubmitted() && $ratingForm->isValid()) {
-            $formData = $ratingForm->getData();
-            $rating = (int)$formData['rating'];
+            $defaultData = ['message' => 'Select rating'];
+            $ratingForm = $this->createFormBuilder($defaultData)
+                ->add('rating', ChoiceType::class, [
+                    'placeholder' => '- Choose rating -',
+                    'choices' => [
+                        '5' => '5',
+                        '4' => '4',
+                        '3' => '3',
+                        '2' => '2',
+                        '1' => '1',
+                    ],
+                ])
+                ->getForm();
+            $ratingForm->handleRequest($request);
+            if ($ratingForm->isSubmitted() && $ratingForm->isValid()) {
+                $formData = $ratingForm->getData();
+                $rating = (int)$formData['rating'];
 
-            $ratingManager->rate($book, $rating);
-            $activityManager->log($this->user, $book, 'Rated a book');
+                $ratingManager->rate($book, $rating);
+                $activityManager->log($this->user, $book, 'Rated a book');
+            }
         }
 
         return $this->render(
             'catalog/book/show.html.twig',
             [
                 'book' => $book,
-                'commentForm' => $commentForm->createView(),
-                'ratingForm' => $ratingForm->createView(),
+                'commentForm' => isset($commentForm) ? $commentForm->createView() : null,
+                'ratingForm' => isset($ratingForm) ? $ratingForm->createView() : null,
             ]
         );
     }

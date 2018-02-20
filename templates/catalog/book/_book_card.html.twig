@@ -125,17 +125,19 @@
         </div>
         <!-- book annotation end. -->
 
-        <!-- Favorite toggle -->
-        {% if book in app.user.favorites %}
-            <a id="toggleFavorite" href="{{ path('toggle-favorite', {id: book.id}) }}
+        {% if app.user %}
+            <!-- Favorite toggle -->
+            {% if book in app.user.favorites %}
+                <a id="toggleFavorite" href="{{ path('toggle-favorite', {id: book.id}) }}
 " data-toggle="tooltip" data-placement="top" title="Remove from favorites">
-                <span class="fa fa-star"></span>
-            </a>
-        {% else %}
-            <a id="toggleFavorite" href="{{ path('toggle-favorite', {id: book.id}) }}" data-toggle="tooltip" data-placement="top" title="Add to favorites">
-                <span class="fa fa-star-o"></span>
-            </a>
+                    <span class="fa fa-star"></span>
+                </a>
+            {% else %}
+                <a id="toggleFavorite" href="{{ path('toggle-favorite', {id: book.id}) }}" data-toggle="tooltip" data-placement="top" title="Add to favorites">
+                    <span class="fa fa-star-o"></span>
+                </a>
+            {% endif %}
+            <!-- favorite toggle end. -->
         {% endif %}
-        <!-- favorite toggle end. -->
     </div>
 </div>
