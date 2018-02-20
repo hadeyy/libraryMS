@@ -11,13 +11,11 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
-use App\Service\EntityManager;
 use App\Service\FileManager;
 use App\Service\PasswordManager;
 use App\Service\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -28,7 +26,6 @@ class RegistrationController extends AbstractController
      * @param UserManager $userManager
      * @param PasswordManager $passwordManager
      * @param FileManager $fileManager
-     * @param EntityManager $entityManager
      * @param string $role
      * @param ContainerInterface $container
      *
@@ -39,7 +36,6 @@ class RegistrationController extends AbstractController
         UserManager $userManager,
         PasswordManager $passwordManager,
         FileManager $fileManager,
-        EntityManager $entityManager,
         ContainerInterface $container,
         string $role = 'ROLE_READER'
     ) {
@@ -49,14 +45,11 @@ class RegistrationController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $file */
-            $file = $user->getPhoto();
-
-            $filename = $fileManager->upload($file, $container->getParameter('user_photo_directory'));
+            $filename = $fileManager->upload($user->getPhoto(), $container->getParameter('user_photo_directory'));
             $encodedPassword = $passwordManager->encode($user);
 
             $userManager->register($user, $filename, $encodedPassword, $role);
-            $entityManager->save($user);
+            $userManager->save($user);
 
             return $this->redirectToRoute('registered');
         }
