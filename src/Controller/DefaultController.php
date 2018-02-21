@@ -38,13 +38,19 @@ class DefaultController extends AbstractController
         $this->user = $container->get('security.token_storage')->getToken()->getUser();
     }
 
-    public function index()
+    /**
+     * @param ActivityManager $activityManager
+     *
+     * @return Response
+     */
+    public function index(ActivityManager $activityManager)
     {
         return $this->render(
             'index.html.twig',
             [
                 'popularBooks' => $this->libraryManager->getPopularBooks(),
                 'newBooks' => $this->libraryManager->getNewestBooks(),
+                'recentActivity' => $activityManager->getRecentActivity(),
             ]
         );
     }

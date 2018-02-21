@@ -19,12 +19,21 @@ class ActivityRepository extends EntityRepository
         $em = $this->getEntityManager();
 
         $query = $em->createQuery(
-          'SELECT a
+            'SELECT a
           FROM App\Entity\Activity a
           WHERE a.user = :user
           ORDER BY a.time DESC'
         )->setParameter('user', $user);
 
         return $query->execute();
+    }
+
+    public function findRecentActivity(int $limit)
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.time', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 }

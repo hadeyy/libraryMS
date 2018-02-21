@@ -794,3 +794,24 @@ span.next {
   width: 5%;
   font-size: 2rem;
 }
+
+.featured-activity {
+  border: 1px solid $palette-medium-light;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+  text-transform: lowercase;
+  & .username {
+    font-variant-caps: all-small-caps;
+  }
+  & a {
+    text-transform: uppercase;
+  }
+  & a {
+    color: $palette-medium-dark;
+  }
+  & .time {
+    color: rgba($palette-dark, 0.75);
+    font-size: 0.75rem;
+  }
+}
