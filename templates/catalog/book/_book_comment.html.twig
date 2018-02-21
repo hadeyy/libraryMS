@@ -3,7 +3,7 @@
         <div class="col-md-2">
             <img src="{{ asset('uploads/photos/') ~ comment.author.photo }}" alt="User photo">
             <h5 class="card-title username">{{ comment.author.username }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted published-at">{{ comment.publishedAt|date('d-m-Y H:m') }}</h6>
+            <h6 class="card-subtitle mb-2 text-muted published-at">{{ comment.publishedAt|date('d-m-Y H:i') }}</h6>
         </div>
         <div class="col-md-10 card-text comment-content">{{ comment.content }}</div>
     </div>
