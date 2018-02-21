@@ -13,12 +13,15 @@ use App\Entity\BookReservation;
 use App\Form\AuthorType;
 use App\Form\BookType;
 use App\Form\GenreType;
+use App\Service\ActivityManager;
 use App\Service\AuthorManager;
 use App\Service\BookManager;
 use App\Service\BookReservationManager;
 use App\Service\GenreManager;
+use App\Service\LibraryManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,15 +31,24 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class LibraryController extends Controller
 {
+    private $user;
+
+    public function __construct(ContainerInterface $container, LibraryManager $libraryManager)
+    {
+        $this->user = $container->get('security.token_storage')->getToken()->getUser();
+    }
+
     /**
      * @param Request $request
      * @param BookManager $bookManager
+     * @param ActivityManager $activityManager
      *
      * @return Response
      */
     public function newBook(
         Request $request,
-        BookManager $bookManager
+        BookManager $bookManager,
+        ActivityManager $activityManager
     ) {
         $book = $bookManager->create();
 
@@ -44,6 +56,7 @@ class LibraryController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $bookManager->submit($book);
+            $activityManager->log($this->user, $book, 'Added a new book');
 
             return $this->redirectToRoute('catalog-books');
         }
