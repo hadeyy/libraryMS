@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BookManager extends EntityManager
 {
+    private $photoName;
+    private $photoPath;
     private $coverDirectory;
     private $fileManager;
     private $activityManager;
@@ -67,5 +69,34 @@ class BookManager extends EntityManager
             $user->removeFavorite($book);
             $this->activityManager->log($user, $book, 'Removed a book from favorites');
         }
+    }
+
+    public function changePhotoFromPathToFile(Book $book)
+    {
+        $this->photoName = $book->getCover();
+        $this->photoPath = $this->coverDirectory . '/' . $this->photoName;
+        $book->setCover($this->fileManager->createFileFromPath($this->photoPath));
+    }
+
+    public function updateBook(Book $book)
+    {
+        $photo = $book->getCover();
+        if ($photo instanceof UploadedFile) {
+            unlink($this->photoPath);
+            $filename = $this->fileManager->upload($photo, $this->coverDirectory);
+        } else {
+            $filename = $this->photoName;
+        }
+
+        $book->setCover($filename);
+
+        $this->em->flush();
+    }
+
+    public function remove($entity)
+    {
+        unlink($this->coverDirectory . '/' . $entity->getCover());
+
+        parent::remove($entity);
     }
 }

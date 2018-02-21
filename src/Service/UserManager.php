@@ -14,20 +14,29 @@ use App\Entity\BookReservation;
 use App\Entity\User;
 use App\Repository\ActivityRepository;
 use App\Repository\BookReservationRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UserManager extends EntityManager
 {
+    /** @var UserRepository */
+    private $userRepository;
     private $photoName;
     private $photoPath;
     private $photoDirectory;
+    private $fileManager;
 
-    public function __construct(EntityManagerInterface $manager, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManagerInterface $manager,
+        ContainerInterface $container,
+        FileManager $fileManager
+    ) {
         parent::__construct($manager, $container);
         $this->photoDirectory = $container->getParameter('user_photo_directory');
+        $this->fileManager = $fileManager;
+        $this->userRepository = $this->getRepository(User::class);
     }
 
     /**
@@ -63,19 +72,19 @@ class UserManager extends EntityManager
         return $repository->findPastReservations($user);
     }
 
-    public function changePhotoFromPathToFile(User $user, FileManager $fileManager)
+    public function changePhotoFromPathToFile(User $user)
     {
         $this->photoName = $user->getPhoto();
         $this->photoPath = $this->photoDirectory . '/' . $this->photoName;
-        $user->setPhoto($fileManager->createFileFromPath($this->photoPath));
+        $user->setPhoto($this->fileManager->createFileFromPath($this->photoPath));
     }
 
-    public function updateProfile(User $user, FileManager $fileManager, PasswordManager $passwordManager)
+    public function updateProfile(User $user, PasswordManager $passwordManager)
     {
         $photo = $user->getPhoto();
         if ($photo instanceof UploadedFile) {
             unlink($this->photoPath);
-            $filename = $fileManager->upload($photo, $this->photoDirectory);
+            $filename = $this->fileManager->upload($photo, $this->photoDirectory);
         } else {
             $filename = $this->photoName;
         }
@@ -89,9 +98,6 @@ class UserManager extends EntityManager
 
     public function getActivity(User $user)
     {
-        /** @var ActivityRepository $repository */
-        $repository = $this->getRepository(Activity::class);
-
-        return $repository->findAllUserActivities($user);
+        return $user->getActivities();
     }
 }

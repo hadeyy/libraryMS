@@ -131,12 +131,11 @@ class Book
 
     /**
      * @ORM\Column(type="string")
-     * @Assert\NotBlank()
      * @Assert\Image(
      *     minWidth = 50,
-     *     maxWidth = 2000,
+     *     maxWidth = 5000,
      *     minHeight = 50,
-     *     maxHeight = 2000,
+     *     maxHeight = 5000,
      *     minWidthMessage="Minimum width expected is {{ min_width }}px.",
      *     maxWidthMessage="Allowed maximum width is {{ max_width }}px.",
      *     minHeightMessage="Minimum height expected is {{ min_height }}px.",
@@ -167,17 +166,17 @@ class Book
     private $timesBorrowed;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="book")
+     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="book", cascade={"remove"})
      */
     private $reservations;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="book")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="book", cascade={"remove"})
      */
     private $comments;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="book")
+     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="book", cascade={"remove"})
      */
     private $activities;
 
@@ -370,5 +369,10 @@ class Book
     public function addActivity($activity): void
     {
         $this->activities->add($activity);
+    }
+
+    public function __toString()
+    {
+        return $this->title;
     }
 }

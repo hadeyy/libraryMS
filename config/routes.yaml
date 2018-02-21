@@ -87,6 +87,16 @@ toggle-favorite:
 new-book:
     path: /catalog/books/new
     controller: App\Controller\librarian\LibraryController::newBook
+edit-book:
+    path: /catalog/book/{id}/edit
+    controller: App\Controller\librarian\LibraryController::editBook
+    requirements:
+        id: '\d+'
+delete-book:
+    path: /catalog/book/{id}/delete
+    controller: App\Controller\librarian\LibraryController::deleteBook
+    requirements:
+        id: '\d+'
 new-author:
     path: /catalog/authors/new
     controller: App\Controller\librarian\LibraryController::newAuthor

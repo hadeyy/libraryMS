@@ -59,15 +59,14 @@ class UserController extends AbstractController
      */
     public function editProfile(
         Request $request,
-        FileManager $fileManager,
         PasswordManager $passwordManager
     ) {
-        $this->userManager->changePhotoFromPathToFile($this->user, $fileManager);
+        $this->userManager->changePhotoFromPathToFile($this->user);
 
         $form = $this->createForm(UserType::class, $this->user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->userManager->updateProfile($this->user, $fileManager, $passwordManager);
+            $this->userManager->updateProfile($this->user, $passwordManager);
 
             return $this->redirectToRoute(
                 'profile',

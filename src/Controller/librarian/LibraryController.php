@@ -9,6 +9,7 @@
 namespace App\Controller\librarian;
 
 
+use App\Entity\Book;
 use App\Entity\BookReservation;
 use App\Form\AuthorType;
 use App\Form\BookType;
@@ -17,6 +18,7 @@ use App\Service\ActivityManager;
 use App\Service\AuthorManager;
 use App\Service\BookManager;
 use App\Service\BookReservationManager;
+use App\Service\EntityManager;
 use App\Service\GenreManager;
 use App\Service\LibraryManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -32,31 +34,37 @@ use Symfony\Component\HttpFoundation\Response;
 class LibraryController extends Controller
 {
     private $user;
+    private $bookManager;
+    private $activityManager;
+    PRIVATE $entityManager;
 
-    public function __construct(ContainerInterface $container, LibraryManager $libraryManager)
-    {
+    public function __construct(
+        ContainerInterface $container,
+        LibraryManager $libraryManager,
+        BookManager $bookManager,
+        ActivityManager $activityManager,
+        EntityManager $entityManager
+    ) {
         $this->user = $container->get('security.token_storage')->getToken()->getUser();
+        $this->bookManager = $bookManager;
+        $this->activityManager = $activityManager;
+        $this->entityManager = $entityManager;
     }
 
     /**
      * @param Request $request
-     * @param BookManager $bookManager
-     * @param ActivityManager $activityManager
      *
      * @return Response
      */
-    public function newBook(
-        Request $request,
-        BookManager $bookManager,
-        ActivityManager $activityManager
-    ) {
-        $book = $bookManager->create();
+    public function newBook(Request $request)
+    {
+        $book = $this->bookManager->create();
 
         $form = $this->createForm(BookType::class, $book);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $bookManager->submit($book);
-            $activityManager->log($this->user, $book, 'Added a new book');
+            $this->bookManager->submit($book);
+            $this->activityManager->log($this->user, $book, 'Added a book');
 
             return $this->redirectToRoute('catalog-books');
         }
@@ -65,6 +73,35 @@ class LibraryController extends Controller
             'catalog/book/new.html.twig',
             ['form' => $form->createView()]
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param Book $book
+     *
+     * @return RedirectResponse|Response
+     */
+    public function editBook(Request $request, Book $book)
+    {
+        $this->bookManager->changePhotoFromPathToFile($book);
+
+        $form = $this->createForm(BookType::class, $book);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->bookManager->updateBook($book);
+            $this->activityManager->log($this->user, $book, 'Updated a book');
+
+            return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
+        }
+
+        return $this->render('catalog/book/edit.html.twig', ['form' => $form->createView()]);
+    }
+
+    public function deleteBook(Book $book)
+    {
+        $this->bookManager->remove($book);
+
+        return $this->redirectToRoute('catalog');
     }
 
     /**

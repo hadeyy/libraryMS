@@ -14,20 +14,6 @@ use Doctrine\ORM\EntityRepository;
 
 class ActivityRepository extends EntityRepository
 {
-    public function findAllUserActivities(User $user)
-    {
-        $em = $this->getEntityManager();
-
-        $query = $em->createQuery(
-            'SELECT a
-          FROM App\Entity\Activity a
-          WHERE a.user = :user
-          ORDER BY a.time DESC'
-        )->setParameter('user', $user);
-
-        return $query->execute();
-    }
-
     public function findRecentActivity(int $limit)
     {
         return $this->createQueryBuilder('a')

@@ -819,3 +819,12 @@ span.next {
     font-size: 0.75rem;
   }
 }
+
+button.remove-validation-btn {
+  margin: 0;
+  width: 49%;
+  height: 40px;
+  &:hover {
+    cursor: pointer;
+  }
+}

@@ -45,4 +45,14 @@ class EntityManager
     {
         return $this->doctrine->getRepository($entity);
     }
+
+    /**
+     * @param object $entity The instance to remove from database.
+     */
+    public function remove($entity)
+    {
+//        var_dump('hello');exit;
+        $this->em->remove($entity);
+        $this->em->flush();
+    }
 }

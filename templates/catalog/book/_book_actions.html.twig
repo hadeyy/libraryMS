@@ -20,11 +20,14 @@
 {% endif %}
 
 {% if is_granted("ROLE_LIBRARIAN") %}
-    <a class="book-action" href="">
+    <a class="book-action" href="{{ path('edit-book', {id: book.id}) }}">
         <button type="button" class="btn btn-warning">EDIT</button>
     </a>
-    <a class="book-action" href="">
-        <button type="button" class="btn btn-danger">REMOVE</button>
+    <a class="book-action">
+        <!-- Book removal validation modal trigger -->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#validationModal">
+            REMOVE
+        </button>
     </a>
     <br><br>
 {% endif %}
@@ -40,3 +43,9 @@
     </div>
 {% endif %}
 <!-- rating modal end. -->
+
+<!-- Book removal validation modal -->
+<div class="modal" id="validationModal" tabindex="-1" role="dialog" aria-hidden="true">
+    {% include 'catalog/book/_removal_validation.html.twig' with {'book': book} %}
+</div>
+<!-- book removal validation modal end. -->
