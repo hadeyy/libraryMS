@@ -9,9 +9,9 @@
 namespace App\Controller\librarian;
 
 
+use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\BookReservation;
-use App\Entity\User;
 use App\Form\AuthorType;
 use App\Form\BookType;
 use App\Form\GenreType;
@@ -39,18 +39,21 @@ class LibraryController extends Controller
     private $bookManager;
     private $activityManager;
     private $entityManager;
+    private $authorManager;
 
     public function __construct(
         ContainerInterface $container,
         LibraryManager $libraryManager,
         BookManager $bookManager,
         ActivityManager $activityManager,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        AuthorManager $authorManager
     ) {
         $this->user = $container->get('security.token_storage')->getToken()->getUser();
         $this->bookManager = $bookManager;
         $this->activityManager = $activityManager;
         $this->entityManager = $entityManager;
+        $this->authorManager = $authorManager;
     }
 
     /**
@@ -112,14 +115,14 @@ class LibraryController extends Controller
      *
      * @return RedirectResponse|Response
      */
-    public function newAuthor(Request $request, AuthorManager $authorManager)
+    public function newAuthor(Request $request)
     {
-        $author = $authorManager->create();
+        $author = $this->authorManager->create();
 
         $form = $this->createForm(AuthorType::class, $author);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $authorManager->save($author);
+            $this->authorManager->save($author);
 
             return $this->redirectToRoute('catalog-books');
         }
@@ -200,5 +203,36 @@ class LibraryController extends Controller
             '/librarian/readers.html.twig',
             ['readers' => $userManager->findUsersByRole('ROLE_READER')]
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param Author $author
+     *
+     * @return RedirectResponse|Response
+     */
+    public function editAuthor(Request $request, Author $author)
+    {
+        $this->authorManager->changePhotoFromPathToFile($author);
+
+        $form = $this->createForm(AuthorType::class, $author);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->authorManager->updateAuthor($author);
+
+            return $this->redirectToRoute('show-author', ['id' => $author->getId()]);
+        }
+
+        return $this->render(
+            'catalog/author/edit.html.twig',
+            ['form' => $form->createView()]
+        );
+    }
+
+    public function deleteAuthor(Author $author)
+    {
+        $this->authorManager->remove($author);
+
+        return $this->redirectToRoute('catalog');
     }
 }

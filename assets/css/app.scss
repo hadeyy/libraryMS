@@ -140,7 +140,7 @@ a:hover {
   margin-bottom: 0;
 }
 
-#userPhoto, #bookPhoto {
+#userPhoto, #bookPhoto, #authorPhoto {
   max-width: 100%;
 }
 
@@ -848,5 +848,16 @@ div.cover-col {
   }
   th, td {
     padding: 5px 15px;
+  }
+}
+
+#authorActions {
+  position: absolute;
+  top: 0;
+  right: -50px;
+  width: 50px;
+  font-size: 1.5em;
+  & a:hover {
+    cursor: pointer;
   }
 }

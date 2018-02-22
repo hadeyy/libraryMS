@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit author{% endblock %}
+{% block content %}
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4" id="authorForm">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -36,7 +36,7 @@ class Author
     private $lastName; // optional (in case of one name alias)
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="author")
+     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="author", cascade={"remove"})
      */
     private $books;
 
@@ -44,6 +44,11 @@ class Author
      * @ORM\Column(type="string")
      */
     private $country;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $portrait;
 
     public function __construct()
     {
@@ -99,6 +104,17 @@ class Author
     {
         $this->country = $country;
     }
+
+    public function getPortrait()
+    {
+        return $this->portrait;
+    }
+
+    public function setPortrait($portrait): void
+    {
+        $this->portrait = $portrait;
+    }
+
 
     public function __toString()
     {

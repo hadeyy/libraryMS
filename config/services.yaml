@@ -4,6 +4,7 @@ parameters:
     locale: 'en'
     user_photo_directory: '%kernel.project_dir%/public/uploads/photos'
     book_cover_directory: '%kernel.project_dir%/public/uploads/covers'
+    author_portrait_directory: '%kernel.project_dir%/public/uploads/portraits'
 
 services:
     # default configuration for services in *this* file

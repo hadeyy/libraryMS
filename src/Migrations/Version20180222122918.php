@@ -8,21 +8,19 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20180116111911 extends AbstractMigration
+class Version20180222122918 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
 
-        $this->addSql('DROP TABLE app_book_series');
-        $this->addSql('DROP TABLE authors_books');
         $this->addSql('DROP INDEX IDX_E3EA0499A76ED395');
         $this->addSql('DROP INDEX IDX_E3EA049916A2B381');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_activities AS SELECT id, book_id, user_id, title, content, time FROM app_activities');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_activities AS SELECT id, book_id, user_id, title, time FROM app_activities');
         $this->addSql('DROP TABLE app_activities');
-        $this->addSql('CREATE TABLE app_activities (id INTEGER NOT NULL, book_id INTEGER UNSIGNED DEFAULT NULL, user_id INTEGER DEFAULT NULL, title VARCHAR(255) NOT NULL COLLATE BINARY, content VARCHAR(255) NOT NULL COLLATE BINARY, time DATETIME NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_E3EA049916A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_E3EA0499A76ED395 FOREIGN KEY (user_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
-        $this->addSql('INSERT INTO app_activities (id, book_id, user_id, title, content, time) SELECT id, book_id, user_id, title, content, time FROM __temp__app_activities');
+        $this->addSql('CREATE TABLE app_activities (id INTEGER NOT NULL, book_id INTEGER UNSIGNED DEFAULT NULL, user_id INTEGER DEFAULT NULL, title VARCHAR(255) NOT NULL COLLATE BINARY, time DATETIME NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_E3EA049916A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_E3EA0499A76ED395 FOREIGN KEY (user_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('INSERT INTO app_activities (id, book_id, user_id, title, time) SELECT id, book_id, user_id, title, time FROM __temp__app_activities');
         $this->addSql('DROP TABLE __temp__app_activities');
         $this->addSql('CREATE INDEX IDX_E3EA0499A76ED395 ON app_activities (user_id)');
         $this->addSql('CREATE INDEX IDX_E3EA049916A2B381 ON app_activities (book_id)');
@@ -45,10 +43,10 @@ class Version20180116111911 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_FD9C07D9A33F7DF7 ON books_and_genres (bookId)');
         $this->addSql('DROP INDEX IDX_F8E9C5FE1717D737');
         $this->addSql('DROP INDEX IDX_F8E9C5FE16A2B381');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_book_reservations AS SELECT id, book_id, reader_id, date_from, date_to, status, fine FROM app_book_reservations');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_book_reservations AS SELECT id, book_id, reader_id, date_from, date_to, status, fine, updated_at FROM app_book_reservations');
         $this->addSql('DROP TABLE app_book_reservations');
-        $this->addSql('CREATE TABLE app_book_reservations (id INTEGER NOT NULL, book_id INTEGER UNSIGNED DEFAULT NULL, reader_id INTEGER DEFAULT NULL, date_from DATETIME NOT NULL, date_to DATETIME NOT NULL, status VARCHAR(255) NOT NULL COLLATE BINARY, fine DOUBLE PRECISION NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_F8E9C5FE16A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_F8E9C5FE1717D737 FOREIGN KEY (reader_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
-        $this->addSql('INSERT INTO app_book_reservations (id, book_id, reader_id, date_from, date_to, status, fine) SELECT id, book_id, reader_id, date_from, date_to, status, fine FROM __temp__app_book_reservations');
+        $this->addSql('CREATE TABLE app_book_reservations (id INTEGER NOT NULL, book_id INTEGER UNSIGNED DEFAULT NULL, reader_id INTEGER DEFAULT NULL, date_from DATETIME NOT NULL, date_to DATETIME NOT NULL, status VARCHAR(255) NOT NULL COLLATE BINARY, fine DOUBLE PRECISION NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_F8E9C5FE16A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_F8E9C5FE1717D737 FOREIGN KEY (reader_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('INSERT INTO app_book_reservations (id, book_id, reader_id, date_from, date_to, status, fine, updated_at) SELECT id, book_id, reader_id, date_from, date_to, status, fine, updated_at FROM __temp__app_book_reservations');
         $this->addSql('DROP TABLE __temp__app_book_reservations');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE1717D737 ON app_book_reservations (reader_id)');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE16A2B381 ON app_book_reservations (book_id)');
@@ -84,25 +82,21 @@ class Version20180116111911 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
 
-        $this->addSql('CREATE TABLE app_book_series (id INTEGER NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE authors_books (author_id INTEGER NOT NULL, book_id INTEGER UNSIGNED NOT NULL, PRIMARY KEY(author_id, book_id))');
-        $this->addSql('CREATE INDEX IDX_2DFDA3CBF675F31B ON authors_books (author_id)');
-        $this->addSql('CREATE INDEX IDX_2DFDA3CB16A2B381 ON authors_books (book_id)');
         $this->addSql('DROP INDEX IDX_E3EA049916A2B381');
         $this->addSql('DROP INDEX IDX_E3EA0499A76ED395');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_activities AS SELECT id, book_id, user_id, title, content, time FROM app_activities');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_activities AS SELECT id, book_id, user_id, title, time FROM app_activities');
         $this->addSql('DROP TABLE app_activities');
-        $this->addSql('CREATE TABLE app_activities (id INTEGER NOT NULL, book_id INTEGER UNSIGNED DEFAULT NULL, user_id INTEGER DEFAULT NULL, title VARCHAR(255) NOT NULL, content VARCHAR(255) NOT NULL, time DATETIME NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('INSERT INTO app_activities (id, book_id, user_id, title, content, time) SELECT id, book_id, user_id, title, content, time FROM __temp__app_activities');
+        $this->addSql('CREATE TABLE app_activities (id INTEGER NOT NULL, book_id INTEGER UNSIGNED DEFAULT NULL, user_id INTEGER DEFAULT NULL, title VARCHAR(255) NOT NULL, time DATETIME NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('INSERT INTO app_activities (id, book_id, user_id, title, time) SELECT id, book_id, user_id, title, time FROM __temp__app_activities');
         $this->addSql('DROP TABLE __temp__app_activities');
         $this->addSql('CREATE INDEX IDX_E3EA049916A2B381 ON app_activities (book_id)');
         $this->addSql('CREATE INDEX IDX_E3EA0499A76ED395 ON app_activities (user_id)');
         $this->addSql('DROP INDEX IDX_F8E9C5FE16A2B381');
         $this->addSql('DROP INDEX IDX_F8E9C5FE1717D737');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_book_reservations AS SELECT id, book_id, reader_id, date_from, date_to, status, fine FROM app_book_reservations');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_book_reservations AS SELECT id, book_id, reader_id, date_from, date_to, status, fine, updated_at FROM app_book_reservations');
         $this->addSql('DROP TABLE app_book_reservations');
-        $this->addSql('CREATE TABLE app_book_reservations (id INTEGER NOT NULL, book_id INTEGER UNSIGNED DEFAULT NULL, reader_id INTEGER DEFAULT NULL, date_from DATETIME NOT NULL, date_to DATETIME NOT NULL, status VARCHAR(255) NOT NULL, fine DOUBLE PRECISION NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('INSERT INTO app_book_reservations (id, book_id, reader_id, date_from, date_to, status, fine) SELECT id, book_id, reader_id, date_from, date_to, status, fine FROM __temp__app_book_reservations');
+        $this->addSql('CREATE TABLE app_book_reservations (id INTEGER NOT NULL, book_id INTEGER UNSIGNED DEFAULT NULL, reader_id INTEGER DEFAULT NULL, date_from DATETIME NOT NULL, date_to DATETIME NOT NULL, status VARCHAR(255) NOT NULL, fine DOUBLE PRECISION NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('INSERT INTO app_book_reservations (id, book_id, reader_id, date_from, date_to, status, fine, updated_at) SELECT id, book_id, reader_id, date_from, date_to, status, fine, updated_at FROM __temp__app_book_reservations');
         $this->addSql('DROP TABLE __temp__app_book_reservations');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE16A2B381 ON app_book_reservations (book_id)');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE1717D737 ON app_book_reservations (reader_id)');
