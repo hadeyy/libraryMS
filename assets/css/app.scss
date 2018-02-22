@@ -565,7 +565,7 @@ a#editAuthorLink {
   margin: 5px;
   height: 150px;
   & div.row {
-    max-height: 100%;
+    height: 100%;
   }
   & div.row div img {
     max-width: 100%;
@@ -828,3 +828,8 @@ button.remove-validation-btn {
     cursor: pointer;
   }
 }
+
+div.cover-col {
+  padding: 0;
+}
+
