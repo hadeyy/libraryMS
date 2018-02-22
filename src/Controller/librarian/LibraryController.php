@@ -11,6 +11,7 @@ namespace App\Controller\librarian;
 
 use App\Entity\Book;
 use App\Entity\BookReservation;
+use App\Entity\User;
 use App\Form\AuthorType;
 use App\Form\BookType;
 use App\Form\GenreType;
@@ -21,6 +22,7 @@ use App\Service\BookReservationManager;
 use App\Service\EntityManager;
 use App\Service\GenreManager;
 use App\Service\LibraryManager;
+use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -36,7 +38,7 @@ class LibraryController extends Controller
     private $user;
     private $bookManager;
     private $activityManager;
-    PRIVATE $entityManager;
+    private $entityManager;
 
     public function __construct(
         ContainerInterface $container,
@@ -185,5 +187,18 @@ class LibraryController extends Controller
         $brm->updateStatus($reservation, $status, new \DateTime());
 
         return $this->redirectToRoute('reservations');
+    }
+
+    /**
+     * @param UserManager $userManager
+     *
+     * @return Response
+     */
+    public function readers(UserManager $userManager)
+    {
+        return $this->render(
+            '/librarian/readers.html.twig',
+            ['readers' => $userManager->findUsersByRole('ROLE_READER')]
+        );
     }
 }

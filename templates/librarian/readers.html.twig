@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Readers{% endblock %}
+{% block content %}
+    <div class="col-xs-12 col-sm-12 col-md-10">
+        <h2>Readers</h2>
+        <hr>
+        <table class="table table-sm">
+            <thead>
+            <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Member since</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for reader in readers %}
+                <tr>
+                    <td>{{ reader.firstName }}</td>
+                    <td>{{ reader.lastName }}</td>
+                    <td>{{ reader.username }}</td>
+                    <td>{{ reader.email }}</td>
+                    <td>{{ reader.registeredAt|date('d-m-Y H:i') }}</td>
+                    <td>
+                        <a title="Send email">
+                            <span class="fa fa-envelope-o"></span>
+                        </a>
+                        {% if is_granted("ROLE_ADMIN") %}
+                            <a title="Delete">
+                                <span class="fa fa-trash-o"></span>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

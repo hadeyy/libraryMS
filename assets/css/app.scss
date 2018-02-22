@@ -236,6 +236,7 @@ a:hover {
 hr {
   border: 1px solid $palette-medium-dark;
   margin-top: 5px;
+  width: 100%;
 }
 
 span.badge {
@@ -833,3 +834,19 @@ div.cover-col {
   padding: 0;
 }
 
+.table {
+  width: 100%;
+  tr:hover {
+    background-color: $palette-medium-light;
+  }
+  thead {
+    background-color: $palette-medium-dark;
+    color: $palette-dark;
+    & tr:hover {
+      background-color: $palette-medium-dark;
+    }
+  }
+  th, td {
+    padding: 5px 15px;
+  }
+}

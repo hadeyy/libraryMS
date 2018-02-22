@@ -115,3 +115,6 @@ reservation-update:
         status: 'reserved'
     requirements:
         id: '\d+'
+readers:
+    path: /readers
+    controller: App\Controller\librarian\LibraryController::readers

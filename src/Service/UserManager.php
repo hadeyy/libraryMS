@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class UserManager extends EntityManager
 {
     /** @var UserRepository */
-    private $userRepository;
+    private $repository;
     private $photoName;
     private $photoPath;
     private $photoDirectory;
@@ -36,7 +36,7 @@ class UserManager extends EntityManager
         parent::__construct($manager, $container);
         $this->photoDirectory = $container->getParameter('user_photo_directory');
         $this->fileManager = $fileManager;
-        $this->userRepository = $this->getRepository(User::class);
+        $this->repository = $this->getRepository(User::class);
     }
 
     /**
@@ -99,5 +99,10 @@ class UserManager extends EntityManager
     public function getActivity(User $user)
     {
         return $user->getActivities();
+    }
+
+    public function findUsersByRole(string $role)
+    {
+        return $this->repository->findUsersByRole($role);
     }
 }
