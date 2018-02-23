@@ -3,7 +3,7 @@
 {% block title %}Profile{% endblock %}
 {% block content %}
     <div class="col-md-12 col-lg-6">
-        {% include 'user/_reader_card.html.twig' with {'user': app.user } %}
+        {% include 'user/_reader_card.html.twig' with {'user': user } %}
         <br>
 
         <h2>Favorites</h2>
@@ -12,7 +12,7 @@
             <p class="no-data">Nothing to display.</p>
         {% else %}
             <div class="row">
-                {% for book in app.user.favorites %}
+                {% for book in favorites %}
                     {% include 'user/_favorite_book.html.twig' with {'book': book } %}
                 {% endfor %}
             </div>

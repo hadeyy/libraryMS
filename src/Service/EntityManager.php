@@ -51,7 +51,6 @@ class EntityManager
      */
     public function remove($entity)
     {
-//        var_dump('hello');exit;
         $this->em->remove($entity);
         $this->em->flush();
     }

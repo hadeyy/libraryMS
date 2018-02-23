@@ -34,4 +34,9 @@ class FileManager
     {
         return new File($path);
     }
+
+    public function deleteFile(string $path)
+    {
+        unlink($path);
+    }
 }

@@ -9,6 +9,7 @@
 namespace App\Repository;
 
 
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 class UserRepository extends EntityRepository
@@ -19,6 +20,41 @@ class UserRepository extends EntityRepository
             ->where('u.roles LIKE :roles')
             ->setParameter('roles', '%"' . $role . '"%')
             ->orderBy('u.registeredAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param User $user
+     * @param string $status
+     *
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findUserJoinedToReservations(User $user, string $status)
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u, br, book, a')
+            ->innerJoin('u.bookReservations', 'br')
+            ->innerJoin('br.book', 'book')
+            ->innerJoin('book.author', 'a')
+            ->where('u = :user')
+            ->andWhere('br.status = :status')
+            ->setParameters([
+                'user' => $user,
+                'status' => $status,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function getFavoriteBooks(User $user)
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u, f')
+            ->innerJoin('u.favorites', 'f')
+            ->where('u = :user')
+            ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
     }

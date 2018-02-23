@@ -9,34 +9,31 @@
 namespace App\Service;
 
 
-use App\Entity\Activity;
-use App\Entity\BookReservation;
 use App\Entity\User;
-use App\Repository\ActivityRepository;
-use App\Repository\BookReservationRepository;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class UserManager extends EntityManager
+class UserManager
 {
-    /** @var UserRepository */
+    private $em;
     private $repository;
+    private $fileManager;
+    private $passwordManager;
+    private $photoDirectory;
     private $photoName;
     private $photoPath;
-    private $photoDirectory;
-    private $fileManager;
 
     public function __construct(
-        EntityManagerInterface $manager,
-        ContainerInterface $container,
-        FileManager $fileManager
+        ManagerRegistry $doctrine,
+        FileManager $fileManager,
+        PasswordManager $passwordManager,
+        $userPhotoDirectory
     ) {
-        parent::__construct($manager, $container);
-        $this->photoDirectory = $container->getParameter('user_photo_directory');
+        $this->em = $doctrine->getManager();
+        $this->repository = $doctrine->getRepository(User::class);
         $this->fileManager = $fileManager;
-        $this->repository = $this->getRepository(User::class);
+        $this->passwordManager = $passwordManager;
+        $this->photoDirectory = $userPhotoDirectory;
     }
 
     /**
@@ -56,20 +53,39 @@ class UserManager extends EntityManager
         $user->addRole($role);
     }
 
-    public function getActiveReservations(User $user)
+    public function getFavoriteBooks(User $user)
     {
-        /** @var BookReservationRepository $repository */
-        $repository = $this->getRepository(BookReservation::class);
-
-        return $repository->findCurrentReservations($user);
+        return $this->repository->getFavoriteBooks($user);
     }
 
-    public function getClosedReservations(User $user)
+    /**
+     * @param User $user
+     * @param string $status
+     *
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getActiveReservations(User $user, string $status = 'reading')
     {
-        /** @var BookReservationRepository $repository */
-        $repository = $this->getRepository(BookReservation::class);
+        /** @var User $user */
+        $user = $this->repository->findUserJoinedToReservations($user, $status);
 
-        return $repository->findPastReservations($user);
+        return $user->getBookReservations();
+    }
+
+    /**
+     * @param User $user
+     * @param string $status
+     *
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getReturnedReservations(User $user, string $status = 'returned')
+    {
+        /** @var User $user */
+        $user = $this->repository->findUserJoinedToReservations($user, $status);
+
+        return $user->getBookReservations();
     }
 
     public function changePhotoFromPathToFile(User $user)
@@ -79,16 +95,16 @@ class UserManager extends EntityManager
         $user->setPhoto($this->fileManager->createFileFromPath($this->photoPath));
     }
 
-    public function updateProfile(User $user, PasswordManager $passwordManager)
+    public function updateProfile(User $user)
     {
         $photo = $user->getPhoto();
         if ($photo instanceof UploadedFile) {
-            unlink($this->photoPath);
+            $this->fileManager->deleteFile($this->photoPath);
             $filename = $this->fileManager->upload($photo, $this->photoDirectory);
         } else {
             $filename = $this->photoName;
         }
-        $encodedPassword = $passwordManager->encode($user);
+        $encodedPassword = $this->passwordManager->encode($user);
 
         $user->setPhoto($filename);
         $user->setPassword($encodedPassword);

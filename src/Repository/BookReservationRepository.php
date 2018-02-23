@@ -14,44 +14,6 @@ use Doctrine\ORM\EntityRepository;
 
 class BookReservationRepository extends EntityRepository
 {
-    /**
-     * @param User $user
-     *
-     * @return mixed
-     */
-    public function findCurrentReservations(User $user)
-    {
-        $em = $this->getEntityManager();
-
-        $query = $em->createQuery(
-            'SELECT r 
-            FROM App\Entity\BookReservation r 
-            WHERE r.reader = :reader AND r.status = :status
-            ORDER BY r.dateFrom ASC'
-        )->setParameters(['reader' => $user, 'status' => 'reading']);
-
-        return $query->execute();
-    }
-
-    /**
-     * @param User $user
-     *
-     * @return mixed
-     */
-    public function findPastReservations(User $user)
-    {
-        $em = $this->getEntityManager();
-
-        $query = $em->createQuery(
-            'SELECT r 
-            FROM App\Entity\BookReservation r 
-            WHERE r.reader = :reader AND r.status = :status
-            ORDER BY r.dateFrom ASC'
-        )->setParameters(['reader' => $user, 'status' => 'returned']);
-
-        return $query->execute();
-    }
-
     public function findReservationsByStatus(string $status)
     {
         $em = $this->getEntityManager();
