@@ -18,48 +18,53 @@ use App\Service\LibraryManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * @Security("has_role('ROLE_READER')")
  */
 class LibraryController extends Controller
 {
-    private $user;
     private $libraryManager;
+    private $bookManager;
+    private $bookReservationManager;
+    private $activityManager;
+    private $user;
 
-    public function __construct(ContainerInterface $container, LibraryManager $libraryManager)
-    {
-        $this->user = $container->get('security.token_storage')->getToken()->getUser();
+    public function __construct(
+        LibraryManager $libraryManager,
+        BookManager $bookManager,
+        BookReservationManager $bookReservationManager,
+        ActivityManager $activityManager,
+        TokenStorage $tokenStorage
+    ) {
         $this->libraryManager = $libraryManager;
+        $this->bookManager = $bookManager;
+        $this->bookReservationManager = $bookReservationManager;
+        $this->activityManager = $activityManager;
+        $this->user = $tokenStorage->getToken()->getUser();
     }
 
     /**
      * @param Request $request
      * @param Book $book
-     * @param BookReservationManager $brm
-     * @param ActivityManager $activityManager
      *
      * @ParamConverter("book", class="App\Entity\Book")
      *
      * @return Response
      */
-    public function reserveBook(
-        Request $request,
-        Book $book,
-        BookReservationManager $brm,
-        ActivityManager $activityManager
-    ) {
-        $reservation = $brm->createReservation($book, $this->user);
+    public function reserveBook(Request $request, Book $book)
+    {
+        $reservation = $this->bookReservationManager->create($book, $this->user);
 
         $form = $this->createForm(BookReservationType::class, $reservation);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $brm->reserve($reservation, $book, $this->user);
-            $activityManager->log($this->user, $book, 'Reserved a book');
+            $this->bookReservationManager->reserve($reservation, $book, $this->user);
+            $this->activityManager->log($this->user, $book, 'Reserved a book');
 
             return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
         }
@@ -75,15 +80,14 @@ class LibraryController extends Controller
 
     /**
      * @param Book $book
-     * @param BookManager $bookManager
      *
      * @ParamConverter("book", class="App\Entity\Book")
      *
      * @return RedirectResponse
      */
-    public function toggleFavorite(Book $book, BookManager $bookManager)
+    public function toggleFavorite(Book $book)
     {
-        $bookManager->toggleFavorite($this->user, $book);
+        $this->bookManager->toggleFavorite($this->user, $book);
 
         return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
     }

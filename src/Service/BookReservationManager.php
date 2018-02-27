@@ -12,20 +12,17 @@ namespace App\Service;
 use App\Entity\Book;
 use App\Entity\BookReservation;
 use App\Entity\User;
-use App\Repository\BookReservationRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
-class BookReservationManager extends EntityManager
+class BookReservationManager
 {
-    /** @var BookReservationRepository */
+    private $em;
     private $repository;
 
-    public function __construct(EntityManagerInterface $manager, ContainerInterface $container)
+    public function __construct(ManagerRegistry $doctrine)
     {
-        parent::__construct($manager, $container);
-
-        $this->repository = $this->getRepository(BookReservation::class);
+        $this->em = $doctrine->getManager();
+        $this->repository = $doctrine->getRepository(BookReservation::class);
     }
 
     public function getByStatus(string $status)
@@ -41,12 +38,11 @@ class BookReservationManager extends EntityManager
         if ($status === 'returned' || 'canceled') {
             $reservation->getFine() < 0 ?: $reservation->setFine(0);
 
-            /** @var Book $book */
             $book = $reservation->getBook();
             $this->updateBook($book);
         }
 
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     private function updateBook(Book $book)
@@ -57,7 +53,7 @@ class BookReservationManager extends EntityManager
         $book->setReservedCopies($reservedCopies - 1);
     }
 
-    public function createReservation(Book $book, User $user)
+    public function create(Book $book, User $user)
     {
         $reservation = new BookReservation();
         $reservation->setBook($book);
@@ -83,5 +79,16 @@ class BookReservationManager extends EntityManager
         $book->setReservedCopies($reservedCopies + 1);
         $timesBorrowed = $book->getTimesBorrowed();
         $book->setTimesBorrowed($timesBorrowed + 1);
+    }
+
+    public function saveChanges()
+    {
+        $this->em->flush();
+    }
+
+    public function save(BookReservation $bookReservation)
+    {
+        $this->em->persist($bookReservation);
+        $this->em->flush();
     }
 }

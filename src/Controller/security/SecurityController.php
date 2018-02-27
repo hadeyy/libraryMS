@@ -9,21 +9,26 @@
 namespace App\Controller\security;
 
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class SecurityController extends Controller
+class SecurityController extends AbstractController
 {
+    private $authenticationUtils;
+
+    public function __construct(AuthenticationUtils $authUtils)
+    {
+        $this->authenticationUtils = $authUtils;
+    }
+
     /**
-     * @param AuthenticationUtils $authUtils
-     *
      * @return Response
      */
-    public function login(AuthenticationUtils $authUtils)
+    public function login()
     {
-        $error = $authUtils->getLastAuthenticationError();
-        $lastUsername = $authUtils->getLastUsername();
+        $error = $this->authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $this->authenticationUtils->getLastUsername();
 
         return $this->render(
             'login.html.twig',

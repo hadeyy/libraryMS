@@ -12,29 +12,20 @@ namespace App\Service;
 use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\Genre;
-use App\Repository\AuthorRepository;
-use App\Repository\BookRepository;
-use App\Repository\GenreRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class LibraryManager extends EntityManager
+class LibraryManager
 {
-    /** @var BookRepository */
     private $bookRepository;
-    /** @var AuthorRepository */
     private $authorRepository;
-    /** @var GenreRepository */
     private $genreRepository;
 
-    public function __construct(EntityManagerInterface $manager, ContainerInterface $container)
+    public function __construct(ManagerRegistry $doctrine)
     {
-        parent::__construct($manager, $container);
-
-        $this->bookRepository = $this->getRepository(Book::class);
-        $this->authorRepository = $this->getRepository(Author::class);
-        $this->genreRepository = $this->getRepository(Genre::class);
+        $this->bookRepository = $doctrine->getRepository(Book::class);
+        $this->authorRepository = $doctrine->getRepository(Author::class);
+        $this->genreRepository = $doctrine->getRepository(Genre::class);
     }
 
     public function getPopularBooks()
@@ -60,12 +51,12 @@ class LibraryManager extends EntityManager
 
     public function getAllAuthors()
     {
-        return $this->authorRepository->findAll();
+        return $this->authorRepository->findAllAuthorsJoinedToBooks();
     }
 
     public function getAllGenres()
     {
-        return $this->genreRepository->findAll();
+        return $this->genreRepository->findAllGenresJoinedToBooks();
     }
 
     /**

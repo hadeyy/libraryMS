@@ -19,41 +19,44 @@ use App\Service\ActivityManager;
 use App\Service\AuthorManager;
 use App\Service\BookManager;
 use App\Service\BookReservationManager;
-use App\Service\EntityManager;
 use App\Service\GenreManager;
-use App\Service\LibraryManager;
 use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * @Security("has_role('ROLE_LIBRARIAN')")
  */
 class LibraryController extends Controller
 {
-    private $user;
     private $bookManager;
+    private $bookReservationManager;
     private $activityManager;
-    private $entityManager;
     private $authorManager;
+    private $genreManager;
+    private $userManager;
+    private $user;
 
     public function __construct(
-        ContainerInterface $container,
-        LibraryManager $libraryManager,
         BookManager $bookManager,
+        BookReservationManager $bookReservationManager,
         ActivityManager $activityManager,
-        EntityManager $entityManager,
-        AuthorManager $authorManager
+        AuthorManager $authorManager,
+        GenreManager $genreManager,
+        UserManager $userManager,
+        TokenStorage $tokenStorage
     ) {
-        $this->user = $container->get('security.token_storage')->getToken()->getUser();
         $this->bookManager = $bookManager;
+        $this->bookReservationManager = $bookReservationManager;
+        $this->genreManager = $genreManager;
         $this->activityManager = $activityManager;
-        $this->entityManager = $entityManager;
         $this->authorManager = $authorManager;
+        $this->userManager = $userManager;
+        $this->user = $tokenStorage->getToken()->getUser();
     }
 
     /**
@@ -111,7 +114,6 @@ class LibraryController extends Controller
 
     /**
      * @param Request $request
-     * @param AuthorManager $authorManager
      *
      * @return RedirectResponse|Response
      */
@@ -135,18 +137,17 @@ class LibraryController extends Controller
 
     /**
      * @param Request $request
-     * @param GenreManager $genreManager
      *
      * @return RedirectResponse|Response
      */
-    public function newGenre(Request $request, GenreManager $genreManager)
+    public function newGenre(Request $request)
     {
-        $genre = $genreManager->create();
+        $genre = $this->genreManager->create();
 
         $form = $this->createForm(GenreType::class, $genre);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $genreManager->save($genre);
+            $this->genreManager->save($genre);
 
             return $this->redirectToRoute('catalog-books');
         }
@@ -162,15 +163,15 @@ class LibraryController extends Controller
      *
      * @return Response
      */
-    public function reservations(BookReservationManager $brm)
+    public function reservations()
     {
         return $this->render(
             'librarian/reservations.html.twig',
             [
-                'reserved' => $brm->getByStatus('reserved'),
-                'reading' => $brm->getByStatus('reading'),
-                'returned' => $brm->getByStatus('returned'),
-                'canceled' => $brm->getByStatus('canceled'),
+                'reserved' => $this->bookReservationManager->getByStatus('reserved'),
+                'reading' => $this->bookReservationManager->getByStatus('reading'),
+                'returned' => $this->bookReservationManager->getByStatus('returned'),
+                'canceled' => $this->bookReservationManager->getByStatus('canceled'),
             ]
         );
     }
@@ -178,30 +179,24 @@ class LibraryController extends Controller
     /**
      * @param BookReservation $reservation
      * @param string $status New reservation status.
-     * @param BookReservationManager $brm
      *
      * @return RedirectResponse
      */
-    public function updateReservationStatus(
-        BookReservation $reservation,
-        string $status,
-        BookReservationManager $brm
-    ) {
-        $brm->updateStatus($reservation, $status, new \DateTime());
+    public function updateReservationStatus(BookReservation $reservation, string $status)
+    {
+        $this->bookReservationManager->updateStatus($reservation, $status, new \DateTime());
 
         return $this->redirectToRoute('reservations');
     }
 
     /**
-     * @param UserManager $userManager
-     *
      * @return Response
      */
-    public function readers(UserManager $userManager)
+    public function readers()
     {
         return $this->render(
             '/librarian/readers.html.twig',
-            ['readers' => $userManager->findUsersByRole('ROLE_READER')]
+            ['readers' => $this->userManager->findUsersByRole('ROLE_READER')]
         );
     }
 

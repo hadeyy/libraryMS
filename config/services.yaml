@@ -5,6 +5,7 @@ parameters:
     app.user_photo_dir: '%kernel.project_dir%/public/uploads/photos'
     app.book_cover_dir: '%kernel.project_dir%/public/uploads/covers'
     app.author_portrait_dir: '%kernel.project_dir%/public/uploads/portraits'
+    app.default_registration_role: 'ROLE_READER'
 
 services:
     # default configuration for services in *this* file
@@ -27,9 +28,59 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    App\Controller\RegistrationController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.user_manager'
+            - '@app.password_manager'
+            - '@app.file_manager'
+            - '%app.user_photo_dir%'
+            - '%app.default_registration_role%'
+    App\Controller\security\SecurityController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@security.authentication_utils'
     App\Controller\user\UserController:
         tags: ['controller.service_arguments']
         arguments:
+            - '@app.user_manager'
+            - '@security.token_storage'
+    App\Controller\DefaultController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.library_manager'
+            - '@app.activity_manager'
+    App\Controller\catalog\CatalogController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.library_manager'
+            - '@app.author_manager'
+            - '@app.genre_manager'
+    App\Controller\catalog\BookController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.comment_manager'
+            - '@app.rating_manager'
+            - '@app.activity_manager'
+            - '@security.token_storage'
+    App\Controller\catalog\AuthorController:
+        tags: ['controller.service_arguments']
+    App\Controller\reader\LibraryController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.library_manager'
+            - '@app.book_manager'
+            - '@app.book_reservation_manager'
+            - '@app.activity_manager'
+            - '@security.token_storage'
+    App\Controller\librarian\LibraryController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.book_manager'
+            - '@app.book_reservation_manager'
+            - '@app.activity_manager'
+            - '@app.author_manager'
+            - '@app.genre_manager'
             - '@app.user_manager'
             - '@security.token_storage'
 
@@ -42,11 +93,44 @@ services:
             - '@app.file_manager'
             - '@app.password_manager'
             - '%app.user_photo_dir%'
-
     app.file_manager:
         class: App\Service\FileManager
-
     app.password_manager:
         class: App\Service\PasswordManager
         arguments:
             - '@security.user_password_encoder.generic'
+    app.library_manager:
+        class: App\Service\LibraryManager
+        arguments:
+            - '@doctrine'
+    app.activity_manager:
+       class: App\Service\ActivityManager
+       arguments:
+            - '@doctrine'
+    app.author_manager:
+        class: App\Service\AuthorManager
+        arguments:
+            - '@doctrine'
+            - '@app.file_manager'
+            - '%app.author_portrait_dir%'
+    app.genre_manager:
+        class: App\Service\GenreManager
+        arguments:
+            - '@doctrine'
+    app.comment_manager:
+        class: App\Service\CommentManager
+        arguments:
+            - '@doctrine'
+    app.rating_manager:
+        class: App\Service\RatingManager
+    app.book_manager:
+        class: App\Service\BookManager
+        arguments:
+            - '@doctrine'
+            - '@app.file_manager'
+            - '@app.activity_manager'
+            - '%app.book_cover_dir%'
+    app.book_reservation_manager:
+        class: App\Service\BookReservationManager
+        arguments:
+            - '@doctrine'

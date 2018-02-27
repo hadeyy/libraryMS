@@ -26,21 +26,21 @@ index:
     controller: App\Controller\DefaultController::index
 catalog:
     path: /catalog/{page}
-    controller: App\Controller\DefaultController::catalog
+    controller: App\Controller\catalog\CatalogController::catalog
     defaults:
         page: 1
     requirements:
         page: '\d+'
 catalog-books:
     path: /catalog/books/{page}
-    controller: App\Controller\DefaultController::catalog
+    controller: App\Controller\catalog\CatalogController::catalog
     defaults:
         page: 1
     requirements:
         page: '\d+'
 books-by-author:
     path: /catalog/books-by-author/{id}/{page}
-    controller: App\Controller\DefaultController::authorCatalog
+    controller: App\Controller\catalog\CatalogController::authorCatalog
     defaults:
         id: 1
         page: 1
@@ -49,7 +49,7 @@ books-by-author:
         page: '\d+'
 books-by-genre:
     path: /catalog/books-by-genre/{id}/{page}
-    controller: App\Controller\DefaultController::genreCatalog
+    controller: App\Controller\catalog\CatalogController::genreCatalog
     defaults:
         id: 1
         page: 1
@@ -58,14 +58,14 @@ books-by-genre:
         page: '\d+'
 show-book:
     path: /catalog/book/{id}
-    controller: App\Controller\DefaultController::showBook
+    controller: App\Controller\catalog\BookController::showBook
     defaults:
         id: 1
     requirements:
         id: '\d+'
 show-author:
     path: /catalog/author/{id}
-    controller: App\Controller\DefaultController::showAuthor
+    controller: App\Controller\catalog\AuthorController::showAuthor
     defaults:
         id: 1
     requirements:

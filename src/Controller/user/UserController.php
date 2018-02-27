@@ -45,8 +45,8 @@ class UserController extends AbstractController
             [
                 'user' => $this->user,
                 'favorites' => $this->userManager->getFavoriteBooks($this->user),
-                'activeReservations' => $this->userManager->getActiveReservations($this->user),
-                'closedReservations' => $this->userManager->getReturnedReservations($this->user),
+                'activeReservations' => $this->userManager->getReservationsByStatus($this->user, 'reading'),
+                'closedReservations' => $this->userManager->getReservationsByStatus($this->user, 'returned'),
             ]
         );
     }

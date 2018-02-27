@@ -9,23 +9,22 @@
 namespace App\Repository;
 
 
-use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 class BookReservationRepository extends EntityRepository
 {
     public function findReservationsByStatus(string $status)
     {
-        $em = $this->getEntityManager();
-
-        $query = $em->createQuery(
-            'SELECT r 
-            FROM App\Entity\BookReservation r
-            WHERE r.status = :status
-            ORDER BY r.updatedAt DESC'
-        )->setParameter('status', $status);
-
-        return $query->execute();
+        return $this->createQueryBuilder('br')
+            ->select('br, b, u, a')
+            ->innerJoin('br.book', 'b')
+            ->innerJoin('br.reader', 'u')
+            ->innerJoin('b.author', 'a')
+            ->where('br.status = :status')
+            ->setParameter('status', $status)
+            ->orderBy('br.updatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
 }

@@ -11,34 +11,30 @@ namespace App\Service;
 
 use App\Entity\Author;
 use App\Entity\Book;
-use App\Repository\BookRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class AuthorManager extends EntityManager
+class AuthorManager
 {
+    private $doctrine;
+    private $em;
     private $photoName;
     private $photoPath;
     private $portraitDirectory;
     private $fileManager;
 
-    public function __construct(
-        EntityManagerInterface $manager,
-        ContainerInterface $container,
-        FileManager $fileManager
-    )
+    public function __construct(ManagerRegistry $doctrine, FileManager $fileManager, $portraitDirectory)
     {
-        parent::__construct($manager, $container);
-
-        $this->portraitDirectory = $container->getParameter('author_portrait_directory');
+        $this->doctrine = $doctrine;
+        $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
+        $this->portraitDirectory = $portraitDirectory;
     }
 
     public function getPaginatedCatalog(Author $author, int $currentPage, int $booksPerPage)
     {
-        /** @var BookRepository $bookRepository */
-        $bookRepository = $this->getRepository(Book::class);
+        /** @todo get books from AuthorRepository */
+        $bookRepository = $this->doctrine->getRepository(Book::class);
 
         return $bookRepository->findAuthorBooksAndPaginate($author, $currentPage, $booksPerPage);
     }
@@ -52,6 +48,7 @@ class AuthorManager extends EntityManager
     {
         $photo = $author->getPortrait();
         if ($photo instanceof UploadedFile) {
+            /** @todo move to FileManager */
             !isset($this->photoPath) ?: unlink($this->photoPath);
             $filename = $this->fileManager->upload($photo, $this->portraitDirectory);
         } else {
@@ -72,10 +69,18 @@ class AuthorManager extends EntityManager
         }
     }
 
-    public function remove($entity)
+    public function save(Author $author)
     {
-        null === $entity->getPortrait() ?: unlink($this->portraitDirectory . '/' . $entity->getPortrait());
+        $this->em->persist($author);
+        $this->em->flush();
+    }
 
-        parent::remove($entity);
+    public function remove(Author $author)
+    {
+        /** @todo move to FileManager */
+        null === $author->getPortrait() ?: unlink($this->portraitDirectory . '/' . $author->getPortrait());
+
+        $this->em->remove($author);
+        $this->em->flush();
     }
 }

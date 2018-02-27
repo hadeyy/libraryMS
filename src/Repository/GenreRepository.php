@@ -13,5 +13,13 @@ use Doctrine\ORM\EntityRepository;
 
 class GenreRepository extends EntityRepository
 {
-
+    public function findAllGenresJoinedToBooks()
+    {
+        return $this->createQueryBuilder('g')
+            ->select('g, b')
+            ->innerJoin('g.books', 'b')
+            ->orderBy('g.name')
+            ->getQuery()
+            ->getResult();
+    }
 }

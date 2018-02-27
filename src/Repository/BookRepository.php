@@ -12,14 +12,16 @@ namespace App\Repository;
 use App\Entity\Author;
 use App\Entity\Genre;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class BookRepository extends EntityRepository
 {
-    public function findAllAndPaginate($currentPage = 1, $limit = 18)
+    public function findAllAndPaginate(int $currentPage = 1, int $limit = 18)
     {
         $query = $this->createQueryBuilder('b')
+            ->select('b, a, g')
+            ->innerJoin('b.author', 'a')
+            ->innerJoin('b.genres', 'g')
             ->orderBy('b.title', 'ASC')
             ->getQuery();
 
@@ -28,9 +30,12 @@ class BookRepository extends EntityRepository
         return $paginator;
     }
 
-    public function findAuthorBooksAndPaginate(Author $author, $currentPage = 1, $limit = 18)
+    public function findAuthorBooksAndPaginate(Author $author, int $currentPage = 1, int $limit = 18)
     {
         $query = $this->createQueryBuilder('b')
+            ->select('b, a, g')
+            ->innerJoin('b.author', 'a')
+            ->innerJoin('b.genres', 'g')
             ->where('b.author = :author')
             ->setParameter('author', $author)
             ->getQuery();
@@ -40,10 +45,12 @@ class BookRepository extends EntityRepository
         return $paginator;
     }
 
-    public function findGenreBooksAndPaginate(Genre $genre, $currentPage = 1, $limit = 18)
+    public function findGenreBooksAndPaginate(Genre $genre, int $currentPage = 1, int $limit = 18)
     {
         $query = $this->createQueryBuilder('b')
-            ->join('b.genres', 'g')
+            ->select('b, a, g')
+            ->innerJoin('b.author', 'a')
+            ->innerJoin('b.genres', 'g')
             ->where('g = :genre')
             ->setParameter('genre', $genre)
             ->getQuery();
@@ -66,28 +73,22 @@ class BookRepository extends EntityRepository
 
     public function findAllOrderedByTimesBorrowed()
     {
-        $em = $this->getEntityManager();
-
-        $query = $em->createQuery(
-            'SELECT b
-            FROM App\Entity\Book b
-            ORDER BY b.timesBorrowed DESC'
-        );
-
-        return $query->execute();
+        return $this->createQueryBuilder('b')
+            ->select('b, a')
+            ->innerJoin('b.author', 'a')
+            ->orderBy('b.timesBorrowed', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     public function findAllOrderedByPublicationDate()
     {
-        $em = $this->getEntityManager();
-
-        $query = $em->createQuery(
-            'SELECT b
-            FROM App\Entity\Book b
-            ORDER BY b.publicationDate DESC'
-        );
-
-        return $query->execute();
+        return $this->createQueryBuilder('b')
+            ->select('b, a')
+            ->innerJoin('b.author', 'a')
+            ->orderBy('b.publicationDate', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
 }

@@ -13,5 +13,13 @@ use Doctrine\ORM\EntityRepository;
 
 class AuthorRepository extends EntityRepository
 {
-
+    public function findAllAuthorsJoinedToBooks()
+    {
+        return $this->createQueryBuilder('a')
+            ->select('a, b')
+            ->innerJoin('a.books', 'b')
+            ->orderBy('a.firstName')
+            ->getQuery()
+            ->getResult();
+    }
 }

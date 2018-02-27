@@ -12,20 +12,17 @@ namespace App\Service;
 use App\Entity\Activity;
 use App\Entity\Book;
 use App\Entity\User;
-use App\Repository\ActivityRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
-class ActivityManager extends EntityManager
+class ActivityManager
 {
-    /** @var ActivityRepository */
+    private $em;
     private $activityRepository;
 
-    public function __construct(EntityManagerInterface $manager, ContainerInterface $container)
+    public function __construct(ManagerRegistry $doctrine)
     {
-        parent::__construct($manager, $container);
-
-        $this->activityRepository = $this->getRepository(Activity::class);
+        $this->em = $doctrine->getManager();
+        $this->activityRepository = $doctrine->getRepository(Activity::class);
     }
 
     public function log(User $user, Book $book, string $title)
@@ -44,5 +41,14 @@ class ActivityManager extends EntityManager
     public function getRecentActivity(int $limit = 7)
     {
         return $this->activityRepository->findRecentActivity($limit);
+    }
+
+    /**
+     * @param object $entity The instance to make managed and persistent.
+     */
+    public function save($entity)
+    {
+        $this->em->persist($entity);
+        $this->em->flush();
     }
 }

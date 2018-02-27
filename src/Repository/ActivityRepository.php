@@ -17,6 +17,9 @@ class ActivityRepository extends EntityRepository
     public function findRecentActivity(int $limit)
     {
         return $this->createQueryBuilder('a')
+            ->select('a, b, u')
+            ->innerJoin('a.book', 'b')
+            ->innerJoin('a.user', 'u')
             ->orderBy('a.time', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()

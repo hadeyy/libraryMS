@@ -15,41 +15,49 @@ use App\Service\FileManager;
 use App\Service\PasswordManager;
 use App\Service\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class RegistrationController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @param UserManager $userManager
-     * @param PasswordManager $passwordManager
-     * @param FileManager $fileManager
-     * @param string $role
-     * @param ContainerInterface $container
-     *
-     * @return Response
-     */
-    public function register(
-        Request $request,
+    private $userManager;
+    private $passwordManager;
+    private $fileManager;
+    private $userPhotoDirectory;
+    private $defaultUserRole;
+
+    public function __construct(
         UserManager $userManager,
         PasswordManager $passwordManager,
         FileManager $fileManager,
-        ContainerInterface $container,
-        string $role = 'ROLE_READER'
+        string $userPhotoDirectory,
+        string $defaultUserRole
     ) {
+        $this->userManager = $userManager;
+        $this->passwordManager = $passwordManager;
+        $this->fileManager = $fileManager;
+        $this->userPhotoDirectory = $userPhotoDirectory;
+        $this->defaultUserRole = $defaultUserRole;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function register(Request $request)
+    {
         $user = new User();
 
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $filename = $fileManager->upload($user->getPhoto(), $container->getParameter('user_photo_directory'));
-            $encodedPassword = $passwordManager->encode($user);
+            $filename = $this->fileManager->upload($user->getPhoto(), $this->userPhotoDirectory);
+            $encodedPassword = $this->passwordManager->encode($user);
 
-            $userManager->register($user, $filename, $encodedPassword, $role);
-            $userManager->save($user);
+            $this->userManager->register($user, $filename, $encodedPassword, $this->defaultUserRole);
+            $this->userManager->save($user);
 
             return $this->redirectToRoute('registered');
         }

@@ -11,30 +11,28 @@ namespace App\Service;
 
 use App\Entity\Book;
 use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class BookManager extends EntityManager
+class BookManager
 {
     private $photoName;
     private $photoPath;
-    private $coverDirectory;
+    private $em;
     private $fileManager;
     private $activityManager;
+    private $coverDirectory;
 
     public function __construct(
-        EntityManagerInterface $manager,
-        ContainerInterface $container,
+        ManagerRegistry $doctrine,
         FileManager $fileManager,
-        ActivityManager $activityManager
+        ActivityManager $activityManager,
+        string $bookCoverDirectory
     ) {
-        parent::__construct($manager, $container);
-
-        $this->coverDirectory = $container->getParameter('book_cover_directory');
+        $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
         $this->activityManager = $activityManager;
+        $this->coverDirectory = $bookCoverDirectory;
     }
 
     public function create()
@@ -44,19 +42,18 @@ class BookManager extends EntityManager
 
     public function submit(Book $book)
     {
-        $filename = $this->uploadCover($book->getCover(), $this->coverDirectory, $this->fileManager);
+        $filename = $this->uploadCover($book->getCover(), $this->coverDirectory);
         $book->setCover($filename);
         $this->save($book);
     }
 
-    private function uploadCover(UploadedFile $cover, string $path, FileManager $fileManager)
+    private function uploadCover(UploadedFile $cover, string $path)
     {
-        return $fileManager->upload($cover, $path);
+        return $this->fileManager->upload($cover, $path);
     }
 
     public function toggleFavorite(User $user, Book $book)
     {
-        /** @var ArrayCollection $userFavorites */
         $userFavorites = $user->getFavorites();
         /** @var bool $isAFavorite */
         $isAFavorite = $userFavorites->contains($book);
@@ -93,10 +90,17 @@ class BookManager extends EntityManager
         $this->em->flush();
     }
 
-    public function remove($entity)
+    public function save(Book $book)
     {
-        unlink($this->coverDirectory . '/' . $entity->getCover());
+        $this->em->persist($book);
+        $this->em->flush();
+    }
 
-        parent::remove($entity);
+    public function remove(Book $book)
+    {
+        unlink($this->coverDirectory . '/' . $book->getCover());
+
+        $this->em->remove($book);
+        $this->em->flush();
     }
 }

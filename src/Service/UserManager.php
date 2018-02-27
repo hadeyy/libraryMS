@@ -65,24 +65,8 @@ class UserManager
      * @return \Doctrine\Common\Collections\ArrayCollection
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getActiveReservations(User $user, string $status = 'reading')
+    public function getReservationsByStatus(User $user, string $status)
     {
-        /** @var User $user */
-        $user = $this->repository->findUserJoinedToReservations($user, $status);
-
-        return $user->getBookReservations();
-    }
-
-    /**
-     * @param User $user
-     * @param string $status
-     *
-     * @return \Doctrine\Common\Collections\ArrayCollection
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function getReturnedReservations(User $user, string $status = 'returned')
-    {
-        /** @var User $user */
         $user = $this->repository->findUserJoinedToReservations($user, $status);
 
         return $user->getBookReservations();
@@ -109,7 +93,7 @@ class UserManager
         $user->setPhoto($filename);
         $user->setPassword($encodedPassword);
 
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     public function getActivity(User $user)
@@ -120,5 +104,16 @@ class UserManager
     public function findUsersByRole(string $role)
     {
         return $this->repository->findUsersByRole($role);
+    }
+
+    public function save(User $user)
+    {
+        $this->em->persist($user);
+        $this->em->flush();
+    }
+
+    private function saveChanges()
+    {
+        $this->em->flush();
     }
 }
