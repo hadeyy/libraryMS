@@ -25,6 +25,13 @@ class ActivityManager
         $this->activityRepository = $doctrine->getRepository(Activity::class);
     }
 
+    /**
+     * @TODO make sure this is correct
+     *
+     * @param User $user
+     * @param Book $book
+     * @param string $title
+     */
     public function log(User $user, Book $book, string $title)
     {
         $activity = new Activity();
@@ -44,11 +51,11 @@ class ActivityManager
     }
 
     /**
-     * @param object $entity The instance to make managed and persistent.
+     * @param Activity $activity The instance to make managed and persistent.
      */
-    public function save($entity)
+    public function save(Activity $activity)
     {
-        $this->em->persist($entity);
+        $this->em->persist($activity);
         $this->em->flush();
     }
 }
