@@ -22,12 +22,27 @@ class FileManager
      */
     public function upload(UploadedFile $file, string $path)
     {
-        $extension = $file->guessExtension();
-        $filename = md5(uniqid()) . '_' . (string)date('dmYHms') . '.' . $extension;
+        $extension = $this->guessExtension($file);
+        $filename = $this->generateFilename($extension);
 
-        $file->move($path, $filename);
+        $this->move($file, $path, $filename);
 
         return $filename;
+    }
+
+    public function guessExtension(File $file)
+    {
+        return $file->guessExtension();
+    }
+
+    public function generateFilename(string $extension)
+    {
+        return md5(uniqid()) . '_' . (string)date('dmYHms') . '.' . $extension;
+    }
+
+    public function move(File $file, string $path, string $filename)
+    {
+        $file->move($path, $filename);
     }
 
     public function createFileFromPath(string $path)
