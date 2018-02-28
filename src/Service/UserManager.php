@@ -48,9 +48,9 @@ class UserManager
         string $password,
         string $role
     ) {
-        $user->setPhoto($filename);
-        $user->setPassword($password);
-        $user->addRole($role);
+        $this->setUserPhoto($user, $filename);
+        $this->setUserPassword($user, $password);
+        $this->addRole($user, $role);
     }
 
     public function getFavoriteBooks(User $user)
@@ -76,12 +76,12 @@ class UserManager
     {
         $this->setPhotoName($user->getPhoto());
         $this->setPhotoPath($this->photoDirectory . '/' . $this->photoName);
-        $user->setPhoto($this->fileManager->createFileFromPath($this->getPhotoPath()));
+        $this->setUserPhoto($user, $this->fileManager->createFileFromPath($this->getPhotoPath()));
     }
 
     public function updateProfile(User $user)
     {
-        $photo = $user->getPhoto();
+        $photo = $this->getUserPhoto($user);
         if ($photo instanceof UploadedFile) {
             $this->fileManager->deleteFile($this->getPhotoPath());
             $filename = $this->fileManager->upload($photo, $this->photoDirectory);
@@ -90,8 +90,8 @@ class UserManager
         }
         $encodedPassword = $this->passwordManager->encode($user);
 
-        $user->setPhoto($filename);
-        $user->setPassword($encodedPassword);
+        $this->setUserPhoto($user, $filename);
+        $this->setUserPassword($user, $encodedPassword);
 
         $this->saveChanges();
     }
@@ -115,6 +115,26 @@ class UserManager
     public function saveChanges()
     {
         $this->em->flush();
+    }
+
+    public function setUserPhoto(User $user, $photo)
+    {
+        $user->setPhoto($photo);
+    }
+
+    public function getUserPhoto(User $user)
+    {
+        return $user->getPhoto();
+    }
+
+    public function setUserPassword(User $user, $password)
+    {
+        $user->setPassword($password);
+    }
+
+    public function addRole(User $user, string $role)
+    {
+        $user->addRole($role);
     }
 
     public function setPhotoPath(string $photoPath)
