@@ -74,19 +74,19 @@ class UserManager
 
     public function changePhotoFromPathToFile(User $user)
     {
-        $this->photoName = $user->getPhoto();
-        $this->photoPath = $this->photoDirectory . '/' . $this->photoName;
-        $user->setPhoto($this->fileManager->createFileFromPath($this->photoPath));
+        $this->setPhotoName($user->getPhoto());
+        $this->setPhotoPath($this->photoDirectory . '/' . $this->photoName);
+        $user->setPhoto($this->fileManager->createFileFromPath($this->getPhotoPath()));
     }
 
     public function updateProfile(User $user)
     {
         $photo = $user->getPhoto();
         if ($photo instanceof UploadedFile) {
-            $this->fileManager->deleteFile($this->photoPath);
+            $this->fileManager->deleteFile($this->getPhotoPath());
             $filename = $this->fileManager->upload($photo, $this->photoDirectory);
         } else {
-            $filename = $this->photoName;
+            $filename = $this->getPhotoName();
         }
         $encodedPassword = $this->passwordManager->encode($user);
 
@@ -112,8 +112,28 @@ class UserManager
         $this->em->flush();
     }
 
-    private function saveChanges()
+    public function saveChanges()
     {
         $this->em->flush();
+    }
+
+    public function setPhotoPath(string $photoPath)
+    {
+        $this->photoPath = $photoPath;
+    }
+
+    public function getPhotoPath()
+    {
+        return $this->photoPath;
+    }
+
+    public function setPhotoName(string $photoName)
+    {
+        $this->photoName = $photoName;
+    }
+
+    public function getPhotoName()
+    {
+        return $this->photoName;
     }
 }
