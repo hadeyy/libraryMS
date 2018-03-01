@@ -26,21 +26,13 @@ class ActivityManager
     }
 
     /**
-     * @TODO make sure this is correct
-     *
      * @param User $user
      * @param Book $book
      * @param string $title
      */
     public function log(User $user, Book $book, string $title)
     {
-        $activity = new Activity();
-
-        $activity->setUser($user);
-        $activity->setBook($book);
-        $activity->setTitle($title);
-        $book->addActivity($activity);
-        $user->addActivity($activity);
+        $activity = new Activity($user, $book, $title);
 
         $this->save($activity);
     }

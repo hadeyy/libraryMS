@@ -10,8 +10,11 @@ namespace App\Tests\Service;
 
 
 use App\Entity\Activity;
+use App\Entity\Book;
+use App\Entity\User;
 use App\Repository\ActivityRepository;
 use App\Service\ActivityManager;
+use DeepCopy\f001\B;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
@@ -19,6 +22,20 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ActivityManagerTest extends WebTestCase
 {
+    public function testLogCallsCreateAndSave()
+    {
+        $activityManager = $this->getMockBuilder(ActivityManager::class)
+            ->disableOriginalConstructor()
+            ->setMethodsExcept(['log'])
+            ->getMock();
+
+        $activityManager->expects($this->once())
+            ->method('save')
+            ->with($this->isInstanceOf(Activity::class));
+
+        $activityManager->log(new User(), new Book(), '');
+    }
+
     public function testGetRecentActivityCallsActivityRepository()
     {
         $activityRepository = $this->createMock(ActivityRepository::class);
@@ -68,6 +85,6 @@ class ActivityManagerTest extends WebTestCase
             ->setMethodsExcept(['save'])
             ->getMock();
 
-        $activityManager->save(new Activity());
+        $activityManager->save(new Activity(new User(), new Book(), 'title'));
     }
 }

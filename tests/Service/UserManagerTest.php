@@ -259,9 +259,11 @@ class UserManagerTest extends WebTestCase
 
     public function testGetActivity()
     {
+        $activity = $this->createMock(Activity::class);
+
         $user = new User();
-        $user->addActivity(new Activity());
-        $user->addActivity(new Activity());
+        $user->addActivity($activity);
+        $user->addActivity($activity);
 
         $userManager = $this->getMockBuilder(UserManager::class)
             ->disableOriginalConstructor()

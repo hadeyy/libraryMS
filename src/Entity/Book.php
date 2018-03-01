@@ -176,7 +176,7 @@ class Book
     private $comments;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="book", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="book", cascade={"persist", "remove"})
      */
     private $activities;
 

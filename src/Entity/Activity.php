@@ -44,8 +44,11 @@ class Activity
      */
     private $time;
 
-    public function __construct()
+    public function __construct(User $user, Book $book, string $title)
     {
+        $this->user = $user;
+        $this->book = $book;
+        $this->title = $this;
         $this->time = new \DateTime();
     }
 

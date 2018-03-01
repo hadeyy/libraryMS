@@ -75,7 +75,7 @@ class User implements UserInterface, \Serializable
     private $notifications;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="user", cascade={"persist", "remove"})
      */
     private $activities;
 
