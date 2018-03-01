@@ -58,7 +58,7 @@ class BookController extends AbstractController
             $commentForm = $this->createForm(CommentType::class, $comment);
             $commentForm->handleRequest($request);
             if ($commentForm->isSubmitted() && $commentForm->isValid()) {
-                $this->commentManager->updateRelatedEntitiesAndSave($comment, $book, $this->user);
+                $this->commentManager->save($comment);
                 $this->activityManager->log($this->user, $book, "Commented on a book's page");
             }
 

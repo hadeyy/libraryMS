@@ -25,24 +25,10 @@ class CommentManager
 
     public function create(User $user, Book $book)
     {
-        $comment = new Comment();
-
-        $comment->setAuthor($user);
-        $comment->setBook($book);
-
-        return $comment;
+        return new Comment($user, $book);
     }
 
-    public function updateRelatedEntitiesAndSave(Comment $comment, Book $book, User $user)
-    {
-        /** @TODO refactor this */
-        $book->addComment($comment);
-        $user->addComment($comment);
-
-        $this->save($comment);
-    }
-
-    private function save(Comment $comment)
+    public function save(Comment $comment)
     {
         $this->em->persist($comment);
         $this->em->flush();

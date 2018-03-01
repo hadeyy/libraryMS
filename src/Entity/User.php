@@ -80,7 +80,7 @@ class User implements UserInterface, \Serializable
     private $activities;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author", cascade={"persist", "remove"})
      */
     private $comments;
 

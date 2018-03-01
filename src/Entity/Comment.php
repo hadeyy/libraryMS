@@ -54,8 +54,10 @@ class Comment
      */
     private $content;
 
-    public function __construct()
+    public function __construct(User $user, Book $book)
     {
+        $this->author = $user;
+        $this->book = $book;
         $this->publishedAt = new \DateTime();
     }
 
