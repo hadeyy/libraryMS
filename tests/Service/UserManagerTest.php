@@ -92,7 +92,7 @@ class UserManagerTest extends WebTestCase
      */
     public function testGetReservationsByStatusCallsUserRepository(string $status)
     {
-        $reservation = new BookReservation();
+        $reservation = new BookReservation(new Book(), new User());
         $reservation->setStatus($status);
 
         $user = new User();

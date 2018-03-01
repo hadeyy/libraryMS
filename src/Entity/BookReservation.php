@@ -77,8 +77,10 @@ class BookReservation
      */
     private $updatedAt;
 
-    public function __construct()
+    public function __construct(Book $book, User $user)
     {
+        $this->book = $book;
+        $this->reader = $user;
         $this->status = 'reserved';
         $this->fine = 0;
         $this->updatedAt = new \DateTime();

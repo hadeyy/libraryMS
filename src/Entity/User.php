@@ -65,7 +65,7 @@ class User implements UserInterface, \Serializable
     private $photo;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="reader")
+     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="reader", cascade={"persist", "remove"})
      */
     private $bookReservations;
 

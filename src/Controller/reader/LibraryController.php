@@ -63,7 +63,7 @@ class LibraryController extends Controller
         $form = $this->createForm(BookReservationType::class, $reservation);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->bookReservationManager->reserve($reservation, $book, $this->user);
+            $this->bookReservationManager->save($reservation);
             $this->activityManager->log($this->user, $book, 'Reserved a book');
 
             return $this->redirectToRoute('show-book', ['id' => $book->getId()]);

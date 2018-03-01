@@ -32,13 +32,13 @@ class BookReservationManager
 
     public function updateStatus(BookReservation $reservation, string $status, \DateTime $updatedAt)
     {
-        $reservation->setStatus($status);
-        $reservation->setUpdatedAt($updatedAt);
+        $this->setStatus($reservation, $status);
+        $this->setUpdatedAt($reservation, $updatedAt);
 
-        if ($status === 'returned' || 'canceled') {
-            $reservation->getFine() < 0 ?: $reservation->setFine(0);
+        if ($status === 'returned' || $status === 'canceled') {
+            $this->getFine($reservation) <= 0 ?: $this->setFine($reservation, 0);
 
-            $book = $reservation->getBook();
+            $book = $this->getBook($reservation);
             $this->updateBook($book);
         }
 
@@ -55,20 +55,7 @@ class BookReservationManager
 
     public function create(Book $book, User $user)
     {
-        $reservation = new BookReservation();
-        $reservation->setBook($book);
-        $reservation->setReader($user);
-
-        return $reservation;
-    }
-
-    public function reserve(BookReservation $reservation, Book $book, User $user)
-    {
-        $book->addReservation($reservation);
-        $user->addBookReservation($reservation);
-
-        $this->updateBookAfterReservation($book);
-        $this->save($reservation);
+        return new BookReservation($book, $user);
     }
 
     private function updateBookAfterReservation(Book $book)
@@ -81,6 +68,31 @@ class BookReservationManager
         $book->setTimesBorrowed($timesBorrowed + 1);
     }
 
+    public function setStatus(BookReservation $reservation, string $status)
+    {
+        $reservation->setStatus($status);
+    }
+
+    public function setUpdatedAt(BookReservation $reservation, \DateTime $datetime)
+    {
+        $reservation->setUpdatedAt($datetime);
+    }
+
+    public function getFine(BookReservation $reservation)
+    {
+        return $reservation->getFine();
+    }
+
+    public function setFine(BookReservation $reservation, float $amount)
+    {
+        $reservation->setFine($amount);
+    }
+
+    public function getBook(BookReservation $bookReservation)
+    {
+        return $bookReservation->getBook();
+    }
+
     public function saveChanges()
     {
         $this->em->flush();
@@ -88,6 +100,8 @@ class BookReservationManager
 
     public function save(BookReservation $bookReservation)
     {
+        $this->updateBookAfterReservation($this->getBook($bookReservation));
+
         $this->em->persist($bookReservation);
         $this->em->flush();
     }

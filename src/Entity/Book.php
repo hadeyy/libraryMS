@@ -166,7 +166,7 @@ class Book
     private $timesBorrowed;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="book", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="book", cascade={"persist", "remove"})
      */
     private $reservations;
 
