@@ -9,7 +9,10 @@
 namespace App\Controller\user;
 
 
+use App\Entity\Book;
+use App\Entity\User;
 use App\Form\UserType;
+use App\Service\ActivityManager;
 use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,12 +28,15 @@ class UserController extends AbstractController
 {
     private $user;
     private $userManager;
+    private $activityManager;
 
     public function __construct(
         UserManager $userManager,
-        TokenStorage $tokenStorage
+        TokenStorage $tokenStorage,
+        ActivityManager $activityManager
     ) {
         $this->userManager = $userManager;
+        $this->activityManager = $activityManager;
         $this->user = $tokenStorage->getToken()->getUser();
     }
 
@@ -82,6 +88,7 @@ class UserController extends AbstractController
     }
 
     /**
+     * @TODO FIXME
      * @return Response
      */
     public function notifications()
@@ -89,5 +96,26 @@ class UserController extends AbstractController
 
 
         return $this->render('user/notifications.html.twig');
+    }
+
+    /**
+     * @TODO FIXME
+     *
+     * @param User $user
+     * @param Book $book
+     */
+    public function toggleFavorite(User $user, Book $book)
+    {
+        $userFavorites = $this->userManager->getFavorites($user);
+
+        $isAFavorite = $userFavorites->contains($book);
+
+        if ($isAFavorite) {
+            $this->userManager->removeFavorite($user, $book);
+            $this->activityManager->log($user, $book, 'Removed a book from favorites');
+        } else {
+            $this->userManager->addFavorite($user, $book);
+            $this->activityManager->log($user, $book, 'Added a book to favorites');
+        }
     }
 }

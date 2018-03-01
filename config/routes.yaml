@@ -79,9 +79,7 @@ reserve-book:
         id: '\d+'
 toggle-favorite:
     path: /catalog/book/{id}/toggle-favorite
-    controller: App\Controller\reader\LibraryController::toggleFavorite
-    defaults:
-        id: 1
+    controller: App\Controller\user\UserController::toggleFavorite
     requirements:
         id: '\d+'
 new-book:

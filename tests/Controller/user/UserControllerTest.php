@@ -9,17 +9,16 @@
 namespace App\Tests\Controller\user;
 
 
-use Symfony\Bundle\FrameworkBundle\Client;
+
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserControllerTest extends WebTestCase
 {
-    /** @var Client */
     private $client;
 
     public function setUp()
     {
-        $this->client = static::createClient([],[
+        $this->client = static::createClient([], [
             'PHP_AUTH_USER' => 'user',
             'PHP_AUTH_PW' => 'kitten',
         ]);
@@ -33,7 +32,7 @@ class UserControllerTest extends WebTestCase
     public function testUserRoutesAreSuccessful($uri)
     {
         $this->client->request('GET', $uri);
-        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Route is successful.');
     }
 
     public function uriProvider()
@@ -49,6 +48,6 @@ class UserControllerTest extends WebTestCase
     public function testUserRoutesAreRedirects()
     {
         $this->client->request('GET', '/logout');
-        $this->assertTrue($this->client->getResponse()->isRedirect());
+        $this->assertTrue($this->client->getResponse()->isRedirect(), 'Route is a redirect.');
     }
 }

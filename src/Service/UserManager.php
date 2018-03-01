@@ -9,6 +9,7 @@
 namespace App\Service;
 
 
+use App\Entity\Book;
 use App\Entity\User;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -48,8 +49,8 @@ class UserManager
         string $password,
         string $role
     ) {
-        $this->setUserPhoto($user, $filename);
-        $this->setUserPassword($user, $password);
+        $this->setPhoto($user, $filename);
+        $this->setPassword($user, $password);
         $this->addRole($user, $role);
     }
 
@@ -74,14 +75,14 @@ class UserManager
 
     public function changePhotoFromPathToFile(User $user)
     {
-        $this->setPhotoName($user->getPhoto());
-        $this->setPhotoPath($this->photoDirectory . '/' . $this->photoName);
-        $this->setUserPhoto($user, $this->fileManager->createFileFromPath($this->getPhotoPath()));
+        $this->setPhotoName($this->getPhoto($user));
+        $this->setPhotoPath($this->photoDirectory . '/' . $this->getPhotoName());
+        $this->setPhoto($user, $this->fileManager->createFileFromPath($this->getPhotoPath()));
     }
 
     public function updateProfile(User $user)
     {
-        $photo = $this->getUserPhoto($user);
+        $photo = $this->getPhoto($user);
         if ($photo instanceof UploadedFile) {
             $this->fileManager->deleteFile($this->getPhotoPath());
             $filename = $this->fileManager->upload($photo, $this->photoDirectory);
@@ -90,8 +91,8 @@ class UserManager
         }
         $encodedPassword = $this->passwordManager->encode($user);
 
-        $this->setUserPhoto($user, $filename);
-        $this->setUserPassword($user, $encodedPassword);
+        $this->setPhoto($user, $filename);
+        $this->setPassword($user, $encodedPassword);
 
         $this->saveChanges();
     }
@@ -117,17 +118,17 @@ class UserManager
         $this->em->flush();
     }
 
-    public function setUserPhoto(User $user, $photo)
+    public function setPhoto(User $user, $photo)
     {
         $user->setPhoto($photo);
     }
 
-    public function getUserPhoto(User $user)
+    public function getPhoto(User $user)
     {
         return $user->getPhoto();
     }
 
-    public function setUserPassword(User $user, $password)
+    public function setPassword(User $user, $password)
     {
         $user->setPassword($password);
     }
@@ -155,5 +156,20 @@ class UserManager
     public function getPhotoName()
     {
         return $this->photoName;
+    }
+
+    public function getFavorites(User $user)
+    {
+        return $user->getFavorites();
+    }
+
+    public function addFavorite(User $user, Book $book)
+    {
+        $user->addFavorite($book);
+    }
+
+    public function removeFavorite(User $user, Book $book)
+    {
+        $user->removeFavorite($book);
     }
 }

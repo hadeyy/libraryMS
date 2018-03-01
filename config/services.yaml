@@ -45,6 +45,7 @@ services:
         arguments:
             - '@app.user_manager'
             - '@security.token_storage'
+            - '@app.activity_manager'
     App\Controller\DefaultController:
         tags: ['controller.service_arguments']
         arguments:
@@ -128,7 +129,6 @@ services:
         arguments:
             - '@doctrine'
             - '@app.file_manager'
-            - '@app.activity_manager'
             - '%app.book_cover_dir%'
     app.book_reservation_manager:
         class: App\Service\BookReservationManager

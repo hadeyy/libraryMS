@@ -71,7 +71,7 @@ class LibraryController extends Controller
         $form = $this->createForm(BookType::class, $book);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->bookManager->submit($book);
+            $this->bookManager->save($book);
             $this->activityManager->log($this->user, $book, 'Added a book');
 
             return $this->redirectToRoute('catalog-books');
@@ -159,8 +159,6 @@ class LibraryController extends Controller
     }
 
     /**
-     * @param BookReservationManager $brm
-     *
      * @return Response
      */
     public function reservations()

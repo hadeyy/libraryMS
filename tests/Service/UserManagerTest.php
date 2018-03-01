@@ -30,7 +30,12 @@ class UserManagerTest extends WebTestCase
     {
         $userManager = $this->getMockBuilder(UserManager::class)
             ->disableOriginalConstructor()
-            ->setMethodsExcept(['register', 'setUserPhoto', 'setUserPassword', 'addRole'])
+            ->setMethodsExcept([
+                'register',
+                'setPhoto',
+                'setPassword',
+                'addRole',
+            ])
             ->getMock();
 
         $user = new User();
@@ -161,10 +166,12 @@ class UserManagerTest extends WebTestCase
             ->setConstructorArgs([$doctrine, $fileManager, $passwordManager, ''])
             ->setMethodsExcept([
                 'changePhotoFromPathToFile',
-                'setUserPhoto',
-                'setPhotoPath',
                 'setPhotoName',
-                'getPhotoPath'
+                'getPhotoName',
+                'setPhotoPath',
+                'getPhotoPath',
+                'getPhoto',
+                'setPhoto',
             ])
             ->getMock();
 
@@ -215,10 +222,9 @@ class UserManagerTest extends WebTestCase
                 'getPhotoPath',
                 'setPhotoName',
                 'getPhotoName',
-                'setUserPhoto',
-                'setUserPassword',
-                'getUserPhoto',
-                'getUserPassword'
+                'setPhoto',
+                'getPhoto',
+                'setPassword',
             ])
             ->getMock();
         $userManager->setPhotoPath('path/to/photo');
@@ -230,7 +236,8 @@ class UserManagerTest extends WebTestCase
         $this->assertEquals('password', $user->getPassword(), "User's password has benn updated.");
         $this->assertNotEquals(
             $originalPhoto, $user->getPhoto(),
-            'Updated photo is not equal to original.');
+            'Updated photo is not equal to original.'
+        );
         $this->assertNotEquals(
             $originalPassword, $user->getPassword(),
             'Updated password is not equal to original.'
@@ -338,10 +345,10 @@ class UserManagerTest extends WebTestCase
 
         $userManager = $this->getMockBuilder(UserManager::class)
             ->disableOriginalConstructor()
-            ->setMethodsExcept(['getUserPhoto'])
+            ->setMethodsExcept(['getPhoto'])
             ->getMock();
 
-        $actual = $userManager->getUserPhoto($user);
+        $actual = $userManager->getPhoto($user);
 
         $this->assertEquals('photo.jpg', $actual, 'Retrieved result matches expected.');
     }
