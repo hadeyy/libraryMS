@@ -273,8 +273,8 @@ class UserManagerTest extends WebTestCase
         fopen($filePath, 'w');
 
         return [
-            [new UploadedFile($filePath, $filePath), true],
-            [$filePath, false]
+            [new UploadedFile($filePath, $filePath), false],
+            [$filePath, true]
         ];
     }
 
@@ -379,6 +379,39 @@ class UserManagerTest extends WebTestCase
         $this->assertEquals(
             'photo.jpg', $actual,
             'Retrieved result matches expected.'
+        );
+    }
+
+    public function testToggleFavoriteBook()
+    {
+        $userManager = $this->getMockBuilder(UserManager::class)
+            ->disableOriginalConstructor()
+            ->setMethodsExcept(['addFavorite', 'getFavorites', 'removeFavorite'])
+            ->getMock();
+
+        $user = new User();
+        $book = new Book();
+
+        $this->assertEmpty(
+            $user->getFavorites(),
+            'User favorites does not contain anything before test.'
+        );
+        $userManager->addFavorite($user, $book);
+        $favorites = $userManager->getFavorites($user);
+        $this->assertContains($book, $favorites, 'Favorites contain expected book.');
+        $this->assertEquals(
+            1, count($favorites),
+            'Favorites contain exactly one book.'
+        );
+
+        $userManager->removeFavorite($user, $book);
+        $this->assertNotContains(
+            $book, $user->getFavorites(),
+            'Book successfully removed from favorites'
+        );
+        $this->assertEmpty(
+            $user->getFavorites(),
+            'User favorites does not contain anything after test.'
         );
     }
 }
