@@ -13,7 +13,12 @@ use Doctrine\ORM\EntityRepository;
 
 class ActivityRepository extends EntityRepository
 {
-    public function findRecentActivity(int $limit)
+    /**
+     * @param integer|null $limit
+     *
+     * @return mixed
+     */
+    public function findRecentActivity($limit = null)
     {
         return $this->createQueryBuilder('a')
             ->select('a, b, u')
