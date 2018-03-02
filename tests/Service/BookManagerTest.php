@@ -29,7 +29,10 @@ class BookManagerTest extends WebTestCase
 
         $book = $bookManager->create();
 
-        $this->assertTrue($book instanceof Book, 'Result is an instance of Book class');
+        $this->assertTrue(
+            $book instanceof Book,
+            'Result is an instance of Book class'
+        );
     }
 
     public function testSavingMethodsCallEntityManagerMethods()
@@ -53,7 +56,10 @@ class BookManagerTest extends WebTestCase
         $fileManager = $this->createMock(FileManager::class);
         $fileManager->expects($this->once())
             ->method('upload')
-            ->with($this->isInstanceOf(UploadedFile::class), $this->isType('string'))
+            ->with(
+                $this->isInstanceOf(UploadedFile::class),
+                $this->isType('string')
+            )
             ->willReturn('filename');
 
         $bookManager = $this->getMockBuilder(BookManager::class)
@@ -74,7 +80,7 @@ class BookManagerTest extends WebTestCase
         $book = new Book();
         $book->setCover('test.jpg');
 
-        $filePath = 'test_file.jpg';
+        $filePath = 'test_change_cover.jpg';
         fopen($filePath, 'w');
 
         $fileManager = $this->createMock(FileManager::class);
@@ -97,7 +103,10 @@ class BookManagerTest extends WebTestCase
             ])
             ->getMock();
 
-        $this->assertTrue(is_string($book->getCover()), "Book cover is stored as string.");
+        $this->assertTrue(
+            is_string($book->getCover()),
+            "Book cover is stored as string."
+        );
         $bookManager->changePhotoFromPathToFile($book);
         $this->assertTrue(
             $book->getCover() instanceof File,
@@ -127,7 +136,10 @@ class BookManagerTest extends WebTestCase
             ->with($this->isType('string'));
         $fileManager->expects($this->any())
             ->method('upload')
-            ->with($this->isInstanceOf(UploadedFile::class), $this->isType('string'))
+            ->with(
+                $this->isInstanceOf(UploadedFile::class),
+                $this->isType('string')
+            )
             ->willReturn('filename');
 
         $bookManager = $this->getMockBuilder(BookManager::class)
@@ -150,18 +162,21 @@ class BookManagerTest extends WebTestCase
 
         $bookManager->updateBook($book);
 
-        $this->assertEquals('filename', $book->getCover(), "Book cover has been updated.");
+        $this->assertEquals(
+            'filename', $book->getCover(),
+            "Book cover has been updated."
+        );
         $this->assertNotEquals(
             $originalCover, $book->getCover(),
             'Updated cover is not equal to original.'
         );
 
-        $isString ?: unlink('test_cover.jpg');
+        $isString ?: unlink('test_update_cover.jpg');
     }
 
     public function bookCoverProvider()
     {
-        $filePath = 'test_cover.jpg';
+        $filePath = 'test_update_cover.jpg';
         fopen($filePath, 'w');
 
         return [

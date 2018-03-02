@@ -46,9 +46,18 @@ class UserManagerTest extends WebTestCase
 
         $userManager->register($user, 'photo.jpg', 'pass123', 'role1');
 
-        $this->assertEquals('photo.jpg', $user->getPhoto(), 'User photo has been updated.');
-        $this->assertEquals('pass123', $user->getPassword(), 'User password has been updated.');
-        $this->assertContains('role1', $user->getRoles(), 'User roles have been updated.');
+        $this->assertEquals(
+            'photo.jpg', $user->getPhoto(),
+            'User photo has been updated.'
+        );
+        $this->assertEquals(
+            'pass123', $user->getPassword(),
+            'User password has been updated.'
+        );
+        $this->assertContains(
+            'role1', $user->getRoles(),
+            'User roles have been updated.'
+        );
     }
 
     public function testGetFavoriteBooksCallsUserRepository()
@@ -85,7 +94,10 @@ class UserManagerTest extends WebTestCase
             $favorites instanceof ArrayCollection,
             'Result is an instance of ArrayCollection.'
         );
-        $this->assertContains($book, $favorites, "Successfully retrieved user's favorite books.");
+        $this->assertContains(
+            $book, $favorites,
+            "Successfully retrieved user's favorite books."
+        );
     }
 
     /**
@@ -151,7 +163,7 @@ class UserManagerTest extends WebTestCase
         $user = new User();
         $user->setPhoto('test.jpg');
 
-        $filePath = 'test_file.jpg';
+        $filePath = 'test_change_photo.jpg';
         fopen($filePath, 'w');
 
         $fileManager = $this->createMock(FileManager::class);
@@ -175,7 +187,10 @@ class UserManagerTest extends WebTestCase
             ])
             ->getMock();
 
-        $this->assertTrue(is_string($user->getPhoto()), "User's photo is stored as string.");
+        $this->assertTrue(is_string(
+            $user->getPhoto()),
+            "User's photo is stored as string."
+        );
         $userManager->changePhotoFromPathToFile($user);
         $this->assertTrue(
             $user->getPhoto() instanceof File,
@@ -232,8 +247,14 @@ class UserManagerTest extends WebTestCase
 
         $userManager->updateProfile($user);
 
-        $this->assertEquals('filename', $user->getPhoto(), "User's photo has been updated.");
-        $this->assertEquals('password', $user->getPassword(), "User's password has benn updated.");
+        $this->assertEquals(
+            'filename', $user->getPhoto(),
+            "User's photo has been updated."
+        );
+        $this->assertEquals(
+            'password', $user->getPassword(),
+            "User's password has benn updated."
+        );
         $this->assertNotEquals(
             $originalPhoto, $user->getPhoto(),
             'Updated photo is not equal to original.'
@@ -243,12 +264,12 @@ class UserManagerTest extends WebTestCase
             'Updated password is not equal to original.'
         );
 
-        $isString ?: unlink('test_photo.jpg');
+        $isString ?: unlink('test_update_photo.jpg');
     }
 
     public function photoProvider()
     {
-        $filePath = 'test_photo.jpg';
+        $filePath = 'test_update_photo.jpg';
         fopen($filePath, 'w');
 
         return [
@@ -275,7 +296,10 @@ class UserManagerTest extends WebTestCase
             $activities instanceof ArrayCollection,
             'Result is an instance of ArrayCollection.'
         );
-        $this->assertCount(2, $activities, 'Retrieved activity count is correct.');
+        $this->assertCount(
+            2, $activities,
+            'Retrieved activity count is correct.'
+        );
     }
 
     public function testFindUsersByRoleCallsUserRepository()
@@ -352,6 +376,9 @@ class UserManagerTest extends WebTestCase
 
         $actual = $userManager->getPhoto($user);
 
-        $this->assertEquals('photo.jpg', $actual, 'Retrieved result matches expected.');
+        $this->assertEquals(
+            'photo.jpg', $actual,
+            'Retrieved result matches expected.'
+        );
     }
 }
