@@ -19,27 +19,29 @@ class FileManagerTest extends WebTestCase
     public function testUpload()
     {
         $fileManager = $this->getMockBuilder(FileManager::class)
-            ->setMethodsExcept(['upload', 'generateFilename'])
+            ->setMethodsExcept([
+                'upload',
+                'generateFilename',
+                'guessExtension',
+                'move',
+            ])
             ->getMock();
-        $fileManager->expects($this->once())
-            ->method('guessExtension')
-            ->with($this->isInstanceOf(File::class))
-            ->willReturn('jpg');
-        $fileManager->expects($this->once())
-            ->method('move')
-            ->with(
-                $this->isInstanceOf(File::class),
-                $this->isType('string'),
-                $this->isType('string')
-            )
-            ->willReturn('jpg');
 
-        $filename = 'test_file.jpg';
+        $filename = 'test_upload_file.jpg';
         fopen($filename, 'w');
 
         $uploadedFile = $this->getMockBuilder(UploadedFile::class)
             ->setConstructorArgs([$filename, $filename])
             ->getMock();
+        $uploadedFile->expects($this->once())
+            ->method('guessExtension')
+            ->willReturn('jpg');
+        $uploadedFile->expects($this->once())
+            ->method('move')
+            ->with(
+                $this->isType('string'),
+                $this->isType('string')
+            );
 
         $result = $fileManager->upload($uploadedFile, 'some/path');
 
@@ -52,7 +54,7 @@ class FileManagerTest extends WebTestCase
 
     public function testCreateFileFromPath()
     {
-        $filePath = 'test_file.jpg';
+        $filePath = 'test_create_file.jpg';
         fopen($filePath, 'w');
 
         $fileManager = $this->getMockBuilder(FileManager::class)
@@ -68,7 +70,7 @@ class FileManagerTest extends WebTestCase
 
     public function testDeleteFile()
     {
-        $filePath = 'test_file.jpg';
+        $filePath = 'test_delete_file.jpg';
         fopen($filePath, 'w');
 
         $this->assertFileExists($filePath, 'File exists.');

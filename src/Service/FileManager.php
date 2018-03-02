@@ -12,7 +12,6 @@ namespace App\Service;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-/** @TODO FIXME */
 class FileManager
 {
     /**
