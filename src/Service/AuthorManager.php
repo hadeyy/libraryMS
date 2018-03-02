@@ -11,7 +11,7 @@ namespace App\Service;
 
 use App\Entity\Author;
 use App\Entity\Book;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class AuthorManager
@@ -23,8 +23,11 @@ class AuthorManager
     private $portraitDirectory;
     private $fileManager;
 
-    public function __construct(ManagerRegistry $doctrine, FileManager $fileManager, $portraitDirectory)
-    {
+    public function __construct(
+        ManagerRegistry $doctrine,
+        FileManager $fileManager,
+        $portraitDirectory
+    ) {
         $this->doctrine = $doctrine;
         $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
@@ -46,26 +49,26 @@ class AuthorManager
 
     public function updateAuthor(Author $author)
     {
-        $photo = $author->getPortrait();
+        $photo = $this->getPortrait($author);
         if ($photo instanceof UploadedFile) {
-            /** @todo move to FileManager */
-            !isset($this->photoPath) ?: unlink($this->photoPath);
+            $photoPath = $this->getPhotoPath();
+            !isset($photoPath) ?: $this->fileManager->deleteFile($this->getPhotoPath());
             $filename = $this->fileManager->upload($photo, $this->portraitDirectory);
         } else {
-            $filename = $this->photoName;
+            $filename = $this->getPhotoName();
         }
 
-        $author->setPortrait($filename);
+        $this->setPortrait($author, $filename);
 
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     public function changePhotoFromPathToFile(Author $author)
     {
-        if (null !== $author->getPortrait()) {
-            $this->photoName = $author->getPortrait();
-            $this->photoPath = $this->portraitDirectory . '/' . $this->photoName;
-            $author->setPortrait($this->fileManager->createFileFromPath($this->photoPath));
+        if (null !== $this->getPortrait($author)) {
+            $this->setPhotoName($this->getPortrait($author));
+            $this->setPhotoPath($this->portraitDirectory . '/' . $this->getPhotoName());
+            $this->setPortrait($author, $this->fileManager->createFileFromPath($this->getPhotoPath()));
         }
     }
 
@@ -75,12 +78,48 @@ class AuthorManager
         $this->em->flush();
     }
 
+    public function saveChanges()
+    {
+        $this->em->flush();
+    }
+
     public function remove(Author $author)
     {
-        /** @todo move to FileManager */
-        null === $author->getPortrait() ?: unlink($this->portraitDirectory . '/' . $author->getPortrait());
+        null === $this->getPortrait($author) ?: $this->fileManager->deleteFile(
+            $this->portraitDirectory . '/' . $this->getPortrait($author)
+        );
 
         $this->em->remove($author);
         $this->em->flush();
+    }
+
+    public function setPhotoPath($path)
+    {
+        $this->photoPath = $path;
+    }
+
+    public function getPhotoPath()
+    {
+        return $this->photoPath;
+    }
+
+    public function setPhotoName($name)
+    {
+        $this->photoName = $name;
+    }
+
+    public function getPhotoName()
+    {
+        return $this->photoName;
+    }
+
+    public function setPortrait(Author $author, $portrait)
+    {
+        $author->setPortrait($portrait);
+    }
+
+    public function getPortrait(Author $author)
+    {
+        return $author->getPortrait();
     }
 }
