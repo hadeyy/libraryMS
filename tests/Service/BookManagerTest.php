@@ -165,8 +165,8 @@ class BookManagerTest extends WebTestCase
         fopen($filePath, 'w');
 
         return [
-            [new UploadedFile($filePath, $filePath), true],
-            [$filePath, false]
+            [new UploadedFile($filePath, $filePath), false],
+            [$filePath, true]
         ];
     }
 
