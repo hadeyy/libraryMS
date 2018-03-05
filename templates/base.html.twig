@@ -13,8 +13,16 @@
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-
 {{ include('header.html.twig') }}
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
 <div class="container">
     <div class="row d-flex justify-content-center">
         {% block content %}

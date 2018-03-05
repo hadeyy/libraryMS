@@ -47,6 +47,10 @@ class RegistrationController extends AbstractController
      */
     public function register(Request $request)
     {
+        if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('index');
+        }
+
         $user = new User();
 
         $form = $this->createForm(UserType::class, $user);
@@ -59,17 +63,14 @@ class RegistrationController extends AbstractController
             $this->userManager->register($user, $filename, $encodedPassword, $this->defaultUserRole);
             $this->userManager->save($user);
 
-            return $this->redirectToRoute('registered');
+            $this->addFlash('success', 'Registration successful!');
+
+            return $this->redirectToRoute('login');
         }
 
         return $this->render(
             'registration/registration.html.twig',
             ['form' => $form->createView()]
         );
-    }
-
-    public function registrationSuccess()
-    {
-        return $this->render('registration/registered.html.twig');
     }
 }

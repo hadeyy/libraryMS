@@ -27,6 +27,10 @@ class SecurityController extends AbstractController
      */
     public function login()
     {
+        if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('index');
+        }
+        
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $this->authenticationUtils->getLastUsername();
 

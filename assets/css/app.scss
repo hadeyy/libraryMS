@@ -48,6 +48,7 @@ a #loginButton, a #registerButton {
   border: 1px solid $palette-medium-dark;
   &:hover {
     background-color: $palette-medium-dark;
+    cursor: pointer;
   }
 }
 

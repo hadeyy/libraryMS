@@ -1,9 +1,6 @@
 register:
     path: /register
     controller: App\Controller\RegistrationController::register
-registered:
-    path: /register/success
-    controller: App\Controller\RegistrationController::registrationSuccess
 login:
     path: /login
     controller: App\Controller\security\SecurityController::login
