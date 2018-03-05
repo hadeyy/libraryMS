@@ -7,4 +7,11 @@
         </div>
         <div class="col-md-10 card-text comment-content">{{ comment.content }}</div>
     </div>
+    {% if is_granted("ROLE_ADMIN") %}
+        <div class="comment-trash">
+            <a title="Delete" href="{{ path('delete-comment', {id: comment.id, book: comment.book}) }}">
+                <span class="fa fa-trash-o"></span>
+            </a>
+        </div>
+    {% endif %}
 </div>

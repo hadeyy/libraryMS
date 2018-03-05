@@ -48,7 +48,7 @@ class Activity
     {
         $this->user = $user;
         $this->book = $book;
-        $this->title = $this;
+        $this->title = $title;
         $this->time = new \DateTime();
     }
 
@@ -102,4 +102,8 @@ class Activity
         $this->time = $time;
     }
 
+    public function __toString()
+    {
+        return $this->title;
+    }
 }

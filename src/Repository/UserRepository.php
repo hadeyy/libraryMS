@@ -34,10 +34,10 @@ class UserRepository extends EntityRepository
     public function findUserJoinedToReservations(User $user, string $status)
     {
         return $this->createQueryBuilder('u')
-            ->select('u, br, book, a')
-            ->innerJoin('u.bookReservations', 'br')
-            ->innerJoin('br.book', 'book')
-            ->innerJoin('book.author', 'a')
+            ->addSelect('u, br, book, a')
+            ->leftJoin('u.bookReservations', 'br')
+            ->leftJoin('br.book', 'book')
+            ->leftJoin('book.author', 'a')
             ->where('u = :user')
             ->andWhere('br.status = :status')
             ->setParameters([
@@ -58,7 +58,7 @@ class UserRepository extends EntityRepository
     {
         return $this->createQueryBuilder('u')
             ->select('u, f')
-            ->innerJoin('u.favorites', 'f')
+            ->leftJoin('u.favorites', 'f')
             ->where('u = :user')
             ->setParameter('user', $user)
             ->getQuery()

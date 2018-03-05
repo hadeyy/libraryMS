@@ -1,9 +1,11 @@
 <div id="userCard" class="card">
     <div class="card-header">
         Reader Card
-        <a href="{{ path('edit-profile') }}" class="new-btn">
-            <button class="btn float-right">EDIT</button>
-        </a>
+        {% if user == app.user %}
+            <a href="{{ path('edit-profile') }}" class="new-btn">
+                <button class="btn float-right">EDIT</button>
+            </a>
+        {% endif %}
     </div>
     <div class="card-body row">
         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2">

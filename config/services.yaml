@@ -84,6 +84,11 @@ services:
             - '@app.genre_manager'
             - '@app.user_manager'
             - '@security.token_storage'
+    App\Controller\admin\AdminController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.app_manager'
+            - '@app.user_manager'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -134,3 +139,11 @@ services:
         class: App\Service\BookReservationManager
         arguments:
             - '@doctrine'
+    app.app_manager:
+        class: App\Service\AppManager
+        arguments:
+            - '@doctrine'
+            - '@app.file_manager'
+            - '@app.user_manager'
+
+

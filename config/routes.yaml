@@ -120,6 +120,32 @@ reservation-update:
         status: 'reserved'
     requirements:
         id: '\d+'
-readers:
+show-readers:
     path: /readers
-    controller: App\Controller\librarian\LibraryController::readers
+    controller: App\Controller\librarian\LibraryController::showReaders
+show-users:
+    path: /admin/users
+    controller: App\Controller\admin\AdminController::showAllUsers
+delete-user:
+    path: /admin/users/{id}/delete
+    controller: App\Controller\admin\AdminController::deleteUser
+    requirements:
+        id: '\d+'
+edit-user:
+    path: /admin/users/edit/{id}
+    controller: App\Controller\admin\AdminController::editUser
+    requirements:
+        id: '\d+'
+show-all-activity:
+    path: /admin/all-activity
+    controller: App\Controller\admin\AdminController::showActivity
+show-user:
+    path: /admin/users/{id}/profile
+    controller: App\Controller\admin\AdminController::showUser
+    requirements:
+        id: '\d+'
+delete-comment:
+    path: /admin/comment/{id}/delete
+    controller: App\Controller\admin\AdminController::deleteComment
+    requirements:
+        id: '\d+'

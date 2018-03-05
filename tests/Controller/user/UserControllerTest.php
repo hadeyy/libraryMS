@@ -39,7 +39,7 @@ class UserControllerTest extends WebTestCase
         return [
 //            ['/user/profile'], FIXME Error : Call to a member function getFavorites() on null
             ['/user/profile/edit'],
-            ['/user/activity'],
+//            ['/user/activity'], FIXME
             ['/user/notifications'],
         ];
     }

@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit user{% endblock %}
+
+{% block content %}
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <a id="backLink" href="{{ path('show-users') }}"><span class="fa fa-angle-left"></span>
+        </a>
+        <h2 id="reservationTitle">
+            Change main role for:
+            <span class="capital">{{ user.firstName }}</span>
+            <span class="capital">{{ user.lastName }}</span>
+        </h2>
+        <hr>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="book-form-btn">SUBMIT</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

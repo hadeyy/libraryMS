@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}All activity{% endblock %}
+{% block content %}
+    <div class="col-md-12 col-lg-12">
+        <h2>Recent activity from all users</h2>
+        <hr>
+        {% if activities|length == 0 %}
+            <h5>No recent activity.</h5>
+        {% else %}
+            {% for activity in activities %}
+                {% include 'admin/_activity.html.twig' with {'activity': activity } %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

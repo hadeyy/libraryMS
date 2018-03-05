@@ -303,7 +303,7 @@ class UserManagerTest extends WebTestCase
         );
         $this->assertCount(
             2, $activities,
-            'Retrieved activity count is correct.'
+            'Retrieved activity.html.twig count is correct.'
         );
     }
 

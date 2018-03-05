@@ -40,6 +40,8 @@ class AppManager
     {
         $user->resetRoles();
         $user->addRole($role);
+
+        $this->saveChanges();
     }
 
     public function deleteUser(User $user)

@@ -381,6 +381,7 @@ form#commentForm {
 
 div.comment {
   margin-top: 10px;
+  position: relative;
 }
 
 #loginForm input,
@@ -789,14 +790,14 @@ span.next {
   position: fixed;
 }
 
-#reservationBackLink,
+#backLink,
 #reservationTitle {
   display: inline-block;
 }
 #reservationTitle {
   width: 94%;
 }
-#reservationBackLink {
+#backLink {
   width: 5%;
   font-size: 2rem;
 }
@@ -865,4 +866,10 @@ div.cover-col {
 
 div.comment img {
   max-width: 100%;
+}
+
+div.comment-trash {
+  position: absolute;
+  top: 15px;
+  right: 15px;
 }

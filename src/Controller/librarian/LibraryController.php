@@ -190,11 +190,11 @@ class LibraryController extends Controller
     /**
      * @return Response
      */
-    public function readers()
+    public function showReaders()
     {
         return $this->render(
-            '/librarian/readers.html.twig',
-            ['readers' => $this->userManager->findUsersByRole('ROLE_READER')]
+            'librarian/users.html.twig',
+            ['users' => $this->userManager->findUsersByRole('ROLE_READER')]
         );
     }
 
