@@ -212,9 +212,9 @@ class AuthorManagerTest extends WebTestCase
 
         $bookManager = $this->getMockBuilder(AuthorManager::class)
             ->setConstructorArgs([$doctrine, $fileManager, ''])
-            ->setMethodsExcept(['remove'])
+            ->setMethodsExcept(['remove', 'saveChanges'])
             ->getMock();
-        $bookManager->expects($this->exactly(2))
+        $bookManager->expects($this->once())
             ->method('getPortrait')
             ->with($this->isInstanceOf(Author::class))
             ->willReturn('filename');

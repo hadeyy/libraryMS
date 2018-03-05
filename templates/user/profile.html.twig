@@ -8,7 +8,7 @@
 
         <h2>Favorites</h2>
         <hr>
-        {% if app.user.favorites|length == 0 %}
+        {% if favorites|length == 0 %}
             <p class="no-data">Nothing to display.</p>
         {% else %}
             <div class="row">
@@ -21,7 +21,7 @@
     <div class="col-md-12 col-lg-6">
         <h2>Currently reading</h2>
         <hr>
-        {% if app.user.bookReservations|length == 0 %}
+        {% if activeReservations|length == 0 %}
             <p class="no-data">Nothing to display.</p>
         {% else %}
             <div class="row">
@@ -34,7 +34,7 @@
 
         <h2>Reading history</h2>
         <hr>
-        {% if app.user.bookReservations|length == 0 %}
+        {% if closedReservations|length == 0 %}
             <p class="no-data">Nothing to display.</p>
         {% else %}
             <div class="row">

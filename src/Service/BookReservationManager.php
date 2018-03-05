@@ -36,16 +36,16 @@ class BookReservationManager
         $this->setUpdatedAt($reservation, $updatedAt);
 
         if ($status === 'returned' || $status === 'canceled') {
-            $this->getFine($reservation) <= 0 ?: $this->setFine($reservation, 0);
+            0 >= $this->getFine($reservation) ?: $this->setFine($reservation, 0);
 
             $book = $this->getBook($reservation);
-            $this->updateBook($book);
+            $this->updateBookAfterClosingReservation($book);
         }
 
         $this->saveChanges();
     }
 
-    private function updateBook(Book $book)
+    private function updateBookAfterClosingReservation(Book $book)
     {
         $availableCopies = $book->getAvailableCopies();
         $book->setAvailableCopies($availableCopies + 1);
@@ -103,6 +103,6 @@ class BookReservationManager
         $this->updateBookAfterReservation($this->getBook($bookReservation));
 
         $this->em->persist($bookReservation);
-        $this->em->flush();
+        $this->saveChanges();
     }
 }

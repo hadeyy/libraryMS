@@ -14,7 +14,6 @@ use App\Entity\Book;
 use App\Entity\User;
 use App\Repository\ActivityRepository;
 use App\Service\ActivityManager;
-use DeepCopy\f001\B;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;

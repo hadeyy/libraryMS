@@ -60,6 +60,9 @@ class UserManagerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function testGetFavoriteBooksCallsUserRepository()
     {
         $book = new Book();
@@ -70,8 +73,9 @@ class UserManagerTest extends WebTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $userRepository->expects($this->once())
-            ->method('getFavoriteBooks')
-            ->willReturn(new ArrayCollection([$book]));
+            ->method('findUserJoinedToFavoriteBooks')
+            ->with($user)
+            ->will($this->returnArgument(0));
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
             ->disableOriginalConstructor()

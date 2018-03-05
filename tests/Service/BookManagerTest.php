@@ -206,7 +206,7 @@ class BookManagerTest extends WebTestCase
 
         $bookManager = $this->getMockBuilder(BookManager::class)
             ->setConstructorArgs([$doctrine, $fileManager, ''])
-            ->setMethodsExcept(['remove'])
+            ->setMethodsExcept(['remove', 'saveChanges'])
             ->getMock();
         $bookManager->expects($this->once())
             ->method('getCover')

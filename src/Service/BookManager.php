@@ -41,7 +41,7 @@ class BookManager
         $this->uploadCover($book);
 
         $this->em->persist($book);
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     private function uploadCover(Book $book)
@@ -77,7 +77,7 @@ class BookManager
         $this->fileManager->deleteFile($this->coverDirectory . '/' . $this->getCover($book));
 
         $this->em->remove($book);
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     public function getCover(Book $book)

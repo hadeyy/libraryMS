@@ -48,7 +48,13 @@ class UserRepository extends EntityRepository
             ->getOneOrNullResult();
     }
 
-    public function getFavoriteBooks(User $user)
+    /**
+     * @param User $user
+     *
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findUserJoinedToFavoriteBooks(User $user)
     {
         return $this->createQueryBuilder('u')
             ->select('u, f')
@@ -56,6 +62,6 @@ class UserRepository extends EntityRepository
             ->where('u = :user')
             ->setParameter('user', $user)
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
     }
 }

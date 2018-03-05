@@ -54,9 +54,17 @@ class UserManager
         $this->addRole($user, $role);
     }
 
+    /**
+     * @param User $user
+     *
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getFavoriteBooks(User $user)
     {
-        return $this->repository->getFavoriteBooks($user);
+        $user = $this->repository->findUserJoinedToFavoriteBooks($user);
+
+        return $user->getFavorites();
     }
 
     /**
@@ -110,7 +118,7 @@ class UserManager
     public function save(User $user)
     {
         $this->em->persist($user);
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     public function saveChanges()

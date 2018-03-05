@@ -52,7 +52,7 @@ class AuthorManager
         $photo = $this->getPortrait($author);
         if ($photo instanceof UploadedFile) {
             $photoPath = $this->getPhotoPath();
-            !isset($photoPath) ?: $this->fileManager->deleteFile($this->getPhotoPath());
+            !isset($photoPath) ?: $this->fileManager->deleteFile($photoPath);
             $filename = $this->fileManager->upload($photo, $this->portraitDirectory);
         } else {
             $filename = $this->getPhotoName();
@@ -65,8 +65,9 @@ class AuthorManager
 
     public function changePhotoFromPathToFile(Author $author)
     {
-        if (null !== $this->getPortrait($author)) {
-            $this->setPhotoName($this->getPortrait($author));
+        $portrait = $this->getPortrait($author);
+        if (null !== $portrait) {
+            $this->setPhotoName($portrait);
             $this->setPhotoPath($this->portraitDirectory . '/' . $this->getPhotoName());
             $this->setPortrait($author, $this->fileManager->createFileFromPath($this->getPhotoPath()));
         }
@@ -75,7 +76,7 @@ class AuthorManager
     public function save(Author $author)
     {
         $this->em->persist($author);
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     public function saveChanges()
@@ -85,12 +86,11 @@ class AuthorManager
 
     public function remove(Author $author)
     {
-        null === $this->getPortrait($author) ?: $this->fileManager->deleteFile(
-            $this->portraitDirectory . '/' . $this->getPortrait($author)
-        );
+        $portrait = $this->getPortrait($author);
+        null === $portrait ?: $this->fileManager->deleteFile($this->portraitDirectory . '/' . $portrait);
 
         $this->em->remove($author);
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     public function setPhotoPath($path)
