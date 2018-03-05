@@ -244,6 +244,7 @@ class UserManagerTest extends WebTestCase
                 'setPhoto',
                 'getPhoto',
                 'setPassword',
+                'getPhotoDirectory',
             ])
             ->getMock();
         $userManager->setPhotoPath('path/to/photo');

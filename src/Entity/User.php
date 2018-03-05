@@ -279,6 +279,11 @@ class User implements UserInterface, \Serializable
         $this->roles[] = $role;
     }
 
+    public function resetRoles()
+    {
+        $this->roles = ['ROLE_USER'];
+    }
+
     /**
      * Returns the password used to authenticate the user.
      *

@@ -15,6 +15,7 @@ use App\Entity\User;
 use App\Repository\ActivityRepository;
 use App\Service\AppManager;
 use App\Service\FileManager;
+use App\Service\UserManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
@@ -54,9 +55,10 @@ class AppManagerTest extends WebTestCase
             ->willReturn($entityManager);
 
         $fileManager = $this->createMock(FileManager::class);
+        $userManager = $this->createMock(UserManager::class);
 
         $appManager = $this->getMockBuilder(AppManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager])
+            ->setConstructorArgs([$doctrine, $fileManager, $userManager])
             ->setMethodsExcept(['getAllActivity'])
             ->getMock();
 
@@ -86,9 +88,10 @@ class AppManagerTest extends WebTestCase
             ->willReturn($entityManager);
 
         $fileManager = $this->createMock(FileManager::class);
+        $userManager = $this->createMock(UserManager::class);
 
         $appManager = $this->getMockBuilder(AppManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager])
+            ->setConstructorArgs([$doctrine, $fileManager, $userManager])
             ->setMethodsExcept(['save', 'saveChanges', 'remove'])
             ->getMock();
 
@@ -98,5 +101,85 @@ class AppManagerTest extends WebTestCase
         $appManager->save($user);
         $appManager->saveChanges();
         $appManager->remove(new Comment($user, $book));
+    }
+
+    public function testChangeRoleResetsRoles()
+    {
+        $appManager = $this->getMockBuilder(AppManager::class)
+            ->disableOriginalConstructor()
+            ->setMethodsExcept(['changeRole'])
+            ->getMock();
+
+        $user = new User();
+        $user->addRole('ROLE_READER');
+        $user->addRole('ROLE_LIBRARIAN');
+        $user->addRole('ROLE_ADMIN');
+        $user->addRole('test_role');
+
+        $this->assertEquals(5, count($user->getRoles()));
+        $appManager->changeRole($user, 'ROLE_UPDATED');
+        $this->assertEquals(2, count($user->getRoles()));
+        $this->assertContains('ROLE_UPDATED', $user->getRoles());
+    }
+
+    public function testDeleteUserCallsFileAndEntityManagerMethods()
+    {
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('remove')
+            ->with($this->isInstanceOf(User::class));
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+        $fileManager->expects($this->once())
+            ->method('deleteFile')
+            ->with($this->isType('string'));
+
+        $userManager = $this->createMock(UserManager::class);
+        $userManager->expects($this->once())
+            ->method('getPhotoDirectory')
+            ->willReturn('path/to/directory');
+        $userManager->expects($this->once())
+            ->method('getPhoto')
+            ->with($this->isInstanceOf(User::class))
+            ->willReturn('filename');
+
+        $appManager = $this->getMockBuilder(AppManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, $userManager])
+            ->setMethodsExcept(['deleteUser', 'remove', 'saveChanges'])
+            ->getMock();
+
+        $appManager->deleteUser(new User());
+    }
+
+    public function testDeleteCommentCallsEntityManager()
+    {
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('remove')
+            ->with($this->isInstanceOf(Comment::class));
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+        $userManager = $this->createMock(UserManager::class);
+
+        $appManager = $this->getMockBuilder(AppManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, $userManager])
+            ->setMethodsExcept(['deleteComment', 'remove', 'saveChanges'])
+            ->getMock();
+
+        $appManager->deleteComment(new Comment(new User(), new Book()));
     }
 }

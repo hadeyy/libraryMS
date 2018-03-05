@@ -18,14 +18,17 @@ class AppManager
 {
     private $em;
     private $fileManager;
+    private $userManager;
 
     public function __construct(
         ManagerRegistry $doctrine,
-        FileManager $fileManager
+        FileManager $fileManager,
+        UserManager $userManager
     )
     {
         $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
+        $this->userManager = $userManager;
     }
 
     public function createUser()
@@ -35,21 +38,15 @@ class AppManager
 
     public function changeRole(User $user, string $role)
     {
-        $this->resetRoles($user);
-
+        $user->resetRoles();
         $user->addRole($role);
-    }
-
-    private function resetRoles(User $user)
-    {
-        foreach ($user->getRoles() as $role) {
-            unset($role);
-        }
     }
 
     public function deleteUser(User $user)
     {
-        /** @todo remove user photo */
+        $photoDirectory = $this->userManager->getPhotoDirectory();
+        $photo = $this->userManager->getPhoto($user);
+        $this->fileManager->deleteFile($photoDirectory . '/' . $photo);
 
         $this->remove($user);
     }
@@ -69,7 +66,7 @@ class AppManager
     public function save(User $user)
     {
         $this->em->persist($user);
-        $this->em->flush();
+        $this->saveChanges();
     }
 
     public function saveChanges()

@@ -84,7 +84,7 @@ class UserManager
     public function changePhotoFromPathToFile(User $user)
     {
         $this->setPhotoName($this->getPhoto($user));
-        $this->setPhotoPath($this->photoDirectory . '/' . $this->getPhotoName());
+        $this->setPhotoPath($this->getPhotoDirectory() . '/' . $this->getPhotoName());
         $this->setPhoto($user, $this->fileManager->createFileFromPath($this->getPhotoPath()));
     }
 
@@ -93,7 +93,7 @@ class UserManager
         $photo = $this->getPhoto($user);
         if ($photo instanceof UploadedFile) {
             $this->fileManager->deleteFile($this->getPhotoPath());
-            $filename = $this->fileManager->upload($photo, $this->photoDirectory);
+            $filename = $this->fileManager->upload($photo, $this->getPhotoDirectory());
         } else {
             $filename = $this->getPhotoName();
         }
@@ -179,5 +179,10 @@ class UserManager
     public function removeFavorite(User $user, Book $book)
     {
         $user->removeFavorite($book);
+    }
+
+    public function getPhotoDirectory()
+    {
+        return $this->photoDirectory;
     }
 }
