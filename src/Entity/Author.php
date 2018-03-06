@@ -36,7 +36,7 @@ class Author
     private $lastName; // optional (in case of one name alias)
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="author", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="author", cascade={"persist", "remove"})
      */
     private $books;
 
@@ -58,11 +58,6 @@ class Author
     public function getId()
     {
         return $this->id;
-    }
-
-    public function setId($id): void
-    {
-        $this->id = $id;
     }
 
     public function getFirstName()

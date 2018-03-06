@@ -55,11 +55,6 @@ class Notification
         return $this->id;
     }
 
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
     public function getTitle()
     {
         return $this->title;

@@ -91,11 +91,6 @@ class BookReservation
         return $this->id;
     }
 
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
     public function getBook()
     {
         return $this->book;
