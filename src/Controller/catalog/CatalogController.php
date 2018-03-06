@@ -41,7 +41,7 @@ class CatalogController extends AbstractController
      *
      * @return Response
      */
-    public function catalog(int $page = 1, int $limit = 18, string $filter = 'main')
+    public function showCatalog(int $page = 1, int $limit = 18, string $filter = 'main')
     {
         $books = $this->libraryManager->getPaginatedBookCatalog($page, $limit);
 
@@ -68,8 +68,12 @@ class CatalogController extends AbstractController
      *
      * @return Response
      */
-    public function authorCatalog(Author $author, int $page = 1, int $limit = 12, string $filter = 'author')
-    {
+    public function showAuthorCatalog(
+        Author $author,
+        int $page = 1,
+        int $limit = 12,
+        string $filter = 'author'
+    ) {
         $books = $this->authorManager->getPaginatedCatalog($author, $page, $limit);
 
         return $this->render(
@@ -96,8 +100,12 @@ class CatalogController extends AbstractController
      *
      * @return Response
      */
-    public function genreCatalog(Genre $genre, int $page = 1, int $limit = 12, string $filter = 'genre')
-    {
+    public function showGenreCatalog(
+        Genre $genre,
+        int $page = 1,
+        int $limit = 12,
+        string $filter = 'genre'
+    ) {
         $books = $this->genreManager->getPaginatedCatalog($genre, $page, $limit);
 
         return $this->render('catalog/_books_by_genre.html.twig', [

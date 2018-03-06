@@ -11,11 +11,11 @@
                 <a class="nav-link" href="{{ path('index') }}">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ path('catalog') }}">Catalog</a>
+                <a class="nav-link" href="{{ path('show-catalog') }}">Catalog</a>
             </li>
             {% if is_granted("ROLE_LIBRARIAN") %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('reservations') }}">Reservations</a>
+                    <a class="nav-link" href="{{ path('show-reservations') }}">Reservations</a>
                 </li>
                 {% if is_granted("ROLE_ADMIN") %}
                     <li class="nav-item">
@@ -54,9 +54,9 @@
                     <div id="profileMenu" class="dropdown-menu">
                         <h6 class="dropdown-header">{{ app.user.firstName }} {{ app.user.lastName }}</h6>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ path('profile') }}">Profile</a>
-                        <a class="dropdown-item" href="{{ path('activity') }}">Activity</a>
-                        <a class="dropdown-item" href="{{ path('notifications') }}">
+                        <a class="dropdown-item" href="{{ path('show-profile') }}">Profile</a>
+                        <a class="dropdown-item" href="{{ path('show-activity') }}">Activity</a>
+                        <a class="dropdown-item" href="{{ path('show-notifications') }}">
                             Notifications
                             <span class="badge badge-pill">0</span>
                         </a>

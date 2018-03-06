@@ -30,11 +30,11 @@
                 <!-- Previous link -->
                 <a href="
                     {% if filter == 'author' %}
-                        {{ path('books-by-author', {page: currentPage-1 < 1 ? 1 : currentPage-1, id: author.id}) }}
+                        {{ path('show-books-by-author', {page: currentPage-1 < 1 ? 1 : currentPage-1, id: author.id}) }}
                     {% elseif filter == 'genre' %}
-                        {{ path('books-by-genre', {page: currentPage-1 < 1 ? 1 : currentPage-1, id: genre.id}) }}
+                        {{ path('show-books-by-genre', {page: currentPage-1 < 1 ? 1 : currentPage-1, id: genre.id}) }}
                     {% else %}
-                        {{ path('catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}
+                        {{ path('show-catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}
                     {% endif %}
                     "
                    class="d-flex align-items-center {{ currentPage == 1 ? 'disabled' }}">
@@ -47,11 +47,11 @@
                 {% for i in 1..maxPages %}
                     <a href="
                         {% if filter == 'author' %}
-                            {{ path('books-by-author', {page: i, id: author.id}) }}
+                            {{ path('show-books-by-author', {page: i, id: author.id}) }}
                         {% elseif filter == 'genre' %}
-                            {{ path('books-by-genre', {page: i, id: genre.id}) }}
+                            {{ path('show-books-by-genre', {page: i, id: genre.id}) }}
                         {% else %}
-                            {{ path('catalog', {page: i}) }}
+                            {{ path('show-catalog', {page: i}) }}
                         {% endif %}
                         "
                        class="d-flex align-items-center {{ currentPage == i ? 'active disabled' }}">
@@ -64,11 +64,11 @@
                 <!-- Next link -->
                 <a href="
                     {% if filter == 'author' %}
-                        {{ path('books-by-author', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, id: author.id}) }}
+                        {{ path('show-books-by-author', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, id: author.id}) }}
                     {% elseif filter == 'genre' %}
-                        {{ path('books-by-genre', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, id: genre.id}) }}
+                        {{ path('show-books-by-genre', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, id: genre.id}) }}
                     {% else %}
-                        {{ path('catalog', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage}) }}
+                        {{ path('show-catalog', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage}) }}
                     {% endif %}
                     "
                    class="d-flex align-items-center {{ currentPage == maxPages ? 'disabled' }}">

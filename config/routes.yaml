@@ -6,47 +6,40 @@ login:
     controller: App\Controller\security\SecurityController::login
 logout:
     path: /logout
-profile:
+show-profile:
     path: /user/profile
-    controller: App\Controller\user\UserController::profile
+    controller: App\Controller\user\UserController::showProfile
 edit-profile:
     path: /user/profile/edit
     controller: App\Controller\user\UserController::editProfile
-activity:
+show-activity:
     path: /user/activity
-    controller: App\Controller\user\UserController::activity
-notifications:
+    controller: App\Controller\user\UserController::showActivity
+show-notifications:
     path: /user/notifications
-    controller: App\Controller\user\UserController::notifications
+    controller: App\Controller\user\UserController::showNotifications
 index:
     path: /
     controller: App\Controller\DefaultController::index
-catalog:
-    path: /catalog/{page}
-    controller: App\Controller\catalog\CatalogController::catalog
-    defaults:
-        page: 1
-    requirements:
-        page: '\d+'
-catalog-books:
+show-catalog:
     path: /catalog/books/{page}
-    controller: App\Controller\catalog\CatalogController::catalog
+    controller: App\Controller\catalog\CatalogController::showCatalog
     defaults:
         page: 1
     requirements:
         page: '\d+'
-books-by-author:
+show-books-by-author:
     path: /catalog/books-by-author/{id}/{page}
-    controller: App\Controller\catalog\CatalogController::authorCatalog
+    controller: App\Controller\catalog\CatalogController::showAuthorCatalog
     defaults:
         id: 1
         page: 1
     requirements:
         id: '\d+'
         page: '\d+'
-books-by-genre:
+show-books-by-genre:
     path: /catalog/books-by-genre/{id}/{page}
-    controller: App\Controller\catalog\CatalogController::genreCatalog
+    controller: App\Controller\catalog\CatalogController::showGenreCatalog
     defaults:
         id: 1
         page: 1
@@ -108,10 +101,10 @@ delete-author:
 new-genre:
     path: /catalog/genres/new
     controller: App\Controller\librarian\LibraryController::newGenre
-reservations:
+show-reservations:
     path: /reservations
-    controller: App\Controller\librarian\LibraryController::reservations
-reservation-update:
+    controller: App\Controller\librarian\LibraryController::showReservations
+update-reservation:
     path: /reservations/update/{id}/{status}
     controller: App\Controller\librarian\LibraryController::updateReservationStatus
     methods: [GET]

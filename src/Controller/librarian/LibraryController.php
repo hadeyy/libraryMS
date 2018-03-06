@@ -161,7 +161,7 @@ class LibraryController extends Controller
     /**
      * @return Response
      */
-    public function reservations()
+    public function showReservations()
     {
         return $this->render(
             'librarian/reservations.html.twig',
@@ -184,7 +184,7 @@ class LibraryController extends Controller
     {
         $this->bookReservationManager->updateStatus($reservation, $status, new \DateTime());
 
-        return $this->redirectToRoute('reservations');
+        return $this->redirectToRoute('show-reservations');
     }
 
     /**

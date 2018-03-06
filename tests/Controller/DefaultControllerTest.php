@@ -39,7 +39,6 @@ class DefaultControllerTest extends WebTestCase
             ['/'],
             ['/register'],
             ['/login'],
-            ['/catalog/1'],
             ['/catalog/books/1'],
             ['/catalog/books-by-author/1/1'],
             ['/catalog/books-by-genre/1/1'],

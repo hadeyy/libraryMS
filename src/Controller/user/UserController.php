@@ -44,7 +44,7 @@ class UserController extends AbstractController
      * @return Response
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function profile()
+    public function showProfile()
     {
         return $this->render(
             'user/profile.html.twig',
@@ -80,7 +80,7 @@ class UserController extends AbstractController
     /**
      * @return Response
      */
-    public function activity()
+    public function showActivity()
     {
         $activities = $this->userManager->getActivity($this->user);
 
@@ -91,7 +91,7 @@ class UserController extends AbstractController
      * @TODO
      * @return Response
      */
-    public function notifications()
+    public function showNotifications()
     {
 
 
