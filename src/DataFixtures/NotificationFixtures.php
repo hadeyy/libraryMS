@@ -32,8 +32,6 @@ class NotificationFixtures extends Fixture implements DependentFixtureInterface
             $notification->setReceiver($user);
             mt_rand(0, 1) ?: $notification->setIsSeen(true);
 
-            $user->addNotification($notification);
-
             $manager->persist($notification);
         }
 

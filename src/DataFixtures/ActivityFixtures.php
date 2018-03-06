@@ -24,18 +24,13 @@ class ActivityFixtures extends Fixture implements DependentFixtureInterface
         $lipsum = new LoremIpsum();
 
         for ($i = 0; $i < 10; $i++) {
-            $activity = new Activity();
-
-            $activity->setTitle($lipsum->words(mt_rand(3, 6)));
+            $title = $lipsum->words(mt_rand(3, 6));
             /** @var Book $book */
             $book = $this->getReference('book' . mt_rand(0, 99));
-            $activity->setBook($book);
             /** @var User $user */
             $user = $this->getReference('user' . mt_rand(0, 3));
-            $activity->setUser($user);
 
-            $book->addActivity($activity);
-            $user->addActivity($activity);
+            $activity = new Activity($user, $book, $title);
 
             $manager->persist($activity);
         }

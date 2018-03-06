@@ -24,19 +24,14 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
         $lipsum = new LoremIpsum();
 
         for ($i = 0; $i < 15; $i++) {
-            $comment = new Comment();
-
             /** @var Book $book */
             $book = $this->getReference('book' . mt_rand(0, 99));
-            $comment->setBook($book);
-
             /** @var User $user */
             $user = $this->getReference('user' . mt_rand(0, 3));
-            $comment->setAuthor($user);
-            $comment->setContent($lipsum->words(mt_rand(5, 20)));
 
-            $book->addComment($comment);
-            $user->addComment($comment);
+            $comment = new Comment($user, $book);
+
+            $comment->setContent($lipsum->words(mt_rand(5, 20)));
 
             $manager->persist($comment);
         }

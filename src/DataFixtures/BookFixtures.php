@@ -51,11 +51,6 @@ class BookFixtures extends Fixture implements DependentFixtureInterface
             $book->setCover('sample.jpg');
             $book->setAnnotation($lipsum->sentences(7));
 
-            $author->addBook($book);
-            $genre1->addBook($book);
-            $genre2->addBook($book);
-            $genre3->addBook($book);
-
             $this->addReference('book' . $i, $book);
 
             $manager->persist($book);
