@@ -24,7 +24,7 @@ class UserControllerTest extends WebTestCase
     }
 
     /**
-     * @dataProvider uriProvider
+     * @dataProvider successfulUriProvider
      *
      * @param $uri
      */
@@ -34,7 +34,7 @@ class UserControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Route is successful.');
     }
 
-    public function uriProvider()
+    public function successfulUriProvider()
     {
         return [
             ['/user/profile'],
@@ -44,9 +44,23 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function testUserRoutesAreRedirects()
+    /**
+     * @dataProvider redirectRouteProvider
+     *
+     * @param $uri
+     */
+    public function testUserRoutesAreRedirects($uri)
     {
-        $this->client->request('GET', '/logout');
+        $this->client->request('GET', $uri);
         $this->assertTrue($this->client->getResponse()->isRedirect(), 'Route is a redirect.');
+    }
+
+    public function redirectRouteProvider()
+    {
+        return [
+            ['/catalog/book/1/toggle-favorite'],
+            ['/catalog/book/1/toggle-favorite'],
+            ['/logout'],
+        ];
     }
 }

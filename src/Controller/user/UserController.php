@@ -101,6 +101,8 @@ class UserController extends AbstractController
     /**
      * @param User $user
      * @param Book $book
+     *
+     * @return RedirectResponse
      */
     public function toggleFavorite(User $user, Book $book)
     {
@@ -115,5 +117,7 @@ class UserController extends AbstractController
             $this->userManager->addFavorite($user, $book);
             $this->activityManager->log($user, $book, 'Added a book to favorites');
         }
+
+        return $this->redirectToRoute('show-book', ['book' => $book]);
     }
 }
