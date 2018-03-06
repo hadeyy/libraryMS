@@ -3,7 +3,7 @@
 {% block title %}{{ book.title }}{% endblock %}
 {% block content %}
     <div class="col-xs-12 col-sm-12 col-md-8">
-        {% include 'catalog/book/_book_card.html.twig' with {'book': book } %}
+        {% include 'catalog/book/_book_card.html.twig' with {'book': book, 'bookRating': bookRating } %}
         <br>
 
         <h2>Comments</h2>

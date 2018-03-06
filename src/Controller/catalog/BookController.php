@@ -48,6 +48,7 @@ class BookController extends AbstractController
      * @ParamConverter("book", class="App\Entity\Book")
      *
      * @return Response
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function showBook(Request $request, Book $book)
     {
@@ -80,9 +81,9 @@ class BookController extends AbstractController
             $ratingForm->handleRequest($request);
             if ($ratingForm->isSubmitted() && $ratingForm->isValid()) {
                 $formData = $ratingForm->getData();
-                $rating = (int)$formData['rating'];
+                $value = (int)$formData['rating'];
 
-                $this->ratingManager->rate($book, $rating);
+                $this->ratingManager->rate($book, $this->user, $value);
                 $this->activityManager->log($this->user, $book, 'Rated a book');
             }
         }
@@ -91,6 +92,7 @@ class BookController extends AbstractController
             'catalog/book/show.html.twig',
             [
                 'book' => $book,
+                'bookRating' => $this->ratingManager->getAverageRating($book),
                 'commentForm' => isset($commentForm) ? $commentForm->createView() : null,
                 'ratingForm' => isset($ratingForm) ? $ratingForm->createView() : null,
             ]

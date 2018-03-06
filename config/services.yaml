@@ -129,6 +129,8 @@ services:
             - '@doctrine'
     app.rating_manager:
         class: App\Service\RatingManager
+        arguments:
+            - '@doctrine'
     app.book_manager:
         class: App\Service\BookManager
         arguments:
@@ -146,4 +148,12 @@ services:
             - '@app.file_manager'
             - '@app.user_manager'
 
+    App\DataFixtures\:
+        resource: '../src/DataFixtures'
+        tags: ['doctrine.fixture.orm']
+
+    App\DataFixtures\UserFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@security.user_password_encoder.generic'
 

@@ -59,13 +59,8 @@
                                 <tr>
                                     <td class="left-side">average rating</td>
                                     <td class="right-side">
-                                        {% if book.ratings|length > 0 %}
-                                            {% set avg = 0 %}
-                                            {% for rating in book.ratings %}
-                                                {% set avg = avg + rating %}
-                                            {% endfor %}
-                                            {% set avg = avg / book.ratings|length %}
-                                            {{ avg|round(2) }}
+                                        {% if bookRating > 0 %}
+                                            {{ bookRating }}
                                         {% else %}
                                             -
                                         {% endif %}

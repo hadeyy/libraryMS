@@ -77,7 +77,7 @@ class Book
     private $language;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Genre", inversedBy="books")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Genre", inversedBy="books", cascade={"persist"})
      * @ORM\JoinTable(name="books_and_genres",
      *     joinColumns={@ORM\JoinColumn(name="bookId", referencedColumnName="id", unique=false)},
      *     inverseJoinColumns={@ORM\JoinColumn(name="genreId", referencedColumnName="id", unique=false)}
@@ -156,7 +156,7 @@ class Book
     private $annotation;
 
     /**
-     * @ORM\Column(type="json_array")
+     * @ORM\OneToMany(targetEntity="App\Entity\Rating", mappedBy="book", cascade={"persist", "remove"})
      */
     private $ratings;
 
@@ -183,7 +183,7 @@ class Book
     public function __construct()
     {
         $this->genres = new ArrayCollection();
-        $this->ratings = [];
+        $this->ratings = new ArrayCollection();
         $this->reservedCopies = 0;
         $this->timesBorrowed = 0;
         $this->reservations = new ArrayCollection();
@@ -194,11 +194,6 @@ class Book
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     public function getISBN()
@@ -326,9 +321,9 @@ class Book
         return $this->ratings;
     }
 
-    public function addRating(float $rating): void
+    public function addRating($rating): void
     {
-        $this->ratings[] = $rating;
+        $this->ratings->add($rating);
     }
 
     public function getTimesBorrowed()

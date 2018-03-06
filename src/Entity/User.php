@@ -70,7 +70,7 @@ class User implements UserInterface, \Serializable
     private $bookReservations;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Notification", mappedBy="receiver")
+     * @ORM\OneToMany(targetEntity="App\Entity\Notification", mappedBy="receiver", cascade={"persist", "remove"})
      */
     private $notifications;
 
@@ -85,13 +85,18 @@ class User implements UserInterface, \Serializable
     private $comments;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Book")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Book", cascade={"persist"})
      * @ORM\JoinTable(name="users_books",
      *     joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="book_id", referencedColumnName="id", unique=true)}
      * )
      */
     private $favorites;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Rating", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $ratings;
 
     /**
      * @Assert\NotBlank()
@@ -118,16 +123,12 @@ class User implements UserInterface, \Serializable
         $this->comments = new ArrayCollection();
         $this->roles = ['ROLE_USER'];
         $this->favorites = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
     }
 
     public function getId()
     {
         return $this->id;
-    }
-
-    public function setId($id): void
-    {
-        $this->id = $id;
     }
 
     public function getFirstName()
@@ -253,6 +254,16 @@ class User implements UserInterface, \Serializable
     public function removeFavorite($book): void
     {
         $this->favorites->removeElement($book);
+    }
+
+    public function getRatings()
+    {
+        return $this->ratings;
+    }
+
+    public function addRating($rating): void
+    {
+        $this->ratings->add($rating);
     }
 
     /**
