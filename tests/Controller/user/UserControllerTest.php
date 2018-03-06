@@ -37,9 +37,9 @@ class UserControllerTest extends WebTestCase
     public function uriProvider()
     {
         return [
-//            ['/user/profile'], FIXME Error : Call to a member function getFavorites() on null
+            ['/user/profile'],
             ['/user/profile/edit'],
-//            ['/user/activity'], FIXME
+            ['/user/activity'],
             ['/user/notifications'],
         ];
     }

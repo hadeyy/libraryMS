@@ -88,7 +88,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @TODO FIXME
+     * @TODO
      * @return Response
      */
     public function notifications()
@@ -99,8 +99,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * @TODO FIXME
-     *
      * @param User $user
      * @param Book $book
      */

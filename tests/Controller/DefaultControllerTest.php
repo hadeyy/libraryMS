@@ -36,7 +36,7 @@ class DefaultControllerTest extends WebTestCase
     public function uriProvider()
     {
         return [
-//            ['/'], FIXME
+            ['/'],
             ['/register'],
             ['/login'],
             ['/catalog/1'],
@@ -48,18 +48,16 @@ class DefaultControllerTest extends WebTestCase
         ];
     }
 
-    // FIXME
-//    public function testIndex()
-//    {
-//        $crawler = $this->client->request('GET', '/');
-//
-//        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-//        $this->assertEquals(3, $crawler->filter('h2')->count());
-//        $this->assertEquals(10, $crawler->filter('div.flip-card-container')->count());
-//        $this->assertGreaterThanOrEqual(4, $crawler->filter('a')->count());
-//        $this->assertContains('Home', $this->client->getResponse()->getContent());
-//        $this->assertContains('Catalog', $this->client->getResponse()->getContent());
-//        $this->assertContains('Newest books', $this->client->getResponse()->getContent());
-//        $this->assertContains('Most popular books', $this->client->getResponse()->getContent());
-//    }
+    public function testIndex()
+    {
+        $crawler = $this->client->request('GET', '/');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(3, $crawler->filter('h2')->count());
+        $this->assertEquals(10, $crawler->filter('div.flip-card-container')->count());
+        $this->assertGreaterThanOrEqual(4, $crawler->filter('a')->count());
+        $this->assertContains('Home', $this->client->getResponse()->getContent());
+        $this->assertContains('Catalog', $this->client->getResponse()->getContent());
+        $this->assertContains('Newest books', $this->client->getResponse()->getContent());
+        $this->assertContains('Most popular books', $this->client->getResponse()->getContent());
+    }
 }
