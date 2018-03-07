@@ -74,7 +74,7 @@ class LibraryController extends Controller
             $this->bookManager->save($book);
             $this->activityManager->log($this->user, $book, 'Added a book');
 
-            return $this->redirectToRoute('catalog-books');
+            return $this->redirectToRoute('show-catalog');
         }
 
         return $this->render(
@@ -109,7 +109,7 @@ class LibraryController extends Controller
     {
         $this->bookManager->remove($book);
 
-        return $this->redirectToRoute('catalog');
+        return $this->redirectToRoute('show-catalog');
     }
 
     /**
@@ -126,7 +126,7 @@ class LibraryController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $this->authorManager->save($author);
 
-            return $this->redirectToRoute('catalog-books');
+            return $this->redirectToRoute('show-catalog');
         }
 
         return $this->render(
@@ -149,7 +149,7 @@ class LibraryController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $this->genreManager->save($genre);
 
-            return $this->redirectToRoute('catalog-books');
+            return $this->redirectToRoute('show-catalog');
         }
 
         return $this->render(
@@ -226,6 +226,6 @@ class LibraryController extends Controller
     {
         $this->authorManager->remove($author);
 
-        return $this->redirectToRoute('catalog');
+        return $this->redirectToRoute('show-catalog');
     }
 }

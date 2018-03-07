@@ -71,7 +71,7 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->userManager->updateProfile($this->user);
 
-            return $this->redirectToRoute('profile');
+            return $this->redirectToRoute('show-profile');
         }
 
         return $this->render('user/edit.html.twig', ['form' => $form->createView()]);
