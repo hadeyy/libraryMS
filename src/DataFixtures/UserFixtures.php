@@ -40,7 +40,7 @@ class UserFixtures extends Fixture
             'JohnHWine@jourrapide.com',
             'silhouette.png',
             $plainPassword,
-            ['ROLE_ADMIN']
+            ['ROLE_USER', 'ROLE_ADMIN']
         );
         $admin->setPassword($this->passwordManager->encode($admin));
         $manager->persist($admin);
@@ -53,7 +53,7 @@ class UserFixtures extends Fixture
             'MelindaRStephens@teleworm.us',
             $photo,
             $plainPassword,
-            ['ROLE_LIBRARIAN']
+            ['ROLE_USER', 'ROLE_LIBRARIAN']
         );
         $librarian->setPassword($this->passwordManager->encode($librarian));
         $manager->persist($librarian);
@@ -66,7 +66,7 @@ class UserFixtures extends Fixture
             'WayneTGutierrez@rhyta.com',
             $photo,
             $plainPassword,
-            ['ROLE_READER']
+            ['ROLE_USER', 'ROLE_READER']
         );
         $reader->setPassword($this->passwordManager->encode($reader));
         $manager->persist($reader);

@@ -244,7 +244,7 @@ class User implements UserInterface, \Serializable
         $this->photo = $photo;
     }
 
-    public function getBookReservations(): ArrayCollection
+    public function getBookReservations()
     {
         return $this->bookReservations;
     }
@@ -254,7 +254,7 @@ class User implements UserInterface, \Serializable
         $this->bookReservations->add($bookReservation);
     }
 
-    public function getNotifications(): ArrayCollection
+    public function getNotifications()
     {
         return $this->notifications;
     }
@@ -264,7 +264,7 @@ class User implements UserInterface, \Serializable
         $this->notifications->add($notification);
     }
 
-    public function getActivities(): ArrayCollection
+    public function getActivities()
     {
         return $this->activities;
     }
@@ -274,7 +274,7 @@ class User implements UserInterface, \Serializable
         $this->activities->add($activity);
     }
 
-    public function getComments(): ArrayCollection
+    public function getComments()
     {
         return $this->comments;
     }
@@ -284,7 +284,7 @@ class User implements UserInterface, \Serializable
         $this->comments->add($comment);
     }
 
-    public function getFavorites(): ArrayCollection
+    public function getFavorites()
     {
         return $this->favorites;
     }
@@ -299,7 +299,7 @@ class User implements UserInterface, \Serializable
         $this->favorites->removeElement($book);
     }
 
-    public function getRatings(): ArrayCollection
+    public function getRatings()
     {
         return $this->ratings;
     }

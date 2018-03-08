@@ -11,7 +11,7 @@ namespace App\Controller\user;
 
 use App\Entity\Book;
 use App\Entity\User;
-use App\Form\UserType;
+use App\Form\UserEditType;
 use App\Service\ActivityManager;
 use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -64,12 +64,12 @@ class UserController extends AbstractController
      */
     public function editProfile(Request $request)
     {
-        $this->userManager->changePhotoFromPathToFile($this->user);
+        $data = $this->userManager->createArrayFromUser($this->user);
 
-        $form = $this->createForm(UserType::class, $this->user);
+        $form = $this->createForm(UserEditType::class, $data);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->userManager->updateProfile($this->user);
+            $this->userManager->updateProfile($this->user, $form->getData());
 
             return $this->redirectToRoute('show-profile');
         }

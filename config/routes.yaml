@@ -35,7 +35,7 @@ show-books-by-author:
         id: 1
         page: 1
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
         page: '\d+'
 show-books-by-genre:
     path: /catalog/books-by-genre/{id}/{page}
@@ -44,7 +44,7 @@ show-books-by-genre:
         id: 1
         page: 1
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
         page: '\d+'
 show-book:
     path: /catalog/book/{id}
@@ -52,26 +52,26 @@ show-book:
     defaults:
         id: 1
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 show-author:
     path: /catalog/author/{id}
     controller: App\Controller\catalog\AuthorController::showAuthor
     defaults:
         id: 1
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 reserve-book:
     path: /catalog/book/{id}/reserve
     controller: App\Controller\reader\LibraryController::reserveBook
     defaults:
         id: 1
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 toggle-favorite:
     path: /catalog/book/{id}/toggle-favorite
     controller: App\Controller\user\UserController::toggleFavorite
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 new-book:
     path: /catalog/books/new
     controller: App\Controller\librarian\LibraryController::newBook
@@ -79,12 +79,12 @@ edit-book:
     path: /catalog/book/{id}/edit
     controller: App\Controller\librarian\LibraryController::editBook
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 delete-book:
     path: /catalog/book/{id}/delete
     controller: App\Controller\librarian\LibraryController::deleteBook
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 new-author:
     path: /catalog/authors/new
     controller: App\Controller\librarian\LibraryController::newAuthor
@@ -92,12 +92,12 @@ edit-author:
     path: /catalog/author/{id}/edit
     controller: App\Controller\librarian\LibraryController::editAuthor
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 delete-author:
     path: /catalog/author/{id}/delete
     controller: App\Controller\librarian\LibraryController::deleteAuthor
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 new-genre:
     path: /catalog/genres/new
     controller: App\Controller\librarian\LibraryController::newGenre
@@ -112,7 +112,7 @@ update-reservation:
         id: 1
         status: 'reserved'
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 show-readers:
     path: /readers
     controller: App\Controller\librarian\LibraryController::showReaders
@@ -123,12 +123,12 @@ delete-user:
     path: /admin/users/{id}/delete
     controller: App\Controller\admin\AdminController::deleteUser
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 edit-user:
     path: /admin/users/edit/{id}
     controller: App\Controller\admin\AdminController::editUser
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 show-all-activity:
     path: /admin/all-activity
     controller: App\Controller\admin\AdminController::showActivity
@@ -136,9 +136,9 @@ show-user:
     path: /admin/users/{id}/profile
     controller: App\Controller\admin\AdminController::showUser
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'
 delete-comment:
     path: /admin/comment/{id}/delete
     controller: App\Controller\admin\AdminController::deleteComment
     requirements:
-        id: '\d+'
+        id: '[a-f0-9-]+'

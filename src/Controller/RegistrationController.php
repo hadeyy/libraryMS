@@ -53,7 +53,7 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(UserType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->userManager->createFromFormData($form->getData());
+            $user = $this->userManager->createUserFromArray($form->getData());
 
             $filename = $this->fileManager->upload($user->getPhoto(), $this->userPhotoDirectory);
             $encodedPassword = $this->passwordManager->encode($user);

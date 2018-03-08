@@ -81,26 +81,21 @@ class UserManager
         return $user->getBookReservations();
     }
 
-    public function changePhotoFromPathToFile(User $user)
+    public function updateProfile(User $user, array $data)
     {
-        $this->setPhotoName($this->getPhoto($user));
-        $this->setPhotoPath($this->getPhotoDirectory() . '/' . $this->getPhotoName());
-        $this->setPhoto($user, $this->fileManager->createFileFromPath($this->getPhotoPath()));
-    }
-
-    public function updateProfile(User $user)
-    {
-        $photo = $this->getPhoto($user);
+        $photo = $data['photo'];
         if ($photo instanceof UploadedFile) {
-            $this->fileManager->deleteFile($this->getPhotoPath());
-            $filename = $this->fileManager->upload($photo, $this->getPhotoDirectory());
-        } else {
-            $filename = $this->getPhotoName();
-        }
-        $encodedPassword = $this->passwordManager->encode($user);
+            $photoPath = $this->photoDirectory .'/'.$user->getPhoto();
+            $this->fileManager->deleteFile($photoPath);
 
-        $this->setPhoto($user, $filename);
-        $this->setPassword($user, $encodedPassword);
+            $filename = $this->fileManager->upload($photo, $this->getPhotoDirectory());
+            $user->setPhoto($filename);
+        }
+
+        $user->setFirstName($data['firstName']);
+        $user->setLastName($data['lastName']);
+        $user->setUsername($data['username']);
+        $user->setEmail($data['email']);
 
         $this->saveChanges();
     }
@@ -186,7 +181,7 @@ class UserManager
         return $this->photoDirectory;
     }
 
-    public function createFromFormData(array $data)
+    public function createUserFromArray(array $data): User
     {
         return new User(
             $data['firstName'],
@@ -196,5 +191,18 @@ class UserManager
             $data['photo'],
             $data['plainPassword']
         );
+    }
+
+    public function createArrayFromUser(User $user): array
+    {
+        $photoPath = $this->photoDirectory .'/'.$user->getPhoto();
+
+        return [
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'username' => $user->getUsername(),
+            'email' => $user->getEmail(),
+            'photo' => $this->fileManager->createFileFromPath($photoPath),
+        ];
     }
 }
