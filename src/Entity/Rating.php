@@ -10,6 +10,7 @@ namespace App\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -20,13 +21,25 @@ class Rating
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
     private $id;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\Range(
+     *     min = 1,
+     *     max = 5,
+     *     minMessage="This value should be greater than or equal to {{ limit }}.",
+     *     maxMessage="This value should be less than or equal to {{ limit }}."
+     * )
      */
     private $value;
 
@@ -34,6 +47,7 @@ class Rating
      * @ORM\ManyToOne(targetEntity="App\Entity\Book", inversedBy="ratings", cascade={"persist"})
      * @ORM\JoinColumn(name="book_id", referencedColumnName="id")
      * @Assert\NotBlank()
+     * @Assert\Valid
      */
     private $book;
 
@@ -41,11 +55,13 @@ class Rating
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="ratings", cascade={"persist"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * @Assert\NotBlank()
+     * @Assert\Valid
      */
     private $user;
 
     public function __construct(int $value, Book $book, User $user)
     {
+        $this->id = Uuid::uuid4();
         $this->value = $value;
         $this->book = $book;
         $this->user = $user;
@@ -56,35 +72,23 @@ class Rating
         return $this->id;
     }
 
-    public function getValue()
+    public function getValue(): int
     {
         return $this->value;
     }
 
-    public function setValue($value): void
+    public function setValue(int $value): void
     {
         $this->value = $value;
     }
 
-    public function getBook()
+    public function getBook(): Book
     {
         return $this->book;
     }
 
-    public function setBook($book): void
-    {
-        $this->book = $book;
-    }
-
-    public function getRater()
+    public function getRater(): User
     {
         return $this->user;
     }
-
-    public function setRater($rater): void
-    {
-        $this->user = $rater;
-    }
-
-
 }

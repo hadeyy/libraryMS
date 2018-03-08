@@ -19,12 +19,17 @@ use joshtronic\LoremIpsum;
 
 class ActivityFixtures extends Fixture implements DependentFixtureInterface
 {
+    private $lipsum;
+
+    public function __construct(LoremIpsum $lipsum)
+    {
+        $this->lipsum = $lipsum;
+    }
+
     public function load(ObjectManager $manager)
     {
-        $lipsum = new LoremIpsum();
-
         for ($i = 0; $i < 10; $i++) {
-            $title = $lipsum->words(mt_rand(3, 6));
+            $title = $this->lipsum->words(mt_rand(3, 6));
             /** @var Book $book */
             $book = $this->getReference('book' . mt_rand(0, 99));
             /** @var User $user */

@@ -10,17 +10,17 @@ namespace App\DataFixtures;
 
 
 use App\Entity\User;
+use App\Service\PasswordManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserFixtures extends Fixture
 {
-    private $encoder;
+    private $passwordManager;
 
-    public function __construct(UserPasswordEncoderInterface $encoder)
+    public function __construct(PasswordManager $passwordManager)
     {
-        $this->encoder = $encoder;
+        $this->passwordManager = $passwordManager;
     }
 
     /**
@@ -30,51 +30,58 @@ class UserFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $admin = new User();
-        $admin->setFirstName('John');
-        $admin->setLastName('Wine');
-        $admin->setUsername('admin');
-        $admin->setEmail('JohnHWine@jourrapide.com');
-        $admin->setPhoto('silhouette.png');
-        $password = $this->encoder->encodePassword($admin, 'kitten');
-        $admin->setPassword($password);
-        $admin->addRole('ROLE_ADMIN');
+        $photo = 'silhouette.png';
+        $plainPassword = 'pass123';
+
+        $admin = new User(
+            'John',
+            'Wine',
+            'admin',
+            'JohnHWine@jourrapide.com',
+            'silhouette.png',
+            $plainPassword,
+            ['ROLE_ADMIN']
+        );
+        $admin->setPassword($this->passwordManager->encode($admin));
         $manager->persist($admin);
         $this->addReference('user0', $admin);
 
-        $librarian = new User();
-        $librarian->setFirstName('Melinda');
-        $librarian->setLastName('Stephens');
-        $librarian->setUsername('librarian');
-        $librarian->setEmail('MelindaRStephens@teleworm.us');
-        $librarian->setPhoto('silhouette.png');
-        $password = $this->encoder->encodePassword($librarian, 'kitten');
-        $librarian->setPassword($password);
-        $librarian->addRole('ROLE_LIBRARIAN');
+        $librarian = new User(
+            'Melinda',
+            'Stephens',
+            'librarian',
+            'MelindaRStephens@teleworm.us',
+            $photo,
+            $plainPassword,
+            ['ROLE_LIBRARIAN']
+        );
+        $librarian->setPassword($this->passwordManager->encode($librarian));
         $manager->persist($librarian);
         $this->addReference('user1', $librarian);
 
-        $user1 = new User();
-        $user1->setFirstName('Wayne');
-        $user1->setLastName('Gutierrez');
-        $user1->setUsername('reader');
-        $user1->setEmail('WayneTGutierrez@rhyta.com');
-        $user1->setPhoto('silhouette.png');
-        $password = $this->encoder->encodePassword($user1, 'kitten');
-        $user1->setPassword($password);
-        $user1->addRole('ROLE_READER');
-        $manager->persist($user1);
-        $this->addReference('user2', $user1);
+        $reader = new User(
+            'Wayne',
+            'Gutierrez',
+            'reader',
+            'WayneTGutierrez@rhyta.com',
+            $photo,
+            $plainPassword,
+            ['ROLE_READER']
+        );
+        $reader->setPassword($this->passwordManager->encode($reader));
+        $manager->persist($reader);
+        $this->addReference('user2', $reader);
 
-        $user = new User();
-        $user->setFirstName('Athena');
-        $user->setLastName('Carswell');
-        $user->setUsername('user');
-        $user->setEmail('AthenaMCarswell@rhyta.com');
-        $user->setPhoto('silhouette.png');
-        $password = $this->encoder->encodePassword($user, 'kitten');
-        $user->setPassword($password);
-        $user->addRole('ROLE_USER');
+        $user = new User(
+            'Athena',
+            'Carswell',
+            'user',
+            'AthenaMCarswell@rhyta.com',
+            $photo,
+            $plainPassword,
+            ['ROLE_USER']
+        );
+        $user->setPassword($this->passwordManager->encode($user));
         $manager->persist($user);
         $this->addReference('user3', $user);
 

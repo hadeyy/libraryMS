@@ -18,18 +18,23 @@ use joshtronic\LoremIpsum;
 
 class NotificationFixtures extends Fixture implements DependentFixtureInterface
 {
+    private $lipsum;
+
+    public function __construct(LoremIpsum $lipsum)
+    {
+        $this->lipsum = $lipsum;
+    }
+
     public function load(ObjectManager $manager)
     {
-        $lipsum = new LoremIpsum();
-
         for ($i = 0; $i < 25; $i++) {
-            $notification = new Notification();
 
-            $notification->setTitle($lipsum->words(mt_rand(3, 6)));
-            $notification->setContent($lipsum->sentences(2));
-            /** @var User $user */
-            $user = $this->getReference('user' . mt_rand(0, 3));
-            $notification->setReceiver($user);
+            $title = $this->lipsum->words(mt_rand(3, 6));
+            $content = $this->lipsum->sentences(2);
+            /** @var User $receiver */
+            $receiver = $this->getReference('user' . mt_rand(0, 3));
+
+            $notification = new Notification($title, $content, $receiver);
             mt_rand(0, 1) ?: $notification->setIsSeen(true);
 
             $manager->persist($notification);

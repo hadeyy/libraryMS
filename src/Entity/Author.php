@@ -11,6 +11,8 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="app_authors")
@@ -20,20 +22,28 @@ class Author
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "First name must be at least {{ limit }} characters long",
+     *      maxMessage = "First name cannot be longer than {{ limit }} characters"
+     * )
      */
     private $firstName;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
-    private $lastName; // optional (in case of one name alias)
+    private $lastName;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="author", cascade={"persist", "remove"})
@@ -42,6 +52,13 @@ class Author
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Country name must be at least {{ limit }} characters long",
+     *      maxMessage = "Country name cannot be longer than {{ limit }} characters"
+     * )
      */
     private $country;
 
@@ -50,8 +67,17 @@ class Author
      */
     private $portrait;
 
-    public function __construct()
-    {
+    public function __construct(
+        string $firstName,
+        $lastName = null,
+        string $country,
+        $portrait = null
+    ) {
+        $this->id = Uuid::uuid4();
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->country = $country;
+        $this->portrait = $portrait;
         $this->books = new ArrayCollection();
     }
 
@@ -60,42 +86,45 @@ class Author
         return $this->id;
     }
 
-    public function getFirstName()
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    public function setFirstName($firstName): void
+    public function setFirstName(string $firstName): void
     {
         $this->firstName = $firstName;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLastName()
     {
         return $this->lastName;
     }
 
-    public function setLastName($lastName): void
+    public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
     }
 
-    public function getBooks()
+    public function getBooks(): ArrayCollection
     {
         return $this->books;
     }
 
-    public function addBook($book): void
+    public function addBook(Book $book): void
     {
         $this->books->add($book);
     }
 
-    public function getCountry()
+    public function getCountry(): string
     {
         return $this->country;
     }
 
-    public function setCountry($country): void
+    public function setCountry(string $country): void
     {
         $this->country = $country;
     }
@@ -110,8 +139,7 @@ class Author
         $this->portrait = $portrait;
     }
 
-
-    public function __toString()
+    public function __toString(): string
     {
         return $this->firstName . ' ' . $this->lastName;
     }

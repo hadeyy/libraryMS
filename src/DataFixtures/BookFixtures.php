@@ -19,37 +19,58 @@ use joshtronic\LoremIpsum;
 
 class BookFixtures extends Fixture implements DependentFixtureInterface
 {
+    private $lipsum;
+
+    public function __construct(LoremIpsum $lipsum)
+    {
+        $this->lipsum = $lipsum;
+    }
+
+    /**
+     * @param ObjectManager $manager
+     *
+     * @throws \Doctrine\Common\DataFixtures\BadMethodCallException
+     */
     public function load(ObjectManager $manager)
     {
-        $lipsum = new LoremIpsum();
         $languages = ['english', 'french', 'russian', 'spanish', 'arabic', 'latvian'];
 
         for ($i = 0; $i < 100; $i++) {
-            $book = new Book();
-
-            $book->setISBN('978-1-' . mt_rand(10000, 99999) . '-' . mt_rand(100, 999) . '-' . mt_rand(0, 9));
-            $book->setTitle($lipsum->words(mt_rand(1, 4)));
+            $ISBN = mt_rand(1000, 9999) . '-' . mt_rand(10, 99) . '-' . mt_rand(100, 999) . '-' . mt_rand(0, 9);
+            $title = $this->lipsum->words(mt_rand(1, 4));
             /** @var Author $author */
             $author = $this->getReference('author' . mt_rand(0, 19));
-            $book->setAuthor($author);
-            $book->setPages(mt_rand(20, 1024));
-            $book->setLanguage($languages[mt_rand(0, count($languages) - 1)]);
-            /** @var Genre $genre */
+            $pages = mt_rand(20, 1024);
+            $language = $languages[mt_rand(0, count($languages) - 1)];
+            /** @var Genre $genre1 */
             $genre1 = $this->getReference('genre' . mt_rand(0, 9));
-            $book->addGenre($genre1);
-            /** @var Genre $genre */
+            /** @var Genre $genre2 */
             $genre2 = $this->getReference('genre' . mt_rand(10, 19));
-            $book->addGenre($genre2);
-            /** @var Genre $genre */
+            /** @var Genre $genre3 */
             $genre3 = $this->getReference('genre' . mt_rand(20, 29));
-            $book->addGenre($genre3);
-            $book->setPublisher($lipsum->words(mt_rand(1, 3)));
+            $publisher = $this->lipsum->words(mt_rand(1, 3));
             $randomDate = mt_rand(1, 28) . '-' . mt_rand(1, 12) . '-' . mt_rand(1800, 2017);
-            $book->setPublicationDate(\DateTime::createFromFormat('d-m-Y', $randomDate));
-            $book->setAvailableCopies(mt_rand(1, 5));
-            $book->setReservedCopies(mt_rand(0, $book->getAvailableCopies()));
-            $book->setCover('sample.jpg');
-            $book->setAnnotation($lipsum->sentences(7));
+            $publicationDate = \DateTime::createFromFormat('d-m-Y', $randomDate);
+            $availableCopies = mt_rand(1, 5);
+            $cover = 'sample.jpg';
+            $annotation = $this->lipsum->sentences(7);
+
+            $book = new Book(
+                $ISBN,
+                $title,
+                $author,
+                $pages,
+                $language,
+                $publisher,
+                $publicationDate,
+                $availableCopies,
+                $cover,
+                $annotation
+            );
+
+            $book->addGenre($genre1);
+            $book->addGenre($genre2);
+            $book->addGenre($genre3);
 
             $this->addReference('book' . $i, $book);
 

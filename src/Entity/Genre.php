@@ -11,6 +11,8 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="app_genres")
@@ -20,13 +22,21 @@ class Genre
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 2,
+     *     max = 25,
+     *     minMessage="Genre name must be at least {{ limit }} characters long.",
+     *     maxMessage="Genre name cannot be longer than {{ limit }} characters."
+     * )
      */
     private $name;
 
@@ -35,8 +45,10 @@ class Genre
      */
     private $books;
 
-    public function __construct()
+    public function __construct(string $name)
     {
+        $this->id = Uuid::uuid4();
+        $this->name = $name;
         $this->books = new ArrayCollection();
     }
 
@@ -45,29 +57,28 @@ class Genre
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getBooks()
+    public function getBooks(): ArrayCollection
     {
         return $this->books;
     }
 
-    public function addBook($book): void
+    public function addBook(Book $book): void
     {
         $this->books->add($book);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }
-
 }

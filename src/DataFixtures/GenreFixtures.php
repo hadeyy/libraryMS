@@ -15,6 +15,11 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class GenreFixtures extends Fixture
 {
+    /**
+     * @param ObjectManager $manager
+     *
+     * @throws \Doctrine\Common\DataFixtures\BadMethodCallException
+     */
     public function load(ObjectManager $manager)
     {
         $genres = [
@@ -52,9 +57,7 @@ class GenreFixtures extends Fixture
         ];
 
         for ($i = 0; $i < count($genres); $i++) {
-            $genre = new Genre();
-
-            $genre->setName($genres[$i]);
+            $genre = new Genre($genres[$i]);
 
             $this->addReference('genre' . $i, $genre);
 

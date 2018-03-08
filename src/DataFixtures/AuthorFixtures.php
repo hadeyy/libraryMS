@@ -16,16 +16,28 @@ use joshtronic\LoremIpsum;
 
 class AuthorFixtures extends Fixture
 {
+    private $lipsum;
+
+    public function __construct(LoremIpsum $lipsum)
+    {
+        $this->lipsum = $lipsum;
+    }
+
+    /**
+     * @param ObjectManager $manager
+     *
+     * @throws \Doctrine\Common\DataFixtures\BadMethodCallException
+     */
     public function load(ObjectManager $manager)
     {
         $lipsum = new LoremIpsum();
 
         for ($i = 0; $i < 20; $i++) {
-            $author = new Author();
+            $firstName = $lipsum->word();
+            $lastName = $lipsum->word();
+            $country = $lipsum->word();
 
-            $author->setFirstName($lipsum->word());
-            $author->setLastName($lipsum->word());
-            $author->setCountry($lipsum->word());
+            $author = new Author($firstName, $lastName, $country);
 
             $this->addReference('author' . $i, $author);
 

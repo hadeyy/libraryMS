@@ -11,6 +11,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -23,18 +24,18 @@ class Book
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
-     * @Assert\Length(
-     *     min="10",
-     *     max="13",
-     *     exactMessage="ISBN must be either 10 or 13 characters long."
+     * @Assert\Expression(
+     *     "strlen(value) == 10 or strlen(value) == 13",
+     *     message="ISBN must be either 10 or 13 characters long."
      * )
      */
     private $ISBN;
@@ -55,12 +56,17 @@ class Book
      * @ORM\ManyToOne(targetEntity="App\Entity\Author", inversedBy="books")
      * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
      * @Assert\NotBlank()
+     * @Assert\Valid
      */
     private $author;
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      * @Assert\Range(
      *     min = 10,
      *     max = 13095,
@@ -73,6 +79,12 @@ class Book
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 2,
+     *     max = 20,
+     *     minMessage="Language name must be at least {{ limit }} characters long.",
+     *     maxMessage="Language name cannot be longer than {{ limit }} characters."
+     * )
      */
     private $language;
 
@@ -82,7 +94,7 @@ class Book
      *     joinColumns={@ORM\JoinColumn(name="bookId", referencedColumnName="id", unique=false)},
      *     inverseJoinColumns={@ORM\JoinColumn(name="genreId", referencedColumnName="id", unique=false)}
      * )
-     * @Assert\NotNull()
+     * @Assert\NotBlank()
      * @Assert\Count(
      *     min="1",
      *     max="5",
@@ -115,6 +127,10 @@ class Book
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      * @Assert\Range(
      *     min = 1,
      *     max = 100,
@@ -126,11 +142,25 @@ class Book
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\Expression(
+     *     "value >= 0",
+     *     message="There cannot be a negative amount of reserved copies."
+     * )
+     * @Assert\Expression(
+     *     "value <= this.getAvailableCopies()",
+     *     message="Amount of reserved copies cannot be greater than amount of available copies."
+     * )
      */
     private $reservedCopies;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      * @Assert\Image(
      *     minWidth = 50,
      *     maxWidth = 5000,
@@ -146,6 +176,7 @@ class Book
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      * @Assert\Length(
      *     min = 140,
      *     max = 2000,
@@ -161,7 +192,16 @@ class Book
     private $ratings;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\Expression(
+     *     "value >= 0",
+     *     message="There cannot be a negative amount of times book has been borrowed."
+     * )
      */
     private $timesBorrowed;
 
@@ -180,23 +220,44 @@ class Book
      */
     private $activities;
 
-    public function __construct()
-    {
-        $this->genres = new ArrayCollection();
-        $this->ratings = new ArrayCollection();
+    public function __construct(
+        string $ISBN,
+        string $title,
+        Author $author,
+        int $pages,
+        string $language,
+        string $publisher,
+        \DateTime $publicationDate,
+        int $availableCopies,
+        $cover,
+        string $annotation
+    ) {
+        $this->id = Uuid::uuid4();
+        $this->ISBN = $ISBN;
+        $this->title = $title;
+        $this->author = $author;
+        $this->pages = $pages;
+        $this->language = $language;
+        $this->publisher = $publisher;
+        $this->publicationDate = $publicationDate;
+        $this->availableCopies = $availableCopies;
+        $this->cover = $cover;
+        $this->annotation = $annotation;
         $this->reservedCopies = 0;
         $this->timesBorrowed = 0;
+        $this->genres = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
         $this->reservations = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->activities = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getISBN()
+    public function getISBN(): string
     {
         return $this->ISBN;
     }
@@ -206,7 +267,7 @@ class Book
         $this->ISBN = $ISBN;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -216,17 +277,17 @@ class Book
         $this->title = $title;
     }
 
-    public function getAuthor()
+    public function getAuthor(): Author
     {
         return $this->author;
     }
 
-    public function setAuthor($author): void
+    public function setAuthor(Author $author): void
     {
         $this->author = $author;
     }
 
-    public function getPages()
+    public function getPages(): int
     {
         return $this->pages;
     }
@@ -236,7 +297,7 @@ class Book
         $this->pages = $pages;
     }
 
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return $this->language;
     }
@@ -246,17 +307,17 @@ class Book
         $this->language = $language;
     }
 
-    public function getGenres()
+    public function getGenres(): ArrayCollection
     {
         return $this->genres;
     }
 
-    public function addGenre($genre): void
+    public function addGenre(Genre $genre): void
     {
         $this->genres->add($genre);
     }
 
-    public function getPublisher()
+    public function getPublisher(): string
     {
         return $this->publisher;
     }
@@ -266,17 +327,17 @@ class Book
         $this->publisher = $publisher;
     }
 
-    public function getPublicationDate()
+    public function getPublicationDate(): \DateTime
     {
         return $this->publicationDate;
     }
 
-    public function setPublicationDate($publicationDate): void
+    public function setPublicationDate(\DateTime $publicationDate): void
     {
         $this->publicationDate = $publicationDate;
     }
 
-    public function getAvailableCopies()
+    public function getAvailableCopies(): int
     {
         return $this->availableCopies;
     }
@@ -306,7 +367,7 @@ class Book
         $this->cover = $cover;
     }
 
-    public function getAnnotation()
+    public function getAnnotation(): string
     {
         return $this->annotation;
     }
@@ -316,17 +377,17 @@ class Book
         $this->annotation = $annotation;
     }
 
-    public function getRatings()
+    public function getRatings(): ArrayCollection
     {
         return $this->ratings;
     }
 
-    public function addRating($rating): void
+    public function addRating(Rating $rating): void
     {
         $this->ratings->add($rating);
     }
 
-    public function getTimesBorrowed()
+    public function getTimesBorrowed(): int
     {
         return $this->timesBorrowed;
     }
@@ -336,37 +397,37 @@ class Book
         $this->timesBorrowed = $timesBorrowed;
     }
 
-    public function getReservations()
+    public function getReservations(): ArrayCollection
     {
         return $this->reservations;
     }
 
-    public function addReservation($reservation): void
+    public function addReservation(BookReservation $reservation): void
     {
         $this->reservations->add($reservation);
     }
 
-    public function getComments()
+    public function getComments(): ArrayCollection
     {
         return $this->comments;
     }
 
-    public function addComment($comment): void
+    public function addComment(Comment $comment): void
     {
         $this->comments->add($comment);
     }
 
-    public function getActivities()
+    public function getActivities(): ArrayCollection
     {
         return $this->activities;
     }
 
-    public function addActivity($activity): void
+    public function addActivity(Activity $activity): void
     {
         $this->activities->add($activity);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->title;
     }

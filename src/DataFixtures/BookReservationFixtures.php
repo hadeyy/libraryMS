@@ -26,21 +26,17 @@ class BookReservationFixtures extends Fixture implements DependentFixtureInterfa
         for ($i = 0; $i < 50; $i++) {
             /** @var Book $book */
             $book = $this->getReference('book' . mt_rand(0, 99));
-            /** @var User $user */
-            $user = $this->getReference('user' . mt_rand(0, 3));
+            /** @var User $reader */
+            $reader = $this->getReference('user' . mt_rand(0, 3));
 
-            $reservation = new BookReservation($book, $user);
-
-            $reservation->setDateFrom(DateTime::createFromFormat(
+            $dateFrom = DateTime::createFromFormat(
                 'd-m-Y',
-                $this->randomDate('+2 days', '+8 days'))
+                $this->randomDate('+2 days', '+8 days')
             );
-            $reservation->setDateTo(DateTime::createFromFormat(
+            $dateTo = DateTime::createFromFormat(
                 'd-m-Y',
-                $this->randomDate('+9 days', '+20 days'))
+                $this->randomDate('+9 days', '+20 days')
             );
-            $reservation->setStatus($statuses[mt_rand(0, count($statuses) - 1)]);
-            $reservation->getStatus() !== 'reading' ?: $reservation->setFine(mt_rand(0, 50) / 10);
 
             $availableCopies = $book->getAvailableCopies();
             $book->setAvailableCopies($availableCopies - 1);
@@ -48,6 +44,9 @@ class BookReservationFixtures extends Fixture implements DependentFixtureInterfa
             $book->setReservedCopies($reservedCopies + 1);
             $timesBorrowed = $book->getTimesBorrowed();
             $book->setTimesBorrowed($timesBorrowed + 1);
+
+            $reservation = new BookReservation($book, $reader, $dateFrom, $dateTo);
+            $reservation->setStatus($statuses[mt_rand(0, count($statuses) - 1)]);
 
             $manager->persist($reservation);
         }

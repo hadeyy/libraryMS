@@ -19,19 +19,23 @@ use joshtronic\LoremIpsum;
 
 class CommentFixtures extends Fixture implements DependentFixtureInterface
 {
+    private $lipsum;
+
+    public function __construct(LoremIpsum $lipsum)
+    {
+        $this->lipsum = $lipsum;
+    }
+
     public function load(ObjectManager $manager)
     {
-        $lipsum = new LoremIpsum();
-
         for ($i = 0; $i < 15; $i++) {
             /** @var Book $book */
             $book = $this->getReference('book' . mt_rand(0, 99));
             /** @var User $user */
             $user = $this->getReference('user' . mt_rand(0, 3));
+            $content = $this->lipsum->words(mt_rand(5, 20));
 
-            $comment = new Comment($user, $book);
-
-            $comment->setContent($lipsum->words(mt_rand(5, 20)));
+            $comment = new Comment($user, $book, $content);
 
             $manager->persist($comment);
         }

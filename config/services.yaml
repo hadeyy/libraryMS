@@ -148,12 +148,34 @@ services:
             - '@app.file_manager'
             - '@app.user_manager'
 
+    lipsum:
+        class: joshtronic\LoremIpsum
+
     App\DataFixtures\:
         resource: '../src/DataFixtures'
         tags: ['doctrine.fixture.orm']
 
+    App\DataFixtures\ActivityFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
+    App\DataFixtures\AuthorFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
+    App\DataFixtures\BookFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
+    App\DataFixtures\CommentFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
+    App\DataFixtures\NotificationFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
     App\DataFixtures\UserFixtures:
         tags: ['doctrine.fixture.orm']
         arguments:
-            - '@security.user_password_encoder.generic'
-
+            - '@app.password_manager'
