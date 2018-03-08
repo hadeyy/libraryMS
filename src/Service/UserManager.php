@@ -185,4 +185,16 @@ class UserManager
     {
         return $this->photoDirectory;
     }
+
+    public function createFromFormData(array $data)
+    {
+        return new User(
+            $data['firstName'],
+            $data['lastName'],
+            $data['username'],
+            $data['email'],
+            $data['photo'],
+            $data['plainPassword']
+        );
+    }
 }

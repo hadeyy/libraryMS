@@ -9,7 +9,6 @@
 namespace App\Controller;
 
 
-use App\Entity\User;
 use App\Form\UserType;
 use App\Service\FileManager;
 use App\Service\PasswordManager;
@@ -24,20 +23,20 @@ class RegistrationController extends AbstractController
     private $passwordManager;
     private $fileManager;
     private $userPhotoDirectory;
-    private $defaultUserRole;
+    private $defaultRegistrationRole;
 
     public function __construct(
         UserManager $userManager,
         PasswordManager $passwordManager,
         FileManager $fileManager,
         string $userPhotoDirectory,
-        string $defaultUserRole
+        string $defaultRegistrationRole
     ) {
         $this->userManager = $userManager;
         $this->passwordManager = $passwordManager;
         $this->fileManager = $fileManager;
         $this->userPhotoDirectory = $userPhotoDirectory;
-        $this->defaultUserRole = $defaultUserRole;
+        $this->defaultRegistrationRole = $defaultRegistrationRole;
     }
 
     /**
@@ -51,16 +50,15 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('index');
         }
 
-        $user = new User();
-
-        $form = $this->createForm(UserType::class, $user);
-
+        $form = $this->createForm(UserType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->userManager->createFromFormData($form->getData());
+
             $filename = $this->fileManager->upload($user->getPhoto(), $this->userPhotoDirectory);
             $encodedPassword = $this->passwordManager->encode($user);
 
-            $this->userManager->register($user, $filename, $encodedPassword, $this->defaultUserRole);
+            $this->userManager->register($user, $filename, $encodedPassword, $this->defaultRegistrationRole);
             $this->userManager->save($user);
 
             $this->addFlash('success', 'Registration successful!');
