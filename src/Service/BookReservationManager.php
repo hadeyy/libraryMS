@@ -25,6 +25,19 @@ class BookReservationManager
         $this->repository = $doctrine->getRepository(BookReservation::class);
     }
 
+    public function create(
+        Book $book,
+        User $reader,
+        array $dates
+    ): BookReservation {
+        return new BookReservation(
+            $book,
+            $reader,
+            $dates['dateFrom'],
+            $dates['dateTo']
+        );
+    }
+
     public function getByStatus(string $status)
     {
         return $this->repository->findReservationsByStatus($status);
@@ -53,11 +66,6 @@ class BookReservationManager
         $book->setReservedCopies($reservedCopies - 1);
     }
 
-    public function create(Book $book, User $user)
-    {
-        return new BookReservation($book, $user);
-    }
-
     private function updateBookAfterReservation(Book $book)
     {
         $availableCopies = $book->getAvailableCopies();
@@ -66,6 +74,19 @@ class BookReservationManager
         $book->setReservedCopies($reservedCopies + 1);
         $timesBorrowed = $book->getTimesBorrowed();
         $book->setTimesBorrowed($timesBorrowed + 1);
+    }
+
+    public function save(BookReservation $bookReservation)
+    {
+        $this->updateBookAfterReservation($this->getBook($bookReservation));
+
+        $this->em->persist($bookReservation);
+        $this->saveChanges();
+    }
+
+    public function saveChanges()
+    {
+        $this->em->flush();
     }
 
     public function setStatus(BookReservation $reservation, string $status)
@@ -91,18 +112,5 @@ class BookReservationManager
     public function getBook(BookReservation $bookReservation)
     {
         return $bookReservation->getBook();
-    }
-
-    public function saveChanges()
-    {
-        $this->em->flush();
-    }
-
-    public function save(BookReservation $bookReservation)
-    {
-        $this->updateBookAfterReservation($this->getBook($bookReservation));
-
-        $this->em->persist($bookReservation);
-        $this->saveChanges();
     }
 }

@@ -69,8 +69,6 @@ services:
     App\Controller\reader\LibraryController:
         tags: ['controller.service_arguments']
         arguments:
-            - '@app.library_manager'
-            - '@app.book_manager'
             - '@app.book_reservation_manager'
             - '@app.activity_manager'
             - '@security.token_storage'

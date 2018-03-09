@@ -12,9 +12,7 @@ namespace App\Controller\reader;
 use App\Entity\Book;
 use App\Form\BookReservationType;
 use App\Service\ActivityManager;
-use App\Service\BookManager;
 use App\Service\BookReservationManager;
-use App\Service\LibraryManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -27,21 +25,15 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
  */
 class LibraryController extends Controller
 {
-    private $libraryManager;
-    private $bookManager;
     private $bookReservationManager;
     private $activityManager;
     private $user;
 
     public function __construct(
-        LibraryManager $libraryManager,
-        BookManager $bookManager,
         BookReservationManager $bookReservationManager,
         ActivityManager $activityManager,
         TokenStorage $tokenStorage
     ) {
-        $this->libraryManager = $libraryManager;
-        $this->bookManager = $bookManager;
         $this->bookReservationManager = $bookReservationManager;
         $this->activityManager = $activityManager;
         $this->user = $tokenStorage->getToken()->getUser();
@@ -57,11 +49,11 @@ class LibraryController extends Controller
      */
     public function reserveBook(Request $request, Book $book)
     {
-        $reservation = $this->bookReservationManager->create($book, $this->user);
-
-        $form = $this->createForm(BookReservationType::class, $reservation);
+        $form = $this->createForm(BookReservationType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $reservation = $this->bookReservationManager->create($book, $this->user, $form->getData());
+
             $this->bookReservationManager->save($reservation);
             $this->activityManager->log($this->user, $book, 'Reserved a book');
 
