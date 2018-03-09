@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BookManager
 {
-    private $photoName;
-    private $photoPath;
     private $em;
     private $fileManager;
     private $coverDirectory;
@@ -31,9 +29,76 @@ class BookManager
         $this->coverDirectory = $bookCoverDirectory;
     }
 
-    public function create()
+    public function create(array $data): Book
     {
-        return new Book();
+        return new Book(
+            $data['ISBN'],
+            $data['title'],
+            $data['author'],
+            $data['pages'],
+            $data['language'],
+            $data['publisher'],
+            $data['publicationDate'],
+            $data['availableCopies'],
+            $data['cover'],
+            $data['annotation']
+        );
+    }
+
+    public function createArrayFromBook(Book $book): array
+    {
+        $photoPath = $this->coverDirectory . '/' . $book->getCover();
+
+        return [
+            'ISBN' => $book->getISBN(),
+            'title' => $book->getTitle(),
+            'author' => $book->getAuthor(),
+            'pages' => $book->getPages(),
+            'language' => $book->getLanguage(),
+            'publisher' => $book->getPublisher(),
+            'publicationDate' => $book->getPublicationDate(),
+            'availableCopies' => $book->getAvailableCopies(),
+            'cover' => $this->fileManager->createFileFromPath($photoPath),
+            'annotation' => $book->getAnnotation(),
+        ];
+    }
+
+    private function uploadCover(Book $book)
+    {
+        $filename = $this->fileManager->upload($book->getCover(), $this->coverDirectory);
+        $book->setCover($filename);
+    }
+
+    public function updateBook(Book $book, $data)
+    {
+        $photo = $data['cover'];
+        if ($photo instanceof UploadedFile) {
+            $photoPath = $this->coverDirectory . '/' . $book->getCover();
+            $this->fileManager->deleteFile($photoPath);
+
+            $filename = $this->fileManager->upload($photo, $this->coverDirectory);
+            $book->setCover($filename);
+        }
+
+        $book->setISBN($data['ISBN']);
+        $book->setTitle($data['title']);
+        $book->setAuthor($data['author']);
+        $book->setPages($data['pages']);
+        $book->setLanguage($data['language']);
+        $book->setPublisher($data['publisher']);
+        $book->setPublicationDate($data['publicationDate']);
+        $book->setAvailableCopies($data['availableCopies']);
+        $book->setAnnotation($data['annotation']);
+
+        $this->saveChanges();
+    }
+
+    public function remove(Book $book)
+    {
+        $this->fileManager->deleteFile($this->coverDirectory . '/' . $book->getCover());
+
+        $this->em->remove($book);
+        $this->saveChanges();
     }
 
     public function save(Book $book)
@@ -44,74 +109,8 @@ class BookManager
         $this->saveChanges();
     }
 
-    private function uploadCover(Book $book)
-    {
-        $filename = $this->fileManager->upload($this->getCover($book), $this->coverDirectory);
-        $this->setCover($book, $filename);
-    }
-
-    public function changePhotoFromPathToFile(Book $book)
-    {
-        $this->setPhotoName($this->getCover($book));
-        $this->setPhotoPath($this->coverDirectory . '/' . $this->getPhotoName());
-        $this->setCover($book, $this->fileManager->createFileFromPath($this->getPhotoPath()));
-    }
-
-    public function updateBook(Book $book)
-    {
-        $photo = $this->getCover($book);
-        if ($photo instanceof UploadedFile) {
-            $this->fileManager->deleteFile($this->getPhotoPath());
-            $filename = $this->fileManager->upload($photo, $this->coverDirectory);
-        } else {
-            $filename = $this->getPhotoName();
-        }
-
-        $this->setCover($book, $filename);
-
-        $this->saveChanges();
-    }
-
-    public function remove(Book $book)
-    {
-        $this->fileManager->deleteFile($this->coverDirectory . '/' . $this->getCover($book));
-
-        $this->em->remove($book);
-        $this->saveChanges();
-    }
-
-    public function getCover(Book $book)
-    {
-        return $book->getCover();
-    }
-
-    public function setCover(Book $book, $cover)
-    {
-        $book->setCover($cover);
-    }
-
     public function saveChanges()
     {
         $this->em->flush();
-    }
-
-    public function setPhotoPath(string $photoPath)
-    {
-        $this->photoPath = $photoPath;
-    }
-
-    public function getPhotoPath()
-    {
-        return $this->photoPath;
-    }
-
-    public function setPhotoName(string $photoName)
-    {
-        $this->photoName = $photoName;
-    }
-
-    public function getPhotoName()
-    {
-        return $this->photoName;
     }
 }

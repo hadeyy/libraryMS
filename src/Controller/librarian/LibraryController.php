@@ -66,11 +66,11 @@ class LibraryController extends Controller
      */
     public function newBook(Request $request)
     {
-        $book = $this->bookManager->create();
-
-        $form = $this->createForm(BookType::class, $book);
+        $form = $this->createForm(BookType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $book = $this->bookManager->create($form->getData());
+
             $this->bookManager->save($book);
             $this->activityManager->log($this->user, $book, 'Added a book');
 
@@ -91,12 +91,12 @@ class LibraryController extends Controller
      */
     public function editBook(Request $request, Book $book)
     {
-        $this->bookManager->changePhotoFromPathToFile($book);
+        $data =$this->bookManager->createArrayFromBook($book);
 
-        $form = $this->createForm(BookType::class, $book);
+        $form = $this->createForm(BookType::class, $data);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->bookManager->updateBook($book);
+            $this->bookManager->updateBook($book, $data);
             $this->activityManager->log($this->user, $book, 'Updated a book');
 
             return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
