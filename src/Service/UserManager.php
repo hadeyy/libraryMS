@@ -19,22 +19,42 @@ class UserManager
     private $em;
     private $repository;
     private $fileManager;
-    private $passwordManager;
     private $photoDirectory;
-    private $photoName;
-    private $photoPath;
 
     public function __construct(
         ManagerRegistry $doctrine,
         FileManager $fileManager,
-        PasswordManager $passwordManager,
         $userPhotoDirectory
     ) {
         $this->em = $doctrine->getManager();
         $this->repository = $doctrine->getRepository(User::class);
         $this->fileManager = $fileManager;
-        $this->passwordManager = $passwordManager;
         $this->photoDirectory = $userPhotoDirectory;
+    }
+
+    public function createUserFromArray(array $data): User
+    {
+        return new User(
+            $data['firstName'],
+            $data['lastName'],
+            $data['username'],
+            $data['email'],
+            $data['photo'],
+            $data['plainPassword']
+        );
+    }
+
+    public function createArrayFromUser(User $user): array
+    {
+        $photoPath = $this->photoDirectory . '/' . $user->getPhoto();
+
+        return [
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'username' => $user->getUsername(),
+            'email' => $user->getEmail(),
+            'photo' => $this->fileManager->createFileFromPath($photoPath),
+        ];
     }
 
     /**
@@ -49,9 +69,9 @@ class UserManager
         string $password,
         string $role
     ) {
-        $this->setPhoto($user, $filename);
-        $this->setPassword($user, $password);
-        $this->addRole($user, $role);
+        $user->setPhoto($filename);
+        $user->setPassword($password);
+        $user->addRole($role);
     }
 
     /**
@@ -85,10 +105,10 @@ class UserManager
     {
         $photo = $data['photo'];
         if ($photo instanceof UploadedFile) {
-            $photoPath = $this->photoDirectory .'/'.$user->getPhoto();
+            $photoPath = $this->photoDirectory . '/' . $user->getPhoto();
             $this->fileManager->deleteFile($photoPath);
 
-            $filename = $this->fileManager->upload($photo, $this->getPhotoDirectory());
+            $filename = $this->fileManager->upload($photo, $this->photoDirectory);
             $user->setPhoto($filename);
         }
 
@@ -121,46 +141,6 @@ class UserManager
         $this->em->flush();
     }
 
-    public function setPhoto(User $user, $photo)
-    {
-        $user->setPhoto($photo);
-    }
-
-    public function getPhoto(User $user)
-    {
-        return $user->getPhoto();
-    }
-
-    public function setPassword(User $user, $password)
-    {
-        $user->setPassword($password);
-    }
-
-    public function addRole(User $user, string $role)
-    {
-        $user->addRole($role);
-    }
-
-    public function setPhotoPath(string $photoPath)
-    {
-        $this->photoPath = $photoPath;
-    }
-
-    public function getPhotoPath()
-    {
-        return $this->photoPath;
-    }
-
-    public function setPhotoName(string $photoName)
-    {
-        $this->photoName = $photoName;
-    }
-
-    public function getPhotoName()
-    {
-        return $this->photoName;
-    }
-
     public function getFavorites(User $user)
     {
         return $user->getFavorites();
@@ -174,35 +154,5 @@ class UserManager
     public function removeFavorite(User $user, Book $book)
     {
         $user->removeFavorite($book);
-    }
-
-    public function getPhotoDirectory()
-    {
-        return $this->photoDirectory;
-    }
-
-    public function createUserFromArray(array $data): User
-    {
-        return new User(
-            $data['firstName'],
-            $data['lastName'],
-            $data['username'],
-            $data['email'],
-            $data['photo'],
-            $data['plainPassword']
-        );
-    }
-
-    public function createArrayFromUser(User $user): array
-    {
-        $photoPath = $this->photoDirectory .'/'.$user->getPhoto();
-
-        return [
-            'firstName' => $user->getFirstName(),
-            'lastName' => $user->getLastName(),
-            'username' => $user->getUsername(),
-            'email' => $user->getEmail(),
-            'photo' => $this->fileManager->createFileFromPath($photoPath),
-        ];
     }
 }

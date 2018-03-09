@@ -97,7 +97,6 @@ services:
         arguments:
             - '@doctrine'
             - '@app.file_manager'
-            - '@app.password_manager'
             - '%app.user_photo_dir%'
     app.file_manager:
         class: App\Service\FileManager

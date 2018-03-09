@@ -165,6 +165,7 @@ class User implements UserInterface, \Serializable
         $this->photo = $photo;
         $this->plainPassword = $plainPassword;
         $this->roles = $roles;
+        $this->password = '123456';
         $this->registeredAt = new \DateTime();
         $this->notifications = new ArrayCollection();
         $this->bookReservations = new ArrayCollection();

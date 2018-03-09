@@ -15,7 +15,6 @@ use App\Entity\BookReservation;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\FileManager;
-use App\Service\PasswordManager;
 use App\Service\UserManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -26,36 +25,115 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UserManagerTest extends WebTestCase
 {
+    public $user;
+
+    public function setUp()
+    {
+        $this->user = new User(
+            'firstName',
+            'lastName',
+            'username',
+            'email',
+            'photo',
+            'plainPassword'
+        );
+    }
+
+    public function testCreateUserFromArray()
+    {
+        $data = [
+            'firstName' => 'firstName',
+            'lastName' => 'lastName',
+            'username' => 'username',
+            'email' => 'email',
+            'photo' => 'photo',
+            'plainPassword' => 'plainPassword',
+        ];
+
+        $userManager = $this->getMockBuilder(UserManager::class)
+            ->disableOriginalConstructor()
+            ->setMethodsExcept(['createUserFromArray'])
+            ->getMock();
+
+        $user = $userManager->createUserFromArray($data);
+        $this->assertTrue(
+            $user instanceof User,
+            'Result is an instance of User class.'
+        );
+        $this->assertEquals('firstName', $user->getFirstName());
+        $this->assertEquals('lastName', $user->getLastName());
+        $this->assertEquals('username', $user->getUsername());
+        $this->assertEquals('email', $user->getEmail());
+        $this->assertEquals('photo', $user->getPhoto());
+        $this->assertEquals('plainPassword', $user->getPlainPassword());
+
+        return $user;
+    }
+
+    /**
+     * @depends testCreateUserFromArray
+     * @param User $user
+     */
+    public function testCreateArrayFromUser(User $user)
+    {
+        $file = $this->createMock(File::class);
+
+        $fileManager = $this->createMock(FileManager::class);
+        $fileManager->expects($this->once())
+            ->method('createFileFromPath')
+            ->with($this->isType('string'))
+            ->willReturn($file);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+
+        $userManager = $this->getMockBuilder(UserManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
+            ->setMethodsExcept(['createArrayFromUser'])
+            ->getMock();
+
+        $data = $userManager->createArrayFromUser($user);
+        $this->assertTrue(is_array($data), 'Result is an array.');
+        $this->assertCount(
+            5, $data,
+            'Array contains the correct number of elements.'
+        );
+        $this->assertArrayHasKey('firstName', $data);
+        $this->assertEquals($data['firstName'], $user->getFirstName());
+        $this->assertArrayHasKey('lastName', $data);
+        $this->assertEquals($data['lastName'], $user->getLastName());
+        $this->assertArrayHasKey('username', $data);
+        $this->assertEquals($data['username'], $user->getUsername());
+        $this->assertArrayHasKey('email', $data);
+        $this->assertEquals($data['email'], $user->getEmail());
+        $this->assertArrayHasKey('photo', $data);
+        $this->assertEquals($data['photo'], $file);
+    }
+
     public function testRegisterUpdatesUserData()
     {
         $userManager = $this->getMockBuilder(UserManager::class)
             ->disableOriginalConstructor()
             ->setMethodsExcept([
                 'register',
-                'setPhoto',
-                'setPassword',
-                'addRole',
             ])
             ->getMock();
 
-        $user = new User();
+        $this->assertEquals('photo', $this->user->getPhoto());
+        $this->assertEquals('123456', $this->user->getPassword());
+        $this->assertEquals(['ROLE_USER'], $this->user->getRoles());
 
-        $this->assertEquals('', $user->getPhoto());
-        $this->assertEquals('', $user->getPassword());
-        $this->assertEquals(['ROLE_USER'], $user->getRoles());
-
-        $userManager->register($user, 'photo.jpg', 'pass123', 'role1');
+        $userManager->register($this->user, 'photo.jpg', 'pass123', 'role1');
 
         $this->assertEquals(
-            'photo.jpg', $user->getPhoto(),
+            'photo.jpg', $this->user->getPhoto(),
             'User photo has been updated.'
         );
         $this->assertEquals(
-            'pass123', $user->getPassword(),
+            'pass123', $this->user->getPassword(),
             'User password has been updated.'
         );
-        $this->assertContains(
-            'role1', $user->getRoles(),
+        $this->assertEquals(
+            ['ROLE_USER', 'role1'], $this->user->getRoles(),
             'User roles have been updated.'
         );
     }
@@ -65,16 +143,15 @@ class UserManagerTest extends WebTestCase
      */
     public function testGetFavoriteBooksCallsUserRepository()
     {
-        $book = new Book();
-        $user = new User();
-        $user->addFavorite($book);
+        $book = $this->createMock(Book::class);
+        $this->user->addFavorite($book);
 
         $userRepository = $this->getMockBuilder(UserRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
         $userRepository->expects($this->once())
             ->method('findUserJoinedToFavoriteBooks')
-            ->with($user)
+            ->with($this->user)
             ->will($this->returnArgument(0));
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
@@ -85,14 +162,13 @@ class UserManagerTest extends WebTestCase
             ->willReturn($userRepository);
 
         $fileManager = $this->createMock(FileManager::class);
-        $passwordManager = $this->createMock(PasswordManager::class);
 
         $userManager = $this->getMockBuilder(UserManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, $passwordManager, null])
+            ->setConstructorArgs([$doctrine, $fileManager, null])
             ->setMethodsExcept(['getFavoriteBooks'])
             ->getMock();
 
-        $favorites = $userManager->getFavoriteBooks($user);
+        $favorites = $userManager->getFavoriteBooks($this->user);
 
         $this->assertTrue(
             $favorites instanceof ArrayCollection,
@@ -113,18 +189,19 @@ class UserManagerTest extends WebTestCase
      */
     public function testGetReservationsByStatusCallsUserRepository(string $status)
     {
-        $reservation = new BookReservation(new Book(), new User());
+        $book = $this->createMock(Book::class);
+        $date = $this->createMock(\DateTime::class);
+        $reservation = new BookReservation($book, $this->user, $date, $date);
         $reservation->setStatus($status);
 
-        $user = new User();
-        $user->addBookReservation($reservation);
+        $this->user->addBookReservation($reservation);
 
         $userRepository = $this->getMockBuilder(UserRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
         $userRepository->expects($this->once())
             ->method('findUserJoinedToReservations')
-            ->with($user, $status)
+            ->with($this->user, $status)
             ->will($this->returnArgument(0));
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
@@ -135,14 +212,13 @@ class UserManagerTest extends WebTestCase
             ->willReturn($userRepository);
 
         $fileManager = $this->createMock(FileManager::class);
-        $passwordManager = $this->createMock(PasswordManager::class);
 
         $userManager = $this->getMockBuilder(UserManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, $passwordManager, null])
+            ->setConstructorArgs([$doctrine, $fileManager, null])
             ->setMethodsExcept(['getReservationsByStatus'])
             ->getMock();
 
-        $reservations = $userManager->getReservationsByStatus($user, $status);
+        $reservations = $userManager->getReservationsByStatus($this->user, $status);
 
         $this->assertTrue(
             $reservations instanceof ArrayCollection,
@@ -162,141 +238,140 @@ class UserManagerTest extends WebTestCase
         ];
     }
 
-    public function testChangePhotoFromPathToFileCreatesAFile()
+    public function testUpdateProfileChangesUserDataWithNewPhoto()
     {
-        $user = new User();
-        $user->setPhoto('test.jpg');
+        $user = new User(
+            'firstName',
+            'lastName',
+            'username',
+            'email',
+            'photo',
+            'plainPassword'
+        );
 
-        $filePath = 'test_change_photo.jpg';
+        $filePath = 'test_update_photo.jpg';
         fopen($filePath, 'w');
+        $newData = [
+            'firstName' => 'Test',
+            'lastName' => 'Testerson',
+            'username' => 'tester',
+            'email' => 'test@test.er',
+            'photo' => new UploadedFile($filePath, $filePath),
+        ];
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
 
         $fileManager = $this->createMock(FileManager::class);
         $fileManager->expects($this->once())
-            ->method('createFileFromPath')
-            ->willReturn(new File($filePath));
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-        $passwordManager = $this->createMock(PasswordManager::class);
-
-        $userManager = $this->getMockBuilder(UserManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, $passwordManager, ''])
-            ->setMethodsExcept([
-                'changePhotoFromPathToFile',
-                'setPhotoName',
-                'getPhotoName',
-                'setPhotoPath',
-                'getPhotoPath',
-                'getPhoto',
-                'setPhoto',
-            ])
-            ->getMock();
-
-        $this->assertTrue(is_string(
-            $user->getPhoto()),
-            "User's photo is stored as string."
-        );
-        $userManager->changePhotoFromPathToFile($user);
-        $this->assertTrue(
-            $user->getPhoto() instanceof File,
-            "User's photo successfully changed from string to an instance of File."
-        );
-
-        unlink($filePath);
-    }
-
-    /**
-     * @dataProvider photoProvider
-     * @param $photo
-     * @param bool $isString
-     */
-    public function testUpdateProfileChangesPhotoAndPassword($photo, bool $isString)
-    {
-        $user = new User();
-        $user->setPhoto($photo);
-        $user->setPassword('1234');
-        $originalPhoto = $user->getPhoto();
-        $originalPassword = $user->getPassword();
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-
-        $fileManager = $this->createMock(FileManager::class);
-        $fileManager->expects($this->any())
             ->method('deleteFile')
             ->with($this->isType('string'));
-        $fileManager->expects($this->any())
+        $fileManager->expects($this->once())
             ->method('upload')
             ->with($this->isInstanceOf(UploadedFile::class), $this->isType('string'))
             ->willReturn('filename');
 
-        $passwordManager = $this->createMock(PasswordManager::class);
-        $passwordManager->expects($this->once())
-            ->method('encode')
-            ->willReturn('password');
-
         $userManager = $this->getMockBuilder(UserManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, $passwordManager, 'path/to/directory'])
+            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
             ->setMethodsExcept([
-                'updateProfile',
-                'setPhotoPath',
-                'getPhotoPath',
-                'setPhotoName',
-                'getPhotoName',
-                'setPhoto',
-                'getPhoto',
-                'setPassword',
-                'getPhotoDirectory',
+                'updateProfile'
             ])
             ->getMock();
-        $userManager->setPhotoPath('path/to/photo');
-        $userManager->setPhotoName('filename');
 
-        $userManager->updateProfile($user);
+        $userManager->updateProfile($user, $newData);
 
-        $this->assertEquals(
-            'filename', $user->getPhoto(),
-            "User's photo has been updated."
-        );
-        $this->assertEquals(
-            'password', $user->getPassword(),
-            "User's password has benn updated."
+        $this->assertNotEquals(
+            'firstName', $user->getFirstName(),
+            "Updated first name is not equal to original."
         );
         $this->assertNotEquals(
-            $originalPhoto, $user->getPhoto(),
+            'lastName', $user->getLastName(),
+            "Updated last name is not equal to original."
+        );
+        $this->assertNotEquals(
+            'username', $user->getUsername(),
+            "Updated username is not equal to original."
+        );
+        $this->assertNotEquals(
+            'email', $user->getEmail(),
+            "Updated email is not equal to original."
+        );
+        $this->assertNotEquals(
+            'photo', $user->getPhoto(),
             'Updated photo is not equal to original.'
         );
-        $this->assertNotEquals(
-            $originalPassword, $user->getPassword(),
-            'Updated password is not equal to original.'
-        );
 
-        $isString ?: unlink('test_update_photo.jpg');
+        unlink('test_update_photo.jpg');
     }
 
-    public function photoProvider()
+    public function testUpdateProfileChangesUserDataWithoutNewPhoto()
     {
-        $filePath = 'test_update_photo.jpg';
-        fopen($filePath, 'w');
+        $user = new User(
+            'firstName',
+            'lastName',
+            'username',
+            'email',
+            'photo',
+            'plainPassword'
+        );
 
-        return [
-            [new UploadedFile($filePath, $filePath), false],
-            [$filePath, true]
+        $newData = [
+            'firstName' => 'Test',
+            'lastName' => 'Testerson',
+            'username' => 'tester',
+            'email' => 'test@test.er',
+            'photo' => null,
         ];
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+
+        $fileManager = $this->createMock(FileManager::class);
+        $fileManager->expects($this->exactly(0))->method('deleteFile');
+        $fileManager->expects($this->exactly(0))->method('upload');
+
+        $userManager = $this->getMockBuilder(UserManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
+            ->setMethodsExcept([
+                'updateProfile'
+            ])
+            ->getMock();
+
+        $userManager->updateProfile($user, $newData);
+
+        $this->assertNotEquals(
+            'firstName', $user->getFirstName(),
+            "Updated first name is not equal to original."
+        );
+        $this->assertNotEquals(
+            'lastName', $user->getLastName(),
+            "Updated last name is not equal to original."
+        );
+        $this->assertNotEquals(
+            'username', $user->getUsername(),
+            "Updated username is not equal to original."
+        );
+        $this->assertNotEquals(
+            'email', $user->getEmail(),
+            "Updated email is not equal to original."
+        );
+        $this->assertEquals(
+            'photo', $user->getPhoto(),
+            'Original photo was not changed.'
+        );
     }
 
     public function testGetActivity()
     {
         $activity = $this->createMock(Activity::class);
 
-        $user = new User();
-        $user->addActivity($activity);
-        $user->addActivity($activity);
+        $this->user->addActivity($activity);
+        $this->user->addActivity($activity);
 
         $userManager = $this->getMockBuilder(UserManager::class)
             ->disableOriginalConstructor()
             ->setMethodsExcept(['getActivity'])
             ->getMock();
 
-        $activities = $userManager->getActivity($user);
+        $activities = $userManager->getActivity($this->user);
         $this->assertTrue(
             $activities instanceof ArrayCollection,
             'Result is an instance of ArrayCollection.'
@@ -309,7 +384,7 @@ class UserManagerTest extends WebTestCase
 
     public function testFindUsersByRoleCallsUserRepository()
     {
-        $expected = new ArrayCollection([new User()]);
+        $expected = new ArrayCollection([$this->user]);
 
         $userRepository = $this->getMockBuilder(UserRepository::class)
             ->disableOriginalConstructor()
@@ -327,10 +402,9 @@ class UserManagerTest extends WebTestCase
             ->willReturn($userRepository);
 
         $fileManager = $this->createMock(FileManager::class);
-        $passwordManager = $this->createMock(PasswordManager::class);
 
         $userManager = $this->getMockBuilder(UserManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, $passwordManager, null])
+            ->setConstructorArgs([$doctrine, $fileManager, null])
             ->setMethodsExcept(['findUsersByRole'])
             ->getMock();
 
@@ -339,7 +413,7 @@ class UserManagerTest extends WebTestCase
         $this->assertEquals($expected, $actual, 'Retrieved result matches expected.');
     }
 
-    public function testSavingMethodsCallEntityManagerMethods()
+    public function testSavingMethodsCallEntityManager()
     {
         $entityManager = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
@@ -358,33 +432,14 @@ class UserManagerTest extends WebTestCase
             ->willReturn($entityManager);
 
         $fileManager = $this->createMock(FileManager::class);
-        $passwordManager = $this->createMock(PasswordManager::class);
 
         $userManager = $this->getMockBuilder(UserManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, $passwordManager, null])
+            ->setConstructorArgs([$doctrine, $fileManager, null])
             ->setMethodsExcept(['save', 'saveChanges'])
             ->getMock();
 
-        $userManager->save(new User());
+        $userManager->save($this->user);
         $userManager->saveChanges();
-    }
-
-    public function testGetUserPhoto()
-    {
-        $user = new User();
-        $user->setPhoto('photo.jpg');
-
-        $userManager = $this->getMockBuilder(UserManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['getPhoto'])
-            ->getMock();
-
-        $actual = $userManager->getPhoto($user);
-
-        $this->assertEquals(
-            'photo.jpg', $actual,
-            'Retrieved result matches expected.'
-        );
     }
 
     public function testToggleFavoriteBook()
@@ -394,28 +449,27 @@ class UserManagerTest extends WebTestCase
             ->setMethodsExcept(['addFavorite', 'getFavorites', 'removeFavorite'])
             ->getMock();
 
-        $user = new User();
-        $book = new Book();
+        $book = $this->createMock(Book::class);
 
         $this->assertEmpty(
-            $user->getFavorites(),
+            $this->user->getFavorites(),
             'User favorites does not contain anything before test.'
         );
-        $userManager->addFavorite($user, $book);
-        $favorites = $userManager->getFavorites($user);
+        $userManager->addFavorite($this->user, $book);
+        $favorites = $userManager->getFavorites($this->user);
         $this->assertContains($book, $favorites, 'Favorites contain expected book.');
         $this->assertEquals(
             1, count($favorites),
             'Favorites contain exactly one book.'
         );
 
-        $userManager->removeFavorite($user, $book);
+        $userManager->removeFavorite($this->user, $book);
         $this->assertNotContains(
-            $book, $user->getFavorites(),
+            $book, $this->user->getFavorites(),
             'Book successfully removed from favorites'
         );
         $this->assertEmpty(
-            $user->getFavorites(),
+            $this->user->getFavorites(),
             'User favorites does not contain anything after test.'
         );
     }
