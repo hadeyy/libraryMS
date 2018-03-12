@@ -21,6 +21,32 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class BookReservationManagerTest extends WebTestCase
 {
+    public function testCreateAddsDataToReservation()
+    {
+        $book = $this->createMock(Book::class);
+        $reader = $this->createMock(User::class);
+        $dates = [
+            'dateFrom' => new \DateTime(),
+            'dateTo' => new \DateTime(),
+        ];
+
+        $reservationManager = $this->getMockBuilder(BookReservationManager::class)
+            ->disableOriginalConstructor()
+            ->setMethodsExcept(['create'])
+            ->getMock();
+
+        $reservation = $reservationManager->create($book, $reader, $dates);
+
+        $this->assertTrue(
+            $reservation instanceof BookReservation,
+            'Result is an instance of BookReservation class.'
+        );
+        $this->assertEquals($book, $reservation->getBook());
+        $this->assertEquals($reader, $reservation->getReader());
+        $this->assertEquals($dates['dateFrom'], $reservation->getDateFrom());
+        $this->assertEquals($dates['dateTo'], $reservation->getDateTo());
+    }
+
     public function testGetByStatusCallsBookReservationRepository()
     {
         $reservations = new ArrayCollection();

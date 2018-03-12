@@ -473,4 +473,21 @@ class UserManagerTest extends WebTestCase
             'User favorites does not contain anything after test.'
         );
     }
+
+    public function testGetPhotoDirectory()
+    {
+        $expected = 'some/directory';
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $fileManager = $this->createMock(FileManager::class);
+
+        $userManager = $this->getMockBuilder(UserManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, 'some/directory'])
+            ->setMethodsExcept(['getPhotoDirectory'])
+            ->getMock();
+
+        $actual = $userManager->getPhotoDirectory();
+
+        $this->assertEquals($expected, $actual);
+    }
 }

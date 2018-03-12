@@ -166,10 +166,10 @@ class AppManagerTest extends WebTestCase
             ->method('deleteFile')
             ->with($this->isType('string'));
 
-        $userManager = $this->createMock(UserManager::class);
-        $userManager->expects($this->once())
-            ->method('getPhotoDirectory')
-            ->willReturn('path/to/directory');
+        $userManager = $this->getMockBuilder(UserManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
+            ->setMethodsExcept(['getPhotoDirectory'])
+            ->getMock();
 
         $appManager = $this->getMockBuilder(AppManager::class)
             ->setConstructorArgs([$doctrine, $fileManager, $userManager])
