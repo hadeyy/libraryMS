@@ -307,7 +307,7 @@ class Book
         $this->language = $language;
     }
 
-    public function getGenres(): ArrayCollection
+    public function getGenres()
     {
         return $this->genres;
     }
@@ -377,7 +377,7 @@ class Book
         $this->annotation = $annotation;
     }
 
-    public function getRatings(): ArrayCollection
+    public function getRatings()
     {
         return $this->ratings;
     }
@@ -397,7 +397,7 @@ class Book
         $this->timesBorrowed = $timesBorrowed;
     }
 
-    public function getReservations(): ArrayCollection
+    public function getReservations()
     {
         return $this->reservations;
     }
@@ -407,7 +407,7 @@ class Book
         $this->reservations->add($reservation);
     }
 
-    public function getComments(): ArrayCollection
+    public function getComments()
     {
         return $this->comments;
     }
@@ -417,7 +417,7 @@ class Book
         $this->comments->add($comment);
     }
 
-    public function getActivities(): ArrayCollection
+    public function getActivities()
     {
         return $this->activities;
     }

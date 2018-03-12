@@ -109,7 +109,7 @@ class Author
         $this->lastName = $lastName;
     }
 
-    public function getBooks(): ArrayCollection
+    public function getBooks()
     {
         return $this->books;
     }

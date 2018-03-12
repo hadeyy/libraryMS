@@ -67,7 +67,7 @@ class Genre
         $this->name = $name;
     }
 
-    public function getBooks(): ArrayCollection
+    public function getBooks()
     {
         return $this->books;
     }
