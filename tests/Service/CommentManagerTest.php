@@ -21,22 +21,29 @@ class CommentManagerTest extends WebTestCase
 {
     public function testCreateAddsUserAndBookToComment()
     {
-        $user = new User();
-        $book = new Book();
+        $user = $this->createMock(User::class);
+        $book = $this->createMock(Book::class);
 
         $commentManager = $this->getMockBuilder(CommentManager::class)
             ->disableOriginalConstructor()
             ->setMethodsExcept(['create'])
             ->getMock();
 
-        $comment = $commentManager->create($user, $book);
+        $comment = $commentManager->create($user, $book, 'content');
 
         $this->assertTrue(
             $comment instanceof Comment,
             'Result is an instance of Comment class.'
         );
-        $this->assertEquals($user, $comment->getAuthor(), 'Comment author matches expected.');
-        $this->assertEquals($book, $comment->getBook(), 'Comment book matches expected.');
+        $this->assertEquals(
+            $user, $comment->getAuthor(),
+            'Comment author matches expected.');
+        $this->assertEquals(
+            $book, $comment->getBook(),
+            'Comment book matches expected.');
+        $this->assertEquals(
+            'content', $comment->getContent(),
+            'Comment content matches expected.');
 
         return $comment;
     }

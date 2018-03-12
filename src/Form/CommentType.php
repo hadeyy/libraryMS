@@ -9,11 +9,12 @@
 namespace App\Form;
 
 
-use App\Entity\Comment;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class CommentType extends AbstractType
 {
@@ -21,13 +22,22 @@ class CommentType extends AbstractType
     {
         $builder->add('content', TextareaType::class, [
             'data' => '',
+            'constraints' => [
+                new NotBlank(),
+                new Length([
+                    'min' => 2,
+                    'minMessage' => 'Comment must be at least {{ limit }} characters long.',
+                    'max' => 350,
+                    'maxMessage' => 'Comment cannot be longer than {{ limit }} characters.',
+                ]),
+            ],
         ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Comment::class,
+            'data_class' => null,
         ]);
     }
 }
