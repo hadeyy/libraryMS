@@ -155,4 +155,9 @@ class UserManager
     {
         $user->removeFavorite($book);
     }
+
+    public function getPhotoDirectory()
+    {
+        return $this->photoDirectory;
+    }
 }

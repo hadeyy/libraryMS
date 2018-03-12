@@ -31,9 +31,16 @@ class AppManager
         $this->userManager = $userManager;
     }
 
-    public function createUser()
+    public function createUser(array $data): User
     {
-        return new User();
+        return new User(
+            $data['firstName'],
+            $data['lastName'],
+            $data['username'],
+            $data['email'],
+            $data['photo'],
+            $data['plainPassword']
+        );
     }
 
     public function changeRole(User $user, string $role)
@@ -47,7 +54,7 @@ class AppManager
     public function deleteUser(User $user)
     {
         $photoDirectory = $this->userManager->getPhotoDirectory();
-        $photo = $this->userManager->getPhoto($user);
+        $photo = $user->getPhoto();
         $this->fileManager->deleteFile($photoDirectory . '/' . $photo);
 
         $this->remove($user);

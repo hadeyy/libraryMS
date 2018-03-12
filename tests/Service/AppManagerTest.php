@@ -23,18 +23,33 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AppManagerTest extends WebTestCase
 {
-    public function testCreateUser()
+    public function testCreateUserAddsDataToUser()
     {
         $appManager = $this->getMockBuilder(AppManager::class)
             ->disableOriginalConstructor()
             ->setMethodsExcept(['createUser'])
             ->getMock();
 
-        $user = $appManager->createUser();
+        $data = [
+            'firstName' => 'firstName',
+            'lastName' => 'lastName',
+            'username' => 'username',
+            'email' => 'email',
+            'photo' => 'photo',
+            'plainPassword' => 'plainPassword',
+        ];
+
+        $user = $appManager->createUser($data);
         $this->assertTrue(
             $user instanceof User,
             'Result is an instance of User class.'
         );
+        $this->assertEquals('firstName', $user->getFirstName());
+        $this->assertEquals('lastName', $user->getLastName());
+        $this->assertEquals('username', $user->getUsername());
+        $this->assertEquals('email', $user->getEmail());
+        $this->assertEquals('photo', $user->getPhoto());
+        $this->assertEquals('plainPassword', $user->getPlainPassword());
     }
 
     public function testGetAllActivityCallsActivityRepository()
@@ -66,7 +81,7 @@ class AppManagerTest extends WebTestCase
         $this->assertEquals(new ArrayCollection(), $result);
     }
 
-    public function testRemoveAndSavingMethodsCallEntityManagerMethods()
+    public function testRemoveAndSavingMethodsCallEntityManager()
     {
         $entityManager = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
@@ -95,12 +110,12 @@ class AppManagerTest extends WebTestCase
             ->setMethodsExcept(['save', 'saveChanges', 'remove'])
             ->getMock();
 
-        $user = new User();
-        $book = new Book();
+        $user = $this->createMock(User::class);
+        $book = $this->createMock(Book::class);
 
         $appManager->save($user);
         $appManager->saveChanges();
-        $appManager->remove(new Comment($user, $book));
+        $appManager->remove(new Comment($user, $book, 'comment'));
     }
 
     public function testChangeRoleResetsRoles()
@@ -110,19 +125,29 @@ class AppManagerTest extends WebTestCase
             ->setMethodsExcept(['changeRole'])
             ->getMock();
 
-        $user = new User();
+        $user = new User(
+            'firstName',
+            'lastName',
+            'username',
+            'email',
+            'photo',
+            'plainPassword'
+        );
         $user->addRole('ROLE_READER');
         $user->addRole('ROLE_LIBRARIAN');
         $user->addRole('ROLE_ADMIN');
         $user->addRole('test_role');
 
+        $expected = ['ROLE_USER', 'ROLE_UPDATED'];
+
         $this->assertEquals(5, count($user->getRoles()));
         $appManager->changeRole($user, 'ROLE_UPDATED');
         $this->assertEquals(2, count($user->getRoles()));
         $this->assertContains('ROLE_UPDATED', $user->getRoles());
+        $this->assertEquals($expected, $user->getRoles());
     }
 
-    public function testDeleteUserCallsFileAndEntityManagerMethods()
+    public function testDeleteUserCallsFileAndEntityManagers()
     {
         $entityManager = $this->createMock(EntityManager::class);
         $entityManager->expects($this->once())
@@ -145,17 +170,21 @@ class AppManagerTest extends WebTestCase
         $userManager->expects($this->once())
             ->method('getPhotoDirectory')
             ->willReturn('path/to/directory');
-        $userManager->expects($this->once())
-            ->method('getPhoto')
-            ->with($this->isInstanceOf(User::class))
-            ->willReturn('filename');
 
         $appManager = $this->getMockBuilder(AppManager::class)
             ->setConstructorArgs([$doctrine, $fileManager, $userManager])
             ->setMethodsExcept(['deleteUser', 'remove', 'saveChanges'])
             ->getMock();
 
-        $appManager->deleteUser(new User());
+        $user = new User(
+            'firstName',
+            'lastName',
+            'username',
+            'email',
+            'photo',
+            'plainPassword'
+        );
+        $appManager->deleteUser($user);
     }
 
     public function testDeleteCommentCallsEntityManager()
@@ -180,6 +209,9 @@ class AppManagerTest extends WebTestCase
             ->setMethodsExcept(['deleteComment', 'remove', 'saveChanges'])
             ->getMock();
 
-        $appManager->deleteComment(new Comment(new User(), new Book()));
+        $user = $this->createMock(User::class);
+        $book = $this->createMock(Book::class);
+
+        $appManager->deleteComment(new Comment($user, $book, 'comment'));
     }
 }
