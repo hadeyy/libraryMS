@@ -27,12 +27,14 @@ class ActivityManagerTest extends WebTestCase
             ->disableOriginalConstructor()
             ->setMethodsExcept(['log'])
             ->getMock();
-
         $activityManager->expects($this->once())
             ->method('save')
             ->with($this->isInstanceOf(Activity::class));
 
-        $activityManager->log(new User(), new Book(), '');
+        $user = $this->createMock(User::class);
+        $book = $this->createMock(Book::class);
+
+        $activityManager->log($user, $book, 'title');
     }
 
     public function testGetRecentActivityCallsActivityRepository()
@@ -84,6 +86,9 @@ class ActivityManagerTest extends WebTestCase
             ->setMethodsExcept(['save'])
             ->getMock();
 
-        $activityManager->save(new Activity(new User(), new Book(), 'title'));
+        $user = $this->createMock(User::class);
+        $book = $this->createMock(Book::class);
+
+        $activityManager->save(new Activity($user, $book, 'title'));
     }
 }
