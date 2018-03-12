@@ -112,5 +112,6 @@ class BookManager
     public function saveChanges()
     {
         $this->em->flush();
+        $this->em->clear();
     }
 }

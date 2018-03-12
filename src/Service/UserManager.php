@@ -139,6 +139,7 @@ class UserManager
     public function saveChanges()
     {
         $this->em->flush();
+        $this->em->clear();
     }
 
     public function getFavorites(User $user)

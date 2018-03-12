@@ -224,6 +224,8 @@ class BookReservationManagerTest extends WebTestCase
             ->with($this->isInstanceOf(BookReservation::class));
         $entityManager->expects($this->exactly(2))
             ->method('flush');
+        $entityManager->expects($this->exactly(2))
+            ->method('clear');
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
             ->disableOriginalConstructor()

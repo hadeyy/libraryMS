@@ -229,6 +229,8 @@ class AuthorManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Author::class));
         $entityManager->expects($this->exactly(2))
             ->method('flush');
+        $entityManager->expects($this->exactly(2))
+            ->method('clear');
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
             ->disableOriginalConstructor()
@@ -256,6 +258,8 @@ class AuthorManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Author::class));
         $entityManager->expects($this->once())
             ->method('flush');
+        $entityManager->expects($this->once())
+            ->method('clear');
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
@@ -290,6 +294,8 @@ class AuthorManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Author::class));
         $entityManager->expects($this->once())
             ->method('flush');
+        $entityManager->expects($this->once())
+            ->method('clear');
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())

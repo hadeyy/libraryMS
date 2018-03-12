@@ -90,6 +90,7 @@ class AuthorManager
     public function saveChanges()
     {
         $this->em->flush();
+        $this->em->clear();
     }
 
     public function remove(Author $author)

@@ -81,11 +81,12 @@ class AppManager
     public function saveChanges()
     {
         $this->em->flush();
+        $this->em->clear();
     }
 
     public function remove($entity)
     {
         $this->em->remove($entity);
-        $this->em->flush();
+        $this->saveChanges();
     }
 }

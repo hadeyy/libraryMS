@@ -124,6 +124,8 @@ class BookManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Book::class));
         $entityManager->expects($this->once())
             ->method('flush');
+        $entityManager->expects($this->once())
+            ->method('clear');
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
@@ -153,6 +155,8 @@ class BookManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Book::class));
         $entityManager->expects($this->exactly(2))
             ->method('flush');
+        $entityManager->expects($this->exactly(2))
+            ->method('clear');
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
             ->disableOriginalConstructor()

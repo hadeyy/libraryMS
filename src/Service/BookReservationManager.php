@@ -87,6 +87,7 @@ class BookReservationManager
     public function saveChanges()
     {
         $this->em->flush();
+        $this->em->clear();
     }
 
     public function setStatus(BookReservation $reservation, string $status)

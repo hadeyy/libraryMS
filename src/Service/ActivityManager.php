@@ -49,5 +49,6 @@ class ActivityManager
     {
         $this->em->persist($activity);
         $this->em->flush();
+        $this->em->clear();
     }
 }

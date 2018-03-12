@@ -91,6 +91,8 @@ class AppManagerTest extends WebTestCase
             ->with($this->isInstanceOf(User::class));
         $entityManager->expects($this->exactly(3))
             ->method('flush');
+        $entityManager->expects($this->exactly(3))
+            ->method('clear');
         $entityManager->expects($this->once())
             ->method('remove')
             ->with($this->isType('object'));
@@ -155,6 +157,8 @@ class AppManagerTest extends WebTestCase
             ->with($this->isInstanceOf(User::class));
         $entityManager->expects($this->once())
             ->method('flush');
+        $entityManager->expects($this->once())
+            ->method('clear');
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->exactly(2))
@@ -195,6 +199,8 @@ class AppManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Comment::class));
         $entityManager->expects($this->once())
             ->method('flush');
+        $entityManager->expects($this->once())
+            ->method('clear');
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
