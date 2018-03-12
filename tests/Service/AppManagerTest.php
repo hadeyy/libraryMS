@@ -157,7 +157,7 @@ class AppManagerTest extends WebTestCase
             ->method('flush');
 
         $doctrine = $this->createMock(ManagerRegistry::class);
-        $doctrine->expects($this->once())
+        $doctrine->expects($this->exactly(2))
             ->method('getManager')
             ->willReturn($entityManager);
 
