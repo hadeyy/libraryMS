@@ -119,11 +119,10 @@ class LibraryController extends Controller
      */
     public function newAuthor(Request $request)
     {
-        $author = $this->authorManager->create();
-
-        $form = $this->createForm(AuthorType::class, $author);
+        $form = $this->createForm(AuthorType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $author = $this->authorManager->create($form->getData());
             $this->authorManager->save($author);
 
             return $this->redirectToRoute('show-catalog');
@@ -133,6 +132,37 @@ class LibraryController extends Controller
             'catalog/author/new.html.twig',
             ['form' => $form->createView()]
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param Author $author
+     *
+     * @return RedirectResponse|Response
+     */
+    public function editAuthor(Request $request, Author $author)
+    {
+        $data = $this->authorManager->createArrayFromAuthor($author);
+
+        $form = $this->createForm(AuthorType::class, $data);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->authorManager->updateAuthor($author, $data);
+
+            return $this->redirectToRoute('show-author', ['id' => $author->getId()]);
+        }
+
+        return $this->render(
+            'catalog/author/edit.html.twig',
+            ['form' => $form->createView()]
+        );
+    }
+
+    public function deleteAuthor(Author $author)
+    {
+        $this->authorManager->remove($author);
+
+        return $this->redirectToRoute('show-catalog');
     }
 
     /**
@@ -196,36 +226,5 @@ class LibraryController extends Controller
             'librarian/users.html.twig',
             ['users' => $this->userManager->findUsersByRole('ROLE_READER')]
         );
-    }
-
-    /**
-     * @param Request $request
-     * @param Author $author
-     *
-     * @return RedirectResponse|Response
-     */
-    public function editAuthor(Request $request, Author $author)
-    {
-        $this->authorManager->changePhotoFromPathToFile($author);
-
-        $form = $this->createForm(AuthorType::class, $author);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->authorManager->updateAuthor($author);
-
-            return $this->redirectToRoute('show-author', ['id' => $author->getId()]);
-        }
-
-        return $this->render(
-            'catalog/author/edit.html.twig',
-            ['form' => $form->createView()]
-        );
-    }
-
-    public function deleteAuthor(Author $author)
-    {
-        $this->authorManager->remove($author);
-
-        return $this->redirectToRoute('show-catalog');
     }
 }

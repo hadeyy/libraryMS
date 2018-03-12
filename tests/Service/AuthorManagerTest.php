@@ -20,76 +20,183 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class AuthorManagerTest extends WebTestCase
 {
-    public function testCreate()
+    public function testCreateAddsDataToAuthor()
     {
         $authorManager = $this->getMockBuilder(AuthorManager::class)
             ->disableOriginalConstructor()
             ->setMethodsExcept(['create'])
             ->getMock();
 
-        $author = $authorManager->create();
+        $data = [
+            'firstName' => 'testFirstName',
+            'lastName' => 'testLastName',
+            'country' => 'testCountry',
+            'portrait' => 'testPortrait',
+        ];
 
-        $this->assertTrue($author instanceof Author, 'Result is an instance of Author class.');
+        $author = $authorManager->create($data);
+
+        $this->assertTrue(
+            $author instanceof Author,
+            'Result is an instance of Author class.'
+        );
+        $this->assertEquals('testFirstName', $author->getFirstName());
+        $this->assertEquals('testCountry', $author->getCountry());
+        $this->assertEquals('testLastName', $author->getLastName());
+        $this->assertEquals('testPortrait', $author->getPortrait());
     }
 
-    /**
-     * @dataProvider portraitProvider
-     * @param $portrait
-     * @param $newFile
-     */
-    public function testUpdateAuthorChangesPortrait($portrait, $newFile)
+    public function testCreateArrayFromAuthorWithAllData()
     {
-        $author = new Author();
-        $author->setPortrait($portrait);
+        $author = new Author(
+            'firstName',
+            'lastName',
+            'country',
+            'portrait'
+        );
+
+        $file = $this->createMock(File::class);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $fileManager = $this->createMock(FileManager::class);
+        $fileManager->expects($this->once())
+            ->method('createFileFromPath')
+            ->with($this->isType('string'))
+            ->willReturn($file);
+
+        $authorManager = $this->getMockBuilder(AuthorManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
+            ->setMethodsExcept(['createArrayFromAuthor'])
+            ->getMock();
+
+        $data = $authorManager->createArrayFromAuthor($author);
+
+        $this->assertTrue(is_array($data), 'Result is an array.');
+        $this->assertCount(
+            4, $data,
+            'Array contains the correct number of elements.'
+        );
+        $this->assertArrayHasKey('firstName', $data);
+        $this->assertEquals($data['firstName'], $author->getFirstName());
+        $this->assertArrayHasKey('lastName', $data);
+        $this->assertEquals($data['lastName'], $author->getLastName());
+        $this->assertArrayHasKey('country', $data);
+        $this->assertEquals($data['country'], $author->getCountry());
+        $this->assertArrayHasKey('portrait', $data);
+        $this->assertEquals($data['portrait'], $file);
+    }
+
+    public function testCreateArrayFromAuthorWithRequiredData()
+    {
+        $author = new Author(
+            'firstName',
+            null,
+            'country',
+            null
+        );
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $fileManager = $this->createMock(FileManager::class);
+        $fileManager->expects($this->exactly(0))
+            ->method('createFileFromPath');
+
+        $authorManager = $this->getMockBuilder(AuthorManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
+            ->setMethodsExcept(['createArrayFromAuthor'])
+            ->getMock();
+
+        $data = $authorManager->createArrayFromAuthor($author);
+
+        $this->assertTrue(is_array($data), 'Result is an array.');
+        $this->assertCount(
+            4, $data,
+            'Array contains the correct number of elements.'
+        );
+        $this->assertArrayHasKey('firstName', $data);
+        $this->assertEquals($data['firstName'], $author->getFirstName());
+        $this->assertArrayHasKey('lastName', $data);
+        $this->assertEquals($data['lastName'], $author->getLastName());
+        $this->assertArrayHasKey('country', $data);
+        $this->assertEquals($data['country'], $author->getCountry());
+        $this->assertArrayHasKey('portrait', $data);
+        $this->assertEquals($data['portrait'], $author->getPortrait());
+    }
+
+    public function testUpdateAuthorChangesAuthorDataWithNewPortrait()
+    {
+        $author = new Author(
+            'firstName',
+            'lastName',
+            'country',
+            'portrait'
+        );
+
+        $filePath = 'test_update_portrait.jpg';
+        fopen($filePath, 'w');
+        $newData = [
+            'firstName' => 'testFirstName',
+            'lastName' => 'testLastName',
+            'country' => 'testCountry',
+            'portrait' => new UploadedFile($filePath, $filePath),
+        ];
 
         $doctrine = $this->createMock(ManagerRegistry::class);
 
         $fileManager = $this->createMock(FileManager::class);
-        $fileManager->expects($this->any())
+        $fileManager->expects($this->once())
             ->method('deleteFile')
             ->with($this->isType('string'));
-        $fileManager->expects($this->any())
+        $fileManager->expects($this->once())
             ->method('upload')
             ->with($this->isInstanceOf(UploadedFile::class), $this->isType('string'))
             ->willReturn('filename');
 
         $authorManager = $this->getMockBuilder(AuthorManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, ''])
-            ->setMethodsExcept([
-                'updateAuthor',
-                'getPortrait',
-                'getPhotoPath',
-            ])
+            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
+            ->setMethodsExcept(['updateAuthor'])
             ->getMock();
-        $authorManager->expects($this->any())
-            ->method('getPhotoName');
-        $authorManager->expects($this->once())
-            ->method('setPortrait')
-            ->with($this->isInstanceOf(Author::class), $this->anything());
         $authorManager->expects($this->once())
             ->method('saveChanges');
 
-        $authorManager->updateAuthor($author);
+        $authorManager->updateAuthor($author, $newData);
 
-        $newFile ? unlink('test_update_portrait.jpg') : null;
+        $this->assertNotEquals(
+            'firstName', $author->getFirstName(),
+            'Updated first name is not equal to original.'
+        );
+        $this->assertNotEquals(
+            'lastName', $author->getLastName(),
+            'Updated last name is not equal to original.'
+        );
+        $this->assertNotEquals(
+            'country', $author->getCountry(),
+            'Updated country is not equal to original.'
+        );
+        $this->assertEquals(
+            'filename', $author->getPortrait(),
+            'Author portrait has been updated.'
+        );
+
+        unlink('test_update_portrait.jpg');
     }
 
-    public function portraitProvider()
+    public function testUpdateAuthorWithoutNewPortrait()
     {
-        $filePath = 'test_update_portrait.jpg';
-        fopen($filePath, 'w');
-        $uploadedFile = $this->createMock(UploadedFile::class);
+        $author = new Author(
+            'firstName',
+            'lastName',
+            'country',
+            'portrait'
+        );
 
-        return [
-          [null, false],
-          [$uploadedFile, true],
-          ['test_portrait.jpg', false],
+        $newData = [
+            'firstName' => 'testFirstName',
+            'lastName' => 'testLastName',
+            'country' => 'testCountry',
+            'portrait' => null,
         ];
-    }
 
-    public function testUpdateAuthorWithoutPortrait()
-    {
-        $author = new Author();
+        $doctrine = $this->createMock(ManagerRegistry::class);
 
         $fileManager = $this->createMock(FileManager::class);
         $fileManager->expects($this->exactly(0))
@@ -98,71 +205,21 @@ class AuthorManagerTest extends WebTestCase
             ->method('upload');
 
         $authorManager = $this->getMockBuilder(AuthorManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept([
-                'updateAuthor',
-                'getPortrait',
-                'getPhotoName',
-            ])
+            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
+            ->setMethodsExcept(['updateAuthor'])
             ->getMock();
-        $authorManager->expects($this->exactly(0))
-            ->method('getPhotoPath');
-        $authorManager->expects($this->once())
-            ->method('setPortrait')
-            ->with($this->isInstanceOf(Author::class), $this->anything());
         $authorManager->expects($this->once())
             ->method('saveChanges');
 
-        $authorManager->setPhotoName($author->getPortrait());
+        $authorManager->updateAuthor($author, $newData);
 
-        $authorManager->updateAuthor($author);
-
-        $this->assertEquals(null, $author->getPortrait());
+        $this->assertEquals(
+            'portrait', $author->getPortrait(),
+            'Original portrait was not changed.'
+        );
     }
 
-    public function testChangePhotoFromPathToFileCreatesAFile()
-    {
-        $author = new Author();
-        $author->setPortrait('test.jpg');
-
-        $filePath = 'test_change_portrait.jpg';
-        fopen($filePath, 'w');
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-
-        $fileManager = $this->createMock(FileManager::class);
-        $fileManager->expects($this->once())
-            ->method('createFileFromPath')
-            ->with($this->isType('string'))
-            ->willReturn(new File($filePath));
-
-        $authorManger= $this->getMockBuilder(AuthorManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
-            ->setMethodsExcept([
-                'changePhotoFromPathToFile',
-                'getPortrait',
-                'setPhotoName',
-                'setPhotoPath',
-                'getPhotoName',
-                'setPortrait',
-                'getPhotoPath',
-            ])
-            ->getMock();
-
-        $this->assertTrue(
-            is_string($author->getPortrait()),
-            'Author portrait is stored as string.'
-        );
-        $authorManger->changePhotoFromPathToFile($author);
-        $this->assertTrue(
-            $author->getPortrait() instanceof File,
-            'Author portrait successfully changed from string to an instance of File.'
-        );
-
-        unlink($filePath);
-    }
-
-    public function testSavingMethodsCallEntityManagerMethods()
+    public function testSavingMethodsCallEntityManager()
     {
         $entityManager = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
@@ -187,11 +244,11 @@ class AuthorManagerTest extends WebTestCase
             ->setMethodsExcept(['save', 'saveChanges'])
             ->getMock();
 
-        $authorManager->save(new Author());
+        $authorManager->save(new Author('firstName', null, 'country'));
         $authorManager->saveChanges();
     }
 
-    public function testRemoveCallsFileAndEntityManagerMethods()
+    public function testRemoveAuthorWithPortraitCallsFileAndEntityManagers()
     {
         $entityManager = $this->createMock(EntityManager::class);
         $entityManager->expects($this->once())
@@ -214,11 +271,40 @@ class AuthorManagerTest extends WebTestCase
             ->setConstructorArgs([$doctrine, $fileManager, ''])
             ->setMethodsExcept(['remove', 'saveChanges'])
             ->getMock();
-        $bookManager->expects($this->once())
-            ->method('getPortrait')
-            ->with($this->isInstanceOf(Author::class))
-            ->willReturn('filename');
 
-        $bookManager->remove(new Author());
+        $bookManager->remove(
+            new Author(
+                'firstName',
+                null,
+                'country',
+                'portrait'
+            )
+        );
+    }
+
+    public function testRemoveAuthorWithoutPortraitCallsOnlyEntityManager()
+    {
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('remove')
+            ->with($this->isInstanceOf(Author::class));
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+        $fileManager->expects($this->exactly(0))
+            ->method('deleteFile');
+
+        $bookManager = $this->getMockBuilder(AuthorManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, ''])
+            ->setMethodsExcept(['remove', 'saveChanges'])
+            ->getMock();
+
+        $bookManager->remove(new Author('firstName', null, 'country'));
     }
 }
