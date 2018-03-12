@@ -17,17 +17,21 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GenreManagerTest extends WebTestCase
 {
-    public function testCreateMakesANewGenre()
+    public function testCreateAddsDataToGenre()
     {
         $genreManager = $this->getMockBuilder(GenreManager::class)
             ->disableOriginalConstructor()
             ->setMethodsExcept(['create'])
             ->getMock();
 
-        $expected = new Genre();
-        $actual = $genreManager->create();
+        $data = ['name' => 'genre'];
+        $genre = $genreManager->create($data);
 
-        $this->assertEquals($expected, $actual, 'Result matches expected.');
+        $this->assertTrue(
+            $genre instanceof Genre,
+            'Result is an instance of Genre class.'
+        );
+        $this->assertEquals('genre', $genre->getName(),'Result matches expected.');
     }
 
     public function testSaveCallsEntityManager()
@@ -51,6 +55,6 @@ class GenreManagerTest extends WebTestCase
             ->setMethodsExcept(['save'])
             ->getMock();
 
-        $genreManager->save(new Genre());
+        $genreManager->save(new Genre('name'));
     }
 }

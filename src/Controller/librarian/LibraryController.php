@@ -172,11 +172,10 @@ class LibraryController extends Controller
      */
     public function newGenre(Request $request)
     {
-        $genre = $this->genreManager->create();
-
-        $form = $this->createForm(GenreType::class, $genre);
+        $form = $this->createForm(GenreType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $genre = $this->genreManager->create($form->getData());
             $this->genreManager->save($genre);
 
             return $this->redirectToRoute('show-catalog');

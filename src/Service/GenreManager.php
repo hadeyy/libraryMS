@@ -34,9 +34,9 @@ class GenreManager
         return $bookRepository->findGenreBooksAndPaginate($genre, $currentPage, $booksPerPage);
     }
 
-    public function create()
+    public function create(array $data): Genre
     {
-        return new Genre();
+        return new Genre($data['name']);
     }
 
     public function save(Genre $genre)
