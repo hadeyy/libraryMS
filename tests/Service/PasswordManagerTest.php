@@ -18,8 +18,10 @@ class PasswordManagerTest extends WebTestCase
 {
     public function testEncodeCallsUserPasswordEncoderInterface()
     {
-        $user = new User();
-        $user->setPlainPassword('password');
+        $user = $this->createMock(User::class);
+        $user->expects($this->once())
+            ->method('getPlainPassword')
+            ->willReturn('plainPassword');
 
         $passwordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
         $passwordEncoder->expects($this->once())
