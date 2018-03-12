@@ -23,19 +23,23 @@ class RatingManagerTest extends WebTestCase
 {
     public function testCreate()
     {
-        $book = new Book();
-        $user = new User();
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
         $value = 7;
-
-        $expected = new Rating($value, $book, $user);
 
         $ratingManager = $this->getMockBuilder(RatingManager::class)
             ->disableOriginalConstructor()
             ->setMethodsExcept(['create'])
             ->getMock();
 
-        $actual = $ratingManager->create($book, $user, $value);
-        $this->assertEquals($expected, $actual);
+        $rating = $ratingManager->create($book, $user, $value);
+        $this->assertTrue(
+            $rating instanceof Rating,
+            'Result is an instance of Rating class.'
+        );
+        $this->assertEquals($book, $rating->getBook());
+        $this->assertEquals($user, $rating->getRater());
+        $this->assertEquals($value, $rating->getValue());
     }
 
     /**
@@ -61,7 +65,10 @@ class RatingManagerTest extends WebTestCase
         $ratingManager->expects($this->exactly(0))
             ->method('saveChanges');
 
-        $ratingManager->rate(new Book(), new User(), 7);
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
+
+        $ratingManager->rate($book, $user, 7);
     }
 
     /**
@@ -69,7 +76,10 @@ class RatingManagerTest extends WebTestCase
      */
     public function testRateUpdatesExistingRating()
     {
-        $rating = new Rating(3, new Book(), new User());
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
+
+        $rating = new Rating(3, $book, $user);
 
         $doctrine = $this->createMock(ManagerRegistry::class);
 
@@ -90,7 +100,7 @@ class RatingManagerTest extends WebTestCase
             3, $rating->getValue(),
             'Initial rating value is 3.'
         );
-        $ratingManager->rate(new Book(), new User(), 7);
+        $ratingManager->rate($book, $user, 7);
         $this->assertEquals(
             7, $rating->getValue(),
             'Rating value has been successfully changed to 7.'
@@ -118,13 +128,19 @@ class RatingManagerTest extends WebTestCase
             ->setMethodsExcept(['checkIfRatingExists'])
             ->getMock();
 
-        $ratingManager->checkIfRatingExists(new Book(), new User());
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
+
+        $ratingManager->checkIfRatingExists($book, $user);
     }
 
     public function testGetAverageRating()
     {
-        $rating1 = new Rating(3, new Book(), new User());
-        $rating2 = new Rating(7, new Book(), new User());
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
+
+        $rating1 = new Rating(3, $book, $user);
+        $rating2 = new Rating(7, $book, $user);
         $ratings = new ArrayCollection([$rating1, $rating2]);
 
         $ratingRepository = $this->createMock(RatingRepository::class);
@@ -144,7 +160,7 @@ class RatingManagerTest extends WebTestCase
             ->setMethodsExcept(['getAverageRating', 'getValue'])
             ->getMock();
 
-        $average = $ratingManager->getAverageRating(new Book());
+        $average = $ratingManager->getAverageRating($book);
         $this->assertEquals(
             5, $average,
             'Average book rating result matches expected.'
