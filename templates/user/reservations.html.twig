@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservations{% endblock %}
+{% block content %}
+    <div class="col-md-3">
+        <h2>Reserved</h2>
+        <hr>
+        <div id="reserved" class="drop-column">
+            {% for reservation in reserved %}
+                {% include 'user/_reservation_card.html.twig' with {'reservation': reservation} %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h2>Reading</h2>
+        <hr>
+        <div id="reading" class="drop-column">
+            {% for reservation in reading %}
+                {% include 'user/_reservation_card.html.twig' with {'reservation': reservation} %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h2>Returned</h2>
+        <hr>
+        <div id="returned" class="drop-column">
+            {% for reservation in returned %}
+                {% include 'user/_reservation_card.html.twig' with {'reservation': reservation} %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h2>Canceled</h2>
+        <hr>
+        <div id="canceled" class="drop-column">
+            {% for reservation in canceled %}
+                {% include 'user/_reservation_card.html.twig' with {'reservation': reservation} %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

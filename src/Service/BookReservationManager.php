@@ -76,6 +76,24 @@ class BookReservationManager
         $book->setTimesBorrowed($timesBorrowed + 1);
     }
 
+    /**
+     * @param User $user
+     * @return null|BookReservation[]
+     */
+    public function checkReservationsForApproachingReturnDate(User $user)
+    {
+        return $this->repository->findReservationsWithApproachingEndDate($user);
+    }
+
+    /**
+     * @param User $user
+     * @return null|BookReservation[]
+     */
+    public function checkReservationsForMissedReturnDate(User $user)
+    {
+        return $this->repository->findReservationsWithMissedEndDate($user);
+    }
+
     public function save(BookReservation $bookReservation)
     {
         $this->updateBookAfterReservation($this->getBook($bookReservation));
@@ -87,7 +105,6 @@ class BookReservationManager
     public function saveChanges()
     {
         $this->em->flush();
-        $this->em->clear();
     }
 
     public function setStatus(BookReservation $reservation, string $status)
@@ -113,5 +130,10 @@ class BookReservationManager
     public function getBook(BookReservation $bookReservation)
     {
         return $bookReservation->getBook();
+    }
+
+    public function findUserReservationsByStatus(User $user, string $string)
+    {
+        return $this->repository->findUserReservationsByStatus($user, $string);
     }
 }

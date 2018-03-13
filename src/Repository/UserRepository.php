@@ -31,7 +31,7 @@ class UserRepository extends EntityRepository
      * @return mixed
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function findUserJoinedToReservations(User $user, string $status)
+    public function findUserJoinedToReservationsByStatus(User $user, string $status)
     {
         return $this->createQueryBuilder('u')
             ->addSelect('u, br, book, a')

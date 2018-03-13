@@ -46,6 +46,7 @@ services:
             - '@app.user_manager'
             - '@security.token_storage'
             - '@app.activity_manager'
+            - '@app.book_reservation_manager'
     App\Controller\DefaultController:
         tags: ['controller.service_arguments']
         arguments:

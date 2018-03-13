@@ -41,6 +41,7 @@ class Activity
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Book", inversedBy="activities")
+     * @ORM\JoinColumn(name="book_id", referencedColumnName="id")
      * @Assert\NotBlank()
      * @Assert\Valid
      */

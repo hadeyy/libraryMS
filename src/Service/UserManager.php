@@ -94,9 +94,9 @@ class UserManager
      * @return \Doctrine\Common\Collections\ArrayCollection
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getReservationsByStatus(User $user, string $status)
+    public function findReservationsByStatus(User $user, string $status)
     {
-        $user = $this->repository->findUserJoinedToReservations($user, $status);
+        $user = $this->repository->findUserJoinedToReservationsByStatus($user, $status);
 
         return $user->getBookReservations();
     }

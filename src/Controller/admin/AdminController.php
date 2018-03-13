@@ -96,9 +96,9 @@ class AdminController extends AbstractController
                 'user' => $user,
                 'favorites' => $this->userManager->getFavoriteBooks($user),
                 'activeReservations' => $this->userManager
-                    ->getReservationsByStatus($user, 'reading'),
+                    ->findReservationsByStatus($user, 'reading'),
                 'closedReservations' => $this->userManager
-                    ->getReservationsByStatus($user, 'returned'),
+                    ->findReservationsByStatus($user, 'returned'),
             ]
         );
     }

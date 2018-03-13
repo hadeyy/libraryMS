@@ -13,6 +13,7 @@ use App\Entity\Book;
 use App\Entity\User;
 use App\Form\UserEditType;
 use App\Service\ActivityManager;
+use App\Service\BookReservationManager;
 use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,15 +30,18 @@ class UserController extends AbstractController
     private $user;
     private $userManager;
     private $activityManager;
+    private $bookReservationManager;
 
     public function __construct(
         UserManager $userManager,
         TokenStorage $tokenStorage,
-        ActivityManager $activityManager
+        ActivityManager $activityManager,
+        BookReservationManager $bookReservationManager
     ) {
         $this->userManager = $userManager;
         $this->activityManager = $activityManager;
         $this->user = $tokenStorage->getToken()->getUser();
+        $this->bookReservationManager = $bookReservationManager;
     }
 
     /**
@@ -51,8 +55,8 @@ class UserController extends AbstractController
             [
                 'user' => $this->user,
                 'favorites' => $this->userManager->getFavoriteBooks($this->user),
-                'activeReservations' => $this->userManager->getReservationsByStatus($this->user, 'reading'),
-                'closedReservations' => $this->userManager->getReservationsByStatus($this->user, 'returned'),
+                'activeReservations' => $this->bookReservationManager->findUserReservationsByStatus($this->user, 'reading'),
+                'closedReservations' => $this->bookReservationManager->findUserReservationsByStatus($this->user, 'returned'),
             ]
         );
     }
@@ -119,5 +123,47 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('show-book', ['book' => $book]);
+    }
+
+    /**
+     * @return Response
+     */
+    public function showReservations()
+    {
+        return $this->render(
+            'user/reservations.html.twig',
+            [
+                'reserved' => $this->bookReservationManager->findUserReservationsByStatus($this->user, 'reserved'),
+                'reading' => $this->bookReservationManager->findUserReservationsByStatus($this->user, 'reading'),
+                'returned' => $this->bookReservationManager->findUserReservationsByStatus($this->user, 'returned'),
+                'canceled' => $this->bookReservationManager->findUserReservationsByStatus($this->user, 'canceled'),
+            ]
+        );
+    }
+
+    public function checkActiveReservations()
+    {
+        $approachingEndDate = $this->bookReservationManager->checkReservationsForApproachingReturnDate($this->user);
+        $missedEndDate = $this->bookReservationManager->checkReservationsForMissedReturnDate($this->user);
+
+        foreach ($approachingEndDate as $reservation) {
+            $book = $reservation->getBook();
+            $date = $reservation->getDateTo();
+            $this->addFlash(
+                'warning',
+                '"' . $book . '"' . ' by ' . $book->getAuthor() . ' has to be returned until ' .
+                date_format($date, 'd-m-Y') . ' !'
+            );
+        }
+
+        foreach ($missedEndDate as $reservation) {
+            $book = $reservation->getBook();
+            $this->addFlash(
+                'danger',
+                'Missed return date for "' . $book . '" by ' . $book->getAuthor() . ' !'
+            );
+        }
+
+        return $this->redirectToRoute('index');
     }
 }

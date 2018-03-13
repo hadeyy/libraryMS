@@ -218,7 +218,7 @@ class UserManagerTest extends WebTestCase
             ->setMethodsExcept(['getReservationsByStatus'])
             ->getMock();
 
-        $reservations = $userManager->getReservationsByStatus($this->user, $status);
+        $reservations = $userManager->findReservationsByStatus($this->user, $status);
 
         $this->assertTrue(
             $reservations instanceof ArrayCollection,

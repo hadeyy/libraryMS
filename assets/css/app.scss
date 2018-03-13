@@ -605,6 +605,14 @@ a#editAuthorLink {
     cursor: pointer;
     background-color: $palette-medium-light;
   }
+  & .book-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+  }
+  & a {
+    color: $palette-dark;
+  }
 }
 
 .portlet-toggle {

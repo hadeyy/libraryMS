@@ -13,10 +13,12 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\Expression;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class BookReservationType extends AbstractType
 {
@@ -41,12 +43,21 @@ class BookReservationType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new Date(),
-                    new Expression([
-                        'expression' => 'this.getDateFrom() < value',
-                        'message' => 'End date cannot be before start date!',
-                    ])
+                    new Callback([$this, 'validateDateTo']),
                 ]
             ]);
+    }
+
+    public function validateDateTo($value, ExecutionContextInterface $context)
+    {
+        $form = $context->getRoot();
+        $data = $form->getData();
+
+        if ($data['dateFrom'] > $value) {
+            $context
+                ->buildViolation('End date cannot be before start date!')
+                ->addViolation();
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)

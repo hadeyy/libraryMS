@@ -18,6 +18,12 @@ show-activity:
 show-notifications:
     path: /user/notifications
     controller: App\Controller\user\UserController::showNotifications
+show-user-reservations:
+    path: /user/reservations
+    controller: App\Controller\user\UserController::showReservations
+check-active-reservations:
+    path: /user/reservations/check
+    controller: App\Controller\user\UserController::checkActiveReservations
 index:
     path: /
     controller: App\Controller\DefaultController::index
