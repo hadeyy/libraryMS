@@ -8,32 +8,43 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20180314135017 extends AbstractMigration
+class Version20180314144127 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
 
-        $this->addSql('DROP INDEX IDX_E3EA0499A76ED395');
-        $this->addSql('DROP INDEX IDX_E3EA049916A2B381');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_activities AS SELECT id, book_id, user_id, title, time FROM app_activities');
-        $this->addSql('DROP TABLE app_activities');
-        $this->addSql('CREATE TABLE app_activities (id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
+        $this->addSql('DROP INDEX UNIQ_AD6C8EDB16A2B381');
+        $this->addSql('DROP INDEX IDX_AD6C8EDBA76ED395');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__users_books AS SELECT user_id, book_id FROM users_books');
+        $this->addSql('DROP TABLE users_books');
+        $this->addSql('CREATE TABLE users_books (user_id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
+        , book_id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
+        , PRIMARY KEY(user_id, book_id), CONSTRAINT FK_AD6C8EDBA76ED395 FOREIGN KEY (user_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_AD6C8EDB16A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('INSERT INTO users_books (user_id, book_id) SELECT user_id, book_id FROM __temp__users_books');
+        $this->addSql('DROP TABLE __temp__users_books');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_AD6C8EDB16A2B381 ON users_books (book_id)');
+        $this->addSql('CREATE INDEX IDX_AD6C8EDBA76ED395 ON users_books (user_id)');
+        $this->addSql('DROP INDEX IDX_571EF687A76ED395');
+        $this->addSql('DROP INDEX IDX_571EF68716A2B381');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_comments AS SELECT id, book_id, user_id, published_at, content FROM app_comments');
+        $this->addSql('DROP TABLE app_comments');
+        $this->addSql('CREATE TABLE app_comments (id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
         , book_id CHAR(36) DEFAULT NULL COLLATE BINARY --(DC2Type:guid)
         , user_id CHAR(36) DEFAULT NULL COLLATE BINARY --(DC2Type:guid)
-        , title VARCHAR(255) NOT NULL COLLATE BINARY, time DATETIME NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_E3EA049916A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_E3EA0499A76ED395 FOREIGN KEY (user_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
-        $this->addSql('INSERT INTO app_activities (id, book_id, user_id, title, time) SELECT id, book_id, user_id, title, time FROM __temp__app_activities');
-        $this->addSql('DROP TABLE __temp__app_activities');
-        $this->addSql('CREATE INDEX IDX_E3EA0499A76ED395 ON app_activities (user_id)');
-        $this->addSql('CREATE INDEX IDX_E3EA049916A2B381 ON app_activities (book_id)');
+        , published_at DATETIME NOT NULL, content VARCHAR(255) NOT NULL COLLATE BINARY, PRIMARY KEY(id), CONSTRAINT FK_571EF68716A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_571EF687A76ED395 FOREIGN KEY (user_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('INSERT INTO app_comments (id, book_id, user_id, published_at, content) SELECT id, book_id, user_id, published_at, content FROM __temp__app_comments');
+        $this->addSql('DROP TABLE __temp__app_comments');
+        $this->addSql('CREATE INDEX IDX_571EF687A76ED395 ON app_comments (user_id)');
+        $this->addSql('CREATE INDEX IDX_571EF68716A2B381 ON app_comments (book_id)');
         $this->addSql('DROP INDEX IDX_9CC8A75FF675F31B');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_books AS SELECT id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed FROM app_books');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_books AS SELECT id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed, slug FROM app_books');
         $this->addSql('DROP TABLE app_books');
         $this->addSql('CREATE TABLE app_books (id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
         , author_id CHAR(36) DEFAULT NULL COLLATE BINARY --(DC2Type:guid)
-        , isbn VARCHAR(255) NOT NULL COLLATE BINARY, title VARCHAR(255) NOT NULL COLLATE BINARY, pages INTEGER NOT NULL, language VARCHAR(255) NOT NULL COLLATE BINARY, publisher VARCHAR(255) NOT NULL COLLATE BINARY, publication_date DATETIME NOT NULL, available_copies INTEGER NOT NULL, reserved_copies INTEGER NOT NULL, cover VARCHAR(255) NOT NULL COLLATE BINARY, annotation VARCHAR(255) NOT NULL COLLATE BINARY, times_borrowed INTEGER NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_9CC8A75FF675F31B FOREIGN KEY (author_id) REFERENCES app_authors (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
-        $this->addSql('INSERT INTO app_books (id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed) SELECT id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed FROM __temp__app_books');
+        , isbn VARCHAR(255) NOT NULL COLLATE BINARY, title VARCHAR(255) NOT NULL COLLATE BINARY, pages INTEGER NOT NULL, language VARCHAR(255) NOT NULL COLLATE BINARY, publisher VARCHAR(255) NOT NULL COLLATE BINARY, publication_date DATETIME NOT NULL, available_copies INTEGER NOT NULL, reserved_copies INTEGER NOT NULL, cover VARCHAR(255) NOT NULL COLLATE BINARY, annotation VARCHAR(255) NOT NULL COLLATE BINARY, times_borrowed INTEGER NOT NULL, slug VARCHAR(255) NOT NULL COLLATE BINARY, PRIMARY KEY(id), CONSTRAINT FK_9CC8A75FF675F31B FOREIGN KEY (author_id) REFERENCES app_authors (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('INSERT INTO app_books (id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed, slug) SELECT id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed, slug FROM __temp__app_books');
         $this->addSql('DROP TABLE __temp__app_books');
         $this->addSql('CREATE INDEX IDX_9CC8A75FF675F31B ON app_books (author_id)');
         $this->addSql('DROP INDEX IDX_FD9C07D94908CA01');
@@ -59,18 +70,18 @@ class Version20180314135017 extends AbstractMigration
         $this->addSql('DROP TABLE __temp__app_book_reservations');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE1717D737 ON app_book_reservations (reader_id)');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE16A2B381 ON app_book_reservations (book_id)');
-        $this->addSql('DROP INDEX IDX_571EF687A76ED395');
-        $this->addSql('DROP INDEX IDX_571EF68716A2B381');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_comments AS SELECT id, book_id, user_id, published_at, content FROM app_comments');
-        $this->addSql('DROP TABLE app_comments');
-        $this->addSql('CREATE TABLE app_comments (id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
+        $this->addSql('DROP INDEX IDX_E3EA0499A76ED395');
+        $this->addSql('DROP INDEX IDX_E3EA049916A2B381');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_activities AS SELECT id, book_id, user_id, title, time FROM app_activities');
+        $this->addSql('DROP TABLE app_activities');
+        $this->addSql('CREATE TABLE app_activities (id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
         , book_id CHAR(36) DEFAULT NULL COLLATE BINARY --(DC2Type:guid)
         , user_id CHAR(36) DEFAULT NULL COLLATE BINARY --(DC2Type:guid)
-        , published_at DATETIME NOT NULL, content VARCHAR(255) NOT NULL COLLATE BINARY, PRIMARY KEY(id), CONSTRAINT FK_571EF68716A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_571EF687A76ED395 FOREIGN KEY (user_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
-        $this->addSql('INSERT INTO app_comments (id, book_id, user_id, published_at, content) SELECT id, book_id, user_id, published_at, content FROM __temp__app_comments');
-        $this->addSql('DROP TABLE __temp__app_comments');
-        $this->addSql('CREATE INDEX IDX_571EF687A76ED395 ON app_comments (user_id)');
-        $this->addSql('CREATE INDEX IDX_571EF68716A2B381 ON app_comments (book_id)');
+        , title VARCHAR(255) NOT NULL COLLATE BINARY, time DATETIME NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_E3EA049916A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_E3EA0499A76ED395 FOREIGN KEY (user_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('INSERT INTO app_activities (id, book_id, user_id, title, time) SELECT id, book_id, user_id, title, time FROM __temp__app_activities');
+        $this->addSql('DROP TABLE __temp__app_activities');
+        $this->addSql('CREATE INDEX IDX_E3EA0499A76ED395 ON app_activities (user_id)');
+        $this->addSql('CREATE INDEX IDX_E3EA049916A2B381 ON app_activities (book_id)');
         $this->addSql('DROP INDEX IDX_23EB8784A76ED395');
         $this->addSql('DROP INDEX IDX_23EB878416A2B381');
         $this->addSql('CREATE TEMPORARY TABLE __temp__app_ratings AS SELECT id, book_id, user_id, value FROM app_ratings');
@@ -83,17 +94,6 @@ class Version20180314135017 extends AbstractMigration
         $this->addSql('DROP TABLE __temp__app_ratings');
         $this->addSql('CREATE INDEX IDX_23EB8784A76ED395 ON app_ratings (user_id)');
         $this->addSql('CREATE INDEX IDX_23EB878416A2B381 ON app_ratings (book_id)');
-        $this->addSql('DROP INDEX UNIQ_AD6C8EDB16A2B381');
-        $this->addSql('DROP INDEX IDX_AD6C8EDBA76ED395');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__users_books AS SELECT user_id, book_id FROM users_books');
-        $this->addSql('DROP TABLE users_books');
-        $this->addSql('CREATE TABLE users_books (user_id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
-        , book_id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
-        , PRIMARY KEY(user_id, book_id), CONSTRAINT FK_AD6C8EDBA76ED395 FOREIGN KEY (user_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_AD6C8EDB16A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
-        $this->addSql('INSERT INTO users_books (user_id, book_id) SELECT user_id, book_id FROM __temp__users_books');
-        $this->addSql('DROP TABLE __temp__users_books');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_AD6C8EDB16A2B381 ON users_books (book_id)');
-        $this->addSql('CREATE INDEX IDX_AD6C8EDBA76ED395 ON users_books (user_id)');
     }
 
     public function down(Schema $schema)
@@ -126,12 +126,12 @@ class Version20180314135017 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_F8E9C5FE16A2B381 ON app_book_reservations (book_id)');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE1717D737 ON app_book_reservations (reader_id)');
         $this->addSql('DROP INDEX IDX_9CC8A75FF675F31B');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_books AS SELECT id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed FROM app_books');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_books AS SELECT id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed, slug FROM app_books');
         $this->addSql('DROP TABLE app_books');
         $this->addSql('CREATE TABLE app_books (id CHAR(36) NOT NULL --(DC2Type:guid)
         , author_id CHAR(36) DEFAULT NULL --(DC2Type:guid)
-        , isbn VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, pages INTEGER NOT NULL, language VARCHAR(255) NOT NULL, publisher VARCHAR(255) NOT NULL, publication_date DATETIME NOT NULL, available_copies INTEGER NOT NULL, reserved_copies INTEGER NOT NULL, cover VARCHAR(255) NOT NULL, annotation VARCHAR(255) NOT NULL, times_borrowed INTEGER NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('INSERT INTO app_books (id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed) SELECT id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed FROM __temp__app_books');
+        , isbn VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, pages INTEGER NOT NULL, language VARCHAR(255) NOT NULL, publisher VARCHAR(255) NOT NULL, publication_date DATETIME NOT NULL, available_copies INTEGER NOT NULL, reserved_copies INTEGER NOT NULL, cover VARCHAR(255) NOT NULL, annotation VARCHAR(255) NOT NULL, times_borrowed INTEGER NOT NULL, slug VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('INSERT INTO app_books (id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed, slug) SELECT id, author_id, isbn, title, pages, language, publisher, publication_date, available_copies, reserved_copies, cover, annotation, times_borrowed, slug FROM __temp__app_books');
         $this->addSql('DROP TABLE __temp__app_books');
         $this->addSql('CREATE INDEX IDX_9CC8A75FF675F31B ON app_books (author_id)');
         $this->addSql('DROP INDEX IDX_571EF68716A2B381');

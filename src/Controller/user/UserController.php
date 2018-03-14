@@ -10,13 +10,13 @@ namespace App\Controller\user;
 
 
 use App\Entity\Book;
-use App\Entity\User;
 use App\Form\PasswordEditType;
 use App\Form\UserEditType;
 use App\Service\ActivityManager;
 use App\Service\BookReservationManager;
 use App\Service\PasswordManager;
 use App\Service\UserManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -117,26 +117,35 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param User $user
      * @param Book $book
+     *
+     * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
      *
      * @return RedirectResponse
      */
-    public function toggleFavorite(User $user, Book $book)
+    public function toggleFavorite(Book $book)
     {
-        $userFavorites = $this->userManager->getFavorites($user);
+        $userFavorites = $this->userManager->getFavorites($this->user);
 
         $isAFavorite = $userFavorites->contains($book);
 
         if ($isAFavorite) {
-            $this->userManager->removeFavorite($user, $book);
-            $this->activityManager->log($user, $book, 'Removed a book from favorites');
+            $this->userManager->removeFavorite($this->user, $book);
+            $this->activityManager->log($this->user, $book, 'Removed a book from favorites');
         } else {
-            $this->userManager->addFavorite($user, $book);
-            $this->activityManager->log($user, $book, 'Added a book to favorites');
+            $this->userManager->addFavorite($this->user, $book);
+            $this->activityManager->log($this->user, $book, 'Added a book to favorites');
         }
 
-        return $this->redirectToRoute('show-book', ['book' => $book]);
+        $author = $book->getAuthor();
+
+        return $this->redirectToRoute(
+            'show-book',
+            [
+                'bookSlug' => $book->getSlug(),
+                'authorSlug' => $author->getSlug(),
+            ]
+        );
     }
 
     /**

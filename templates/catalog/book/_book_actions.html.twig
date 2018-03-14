@@ -3,7 +3,7 @@
         <button type="button" class="btn" disabled>RESERVE BOOK</button>
     </a>
 {% elseif app.user and 0 < book.availableCopies %}
-    <a class="book-action" href="{{ path('reserve-book', {id: book.id}) }}">
+    <a class="book-action" href="{{ path('reserve-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
         <!-- Reservation modal trigger -->
         <button type="button" class="btn">RESERVE BOOK</button>
     </a>
@@ -24,7 +24,7 @@
 {% endif %}
 
 {% if is_granted("ROLE_LIBRARIAN") %}
-    <a class="book-action" href="{{ path('edit-book', {id: book.id}) }}">
+    <a class="book-action" href="{{ path('edit-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
         <button type="button" class="btn btn-warning">EDIT</button>
     </a>
     <a class="book-action">
@@ -36,7 +36,7 @@
     <br><br>
 {% endif %}
 
-<a class="book-action" href="{{ path('show-author', {id: book.author.id}) }}">
+<a class="book-action" href="{{ path('show-author', {slug: book.author.slug}) }}">
     <button type="button" class="btn">SEE AUTHOR PAGE</button>
 </a>
 

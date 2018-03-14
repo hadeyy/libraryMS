@@ -14,7 +14,7 @@
             <h5>{{ book.title }}</h5>
             <h6><small>by</small> {{ book.author }}</h6>
             <br><br>
-            <a href="{{ path('show-book', {id: book.id}) }}">
+            <a href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
                 see more <span class="fa fa-angle-right"></span>
             </a>
         </div>

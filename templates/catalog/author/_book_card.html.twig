@@ -16,7 +16,7 @@
             {% endfor %}
         </div>
         <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-            <a href="{{ path('show-book', {id: book.id}) }}">
+            <a href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
                 <span class="fa fa-angle-right"></span>
             </a>
         </div>

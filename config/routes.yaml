@@ -35,72 +35,77 @@ show-catalog:
     requirements:
         page: '\d+'
 show-books-by-author:
-    path: /catalog/books-by-author/{id}/{page}
+    path: /catalog/books-by-author/{slug}/{page}
     controller: App\Controller\catalog\CatalogController::showAuthorCatalog
     defaults:
         page: 1
     requirements:
-        id: '[a-f0-9-]+'
+        slug: '[a-z-]+'
         page: '\d+'
 show-books-by-genre:
-    path: /catalog/books-by-genre/{id}/{page}
+    path: /catalog/books-by-genre/{slug}/{page}
     controller: App\Controller\catalog\CatalogController::showGenreCatalog
     defaults:
         page: 1
     requirements:
-        id: '[a-f0-9-]+'
+        slug: '[a-z-]+'
         page: '\d+'
 show-book:
-    path: /catalog/book/{id}
+    path: /catalog/books/{authorSlug}/{bookSlug}
     controller: App\Controller\catalog\BookController::showBook
     requirements:
-        id: '[a-f0-9-]+'
+        authorSlug: '[a-z-]+'
+        bookSlug: '[a-z-]+'
 show-author:
-    path: /catalog/author/{id}
+    path: /catalog/author/{slug}
     controller: App\Controller\catalog\AuthorController::showAuthor
     requirements:
-        id: '[a-f0-9-]+'
+        slug: '[a-z-]+'
 reserve-book:
-    path: /catalog/book/{id}/reserve
+    path: /catalog/books/{authorSlug}/{bookSlug}/reserve
     controller: App\Controller\reader\LibraryController::reserveBook
     requirements:
-        id: '[a-f0-9-]+'
+        authorSlug: '[a-z-]+'
+        bookSlug: '[a-z-]+'
 cancel-reservation:
     path: /user/reservations/{id}/cancel
     controller: App\Controller\reader\LibraryController::cancelReservation
     requirements:
         id: '[a-f0-9-]+'
 toggle-favorite:
-    path: /catalog/book/{id}/toggle-favorite
+    path: /catalog/books/{authorSlug}/{bookSlug}/toggle-favorite
     controller: App\Controller\user\UserController::toggleFavorite
     requirements:
-        id: '[a-f0-9-]+'
+        authorSlug: '[a-z-]+'
+        bookSlug: '[a-z-]+'
 new-book:
     path: /catalog/books/new
     controller: App\Controller\librarian\LibraryController::newBook
 edit-book:
-    path: /catalog/book/{id}/edit
+    path: /catalog/{authorSlug}/{bookSlug}/edit
     controller: App\Controller\librarian\LibraryController::editBook
     requirements:
-        id: '[a-f0-9-]+'
+        authorSlug: '[a-z-]+'
+        bookSlug: '[a-z-]+'
 delete-book:
-    path: /catalog/book/{id}/delete
+    path: /catalog/{authorSlug}/{bookSlug}/delete
     controller: App\Controller\librarian\LibraryController::deleteBook
     requirements:
-        id: '[a-f0-9-]+'
+        authorSlug: '[a-z-]+'
+        bookSlug: '[a-z-]+'
 new-author:
     path: /catalog/authors/new
     controller: App\Controller\librarian\LibraryController::newAuthor
 edit-author:
-    path: /catalog/author/{id}/edit
+    path: /catalog/{authorSlug}/edit
     controller: App\Controller\librarian\LibraryController::editAuthor
     requirements:
-        id: '[a-f0-9-]+'
+        authorSlug: '[a-z-]+'
 delete-author:
-    path: /catalog/author/{id}/delete
+    path: /catalog/{slug}/delete
     controller: App\Controller\librarian\LibraryController::deleteAuthor
     requirements:
-        id: '[a-f0-9-]+'
+        slug: '[a-z-]+'
 new-genre:
     path: /catalog/genres/new
     controller: App\Controller\librarian\LibraryController::newGenre

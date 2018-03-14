@@ -40,12 +40,10 @@ class DefaultControllerTest extends WebTestCase
             ['/register'],
             ['/login'],
             ['/catalog/books/1'],
-
-            /** @FIXME */
-//            ['/catalog/books-by-author/1/1'],
-//            ['/catalog/books-by-genre/1/1'],
-//            ['/catalog/author/1'],
-//            ['/catalog/book/1'],
+            ['/catalog/books-by-author/lorem-ipsum/1'],
+            ['/catalog/books-by-genre/guide/1'],
+            ['/catalog/author/lorem-ipsum'],
+            ['/catalog/books/lorem-ipsum/lorem-ipsum'],
         ];
     }
 

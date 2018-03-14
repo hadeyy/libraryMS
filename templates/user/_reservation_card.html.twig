@@ -1,7 +1,7 @@
 <div class="portlet reservation-card" id="{{ reservation.id }}" draggable="true">
     <div class="portlet-header">
         <a class="book-title"
-           href="{{ path('show-book', {id: reservation.book.id}) }}"
+           href="{{ path('show-book', {bookSlug: reservation.book.slug, authorSlug: reservation.book.author.slug}) }}"
            title="Go to book"
         >
             {{ reservation.book.title }}

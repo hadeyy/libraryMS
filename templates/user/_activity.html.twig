@@ -4,11 +4,11 @@
         <h6 class="card-subtitle mb-2 text-muted">
             {{ activity.time|date('H:i d-m-Y') }}
         </h6>
-        <a href="{{ path("show-book", {id: activity.book.id}) }}" class="activity-book-title">
+        <a href="{{ path("show-book", {bookSlug: activity.book.slug, authorSlug: activity.book.author.slug}) }}" class="activity-book-title">
             {{ activity.book.title }}
         </a>
         by
-        <a href="{{ path("show-author", {id: activity.book.author.id}) }}" class="activity-book-author">
+        <a href="{{ path("show-author", {slug: activity.book.author.slug}) }}" class="activity-book-author">
             {{ activity.book.author }}
         </a>
     </div>

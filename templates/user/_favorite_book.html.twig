@@ -5,7 +5,7 @@
                 <img src="{{ asset('uploads/covers/' ~ book.cover) }}"/>
             </div>
             <div class="face back-face">
-                <a href="{{ path('show-book', {id: book.id}) }}">
+                <a href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
                     book page
                     <span class="fa fa-angle-right"></span>
                 </a>

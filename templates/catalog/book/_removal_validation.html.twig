@@ -12,7 +12,7 @@
             <button type="button" class="btn btn-secondary remove-validation-btn" data-dismiss="modal">
                 Cancel
             </button>
-            <a href="{{ path('delete-book', {id: book.id}) }}">
+            <a href="{{ path('delete-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
                 <button type="button" class="btn btn-danger remove-validation-btn">REMOVE</button>
             </a>
         </div>

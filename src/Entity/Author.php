@@ -9,14 +9,17 @@
 namespace App\Entity;
 
 
+use App\Utils\Slugger;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Table(name="app_authors")
  * @ORM\Entity(repositoryClass="App\Repository\AuthorRepository")
+ * @UniqueEntity(fields="slug", message="Author with this slug already exists.")
  */
 class Author
 {
@@ -67,6 +70,11 @@ class Author
      */
     private $portrait;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $slug;
+
     public function __construct(
         string $firstName,
         $lastName = null,
@@ -79,6 +87,7 @@ class Author
         $this->country = $country;
         $this->portrait = $portrait;
         $this->books = new ArrayCollection();
+        $this->slug = Slugger::slugify($this);
     }
 
     public function getId()
@@ -142,5 +151,10 @@ class Author
     public function __toString(): string
     {
         return $this->firstName . ' ' . $this->lastName;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
     }
 }

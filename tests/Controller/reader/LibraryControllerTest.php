@@ -21,21 +21,19 @@ class LibraryControllerTest extends WebTestCase
     {
         $this->client = static::createClient([],[
             'PHP_AUTH_USER' => 'reader',
-            'PHP_AUTH_PW' => 'kitten',
+            'PHP_AUTH_PW' => 'pass123',
         ]);
     }
 
-    /** @FIXME */
-//    public function testReaderRoutesAreSuccessful()
-//    {
-//        $this->client->request('GET', '/catalog/book/1/reserve');
-//        $this->assertTrue($this->client->getResponse()->isSuccessful());
-//    }
+    public function testReaderRoutesAreSuccessful()
+    {
+        $this->client->request('GET', '/catalog/books/lorem-ipsum/lorem-ipsum/reserve');
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+    }
 
-    /** @FIXME */
-//    public function testReaderRoutesAreRedirects()
-//    {
-//        $this->client->request('GET', '/catalog/book/1/toggle-favorite');
-//        $this->assertTrue($this->client->getResponse()->isRedirect());
-//    }
+    public function testReaderRoutesAreRedirects()
+    {
+        $this->client->request('GET', '/catalog/books/lorem-ipsum/lorem-ipsum/toggle-favorite');
+        $this->assertTrue($this->client->getResponse()->isRedirect());
+    }
 }

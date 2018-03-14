@@ -49,7 +49,7 @@ class BookController extends AbstractController
      * @param Request $request
      * @param Book $book
      *
-     * @ParamConverter("book", class="App\Entity\Book")
+     * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
      *
      * @return Response
      * @throws \Doctrine\ORM\NonUniqueResultException

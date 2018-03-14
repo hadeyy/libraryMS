@@ -54,11 +54,11 @@
                                 {{ book.annotation|length > 400 ? book.annotation|slice(0,400) ~ '...' : book.annotation }}
                             </p>
 
-                            <a href="{{ path('show-book', {id: book.id}) }}" class="card-link preview-link">
+                            <a href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}" class="card-link preview-link">
                                 Book page
                                 <span class="fa fa-angle-right"></span>
                             </a>
-                            <a href="{{ path('show-author', {id: book.author.id}) }}" class="card-link preview-link">
+                            <a href="{{ path('show-author', {slug: book.author.slug}) }}" class="card-link preview-link">
                                 Author page
                                 <span class="fa fa-angle-right"></span>
                             </a>

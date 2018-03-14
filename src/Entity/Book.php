@@ -9,6 +9,7 @@
 namespace App\Entity;
 
 
+use App\Utils\Slugger;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -19,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="app_books")
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
  * @UniqueEntity(fields="ISBN", message="Book with this ISBN already exists.")
+ * @UniqueEntity(fields="slug", message="Book with this slug already exists.")
  */
 class Book
 {
@@ -220,6 +222,11 @@ class Book
      */
     private $activities;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $slug;
+
     public function __construct(
         string $ISBN,
         string $title,
@@ -250,6 +257,7 @@ class Book
         $this->reservations = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->activities = new ArrayCollection();
+        $this->slug = Slugger::slugify($this);
     }
 
     public function getId()
@@ -430,5 +438,10 @@ class Book
     public function __toString(): string
     {
         return $this->title;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
     }
 }

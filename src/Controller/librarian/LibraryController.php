@@ -99,7 +99,15 @@ class LibraryController extends Controller
             $this->bookManager->updateBook($book, $data);
             $this->activityManager->log($this->user, $book, 'Updated a book');
 
-            return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
+            $author = $book->getAuthor();
+
+            return $this->redirectToRoute(
+                'show-book',
+                [
+                    'bookSlug' => $book->getSlug(),
+                    'authorSlug' => $author->getSlug(),
+                ]
+            );
         }
 
         return $this->render('catalog/book/edit.html.twig', ['form' => $form->createView()]);
@@ -149,7 +157,7 @@ class LibraryController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $this->authorManager->updateAuthor($author, $data);
 
-            return $this->redirectToRoute('show-author', ['id' => $author->getId()]);
+            return $this->redirectToRoute('show-author', ['slug' => $author->getSlug()]);
         }
 
         return $this->render(

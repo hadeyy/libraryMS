@@ -21,20 +21,19 @@ class LibraryControllerTest extends WebTestCase
     {
         $this->client = static::createClient([],[
             'PHP_AUTH_USER' => 'librarian',
-            'PHP_AUTH_PW' => 'kitten',
+            'PHP_AUTH_PW' => 'pass123',
         ]);
     }
 
-    /** @FIXME */
-//    /**
-//     * @dataProvider uriProvider
-//     * @param $uri
-//     */
-//    public function testLibrarianRoutesAreSuccessful($uri)
-//    {
-//        $this->client->request('GET', $uri);
-//        $this->assertTrue($this->client->getResponse()->isSuccessful());
-//    }
+    /**
+     * @dataProvider uriProvider
+     * @param $uri
+     */
+    public function testLibrarianRoutesAreSuccessful($uri)
+    {
+        $this->client->request('GET', $uri);
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+    }
 
     public function uriProvider()
     {
@@ -44,11 +43,5 @@ class LibraryControllerTest extends WebTestCase
             ['/catalog/genres/new'],
             ['/reservations'],
         ];
-    }
-
-    public function testLibrarianRoutesAreRedirects()
-    {
-        $this->client->request('GET', '/reservations/update/1/reading');
-        $this->assertTrue($this->client->getResponse()->isRedirect());
     }
 }

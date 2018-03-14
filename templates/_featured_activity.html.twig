@@ -1,6 +1,6 @@
 <div class="featured-activity">
     <span class="username">{{ activity.user.username }}</span>
-    {{ activity.title|replace({ "a book": "<a href=" ~ path('show-book', {id: activity.book.id}) ~ ">" ~ activity.book.title ~ "</a>" })|raw }}
+    {{ activity.title|replace({ "a book": "<a href=" ~ path('show-book', {bookSlug: activity.book.slug, authorSlug: activity.book.author.slug}) ~ ">" ~ activity.book.title ~ "</a>" })|raw }}
     <br>
     <span class="time">{{ activity.time|date('H:i d-m-Y') }}</span>
 </div>

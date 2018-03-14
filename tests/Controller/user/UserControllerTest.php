@@ -18,21 +18,20 @@ class UserControllerTest extends WebTestCase
     public function setUp()
     {
         $this->client = static::createClient([], [
-            'PHP_AUTH_USER' => 'user',
-            'PHP_AUTH_PW' => 'kitten',
+            'PHP_AUTH_USER' => 'reader',
+            'PHP_AUTH_PW' => 'pass123',
         ]);
     }
 
-    /** @FIXME */
-//    /**
-//     * @dataProvider successfulUriProvider
-//     * @param $uri
-//     */
-//    public function testUserRoutesAreSuccessful($uri)
-//    {
-//        $this->client->request('GET', $uri);
-//        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Route is successful.');
-//    }
+    /**
+     * @dataProvider successfulUriProvider
+     * @param $uri
+     */
+    public function testUserRoutesAreSuccessful($uri)
+    {
+        $this->client->request('GET', $uri);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Route is successful.');
+    }
 
     public function successfulUriProvider()
     {
@@ -40,7 +39,7 @@ class UserControllerTest extends WebTestCase
             ['/user/profile'],
             ['/user/profile/edit'],
             ['/user/activity'],
-            ['/user/notifications'],
+            ['/user/reservations'],
         ];
     }
 
@@ -58,8 +57,8 @@ class UserControllerTest extends WebTestCase
     public function redirectRouteProvider()
     {
         return [
-            ['/catalog/book/1/toggle-favorite'],
-            ['/catalog/book/1/toggle-favorite'],
+            ['/catalog/books/lorem-ipsum/lorem-ipsum/toggle-favorite'],
+            ['/catalog/books/lorem-ipsum/lorem-ipsum/toggle-favorite'],
             ['/logout'],
         ];
     }

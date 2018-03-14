@@ -44,7 +44,7 @@ class LibraryController extends Controller
      * @param Request $request
      * @param Book $book
      *
-     * @ParamConverter("book", class="App\Entity\Book")
+     * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
      *
      * @return Response
      */
@@ -58,7 +58,15 @@ class LibraryController extends Controller
             $this->bookReservationManager->save($reservation);
             $this->activityManager->log($this->user, $book, 'Reserved a book');
 
-            return $this->redirectToRoute('show-book', ['id' => $book->getId()]);
+            $author = $book->getAuthor();
+
+            return $this->redirectToRoute(
+                'show-book',
+                [
+                    'bookSlug' => $book->getSlug(),
+                    'authorSlug' => $author->getSlug(),
+                ]
+            );
         }
 
         return $this->render(

@@ -30,9 +30,9 @@
                 <!-- Previous link -->
                 <a href="
                     {% if filter == 'author' %}
-                        {{ path('show-books-by-author', {page: currentPage-1 < 1 ? 1 : currentPage-1, id: author.id}) }}
+                        {{ path('show-books-by-author', {page: currentPage-1 < 1 ? 1 : currentPage-1, slug: author.slug}) }}
                     {% elseif filter == 'genre' %}
-                        {{ path('show-books-by-genre', {page: currentPage-1 < 1 ? 1 : currentPage-1, id: genre.id}) }}
+                        {{ path('show-books-by-genre', {page: currentPage-1 < 1 ? 1 : currentPage-1, slug: genre.slug}) }}
                     {% else %}
                         {{ path('show-catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}
                     {% endif %}
@@ -47,9 +47,9 @@
                 {% for i in 1..maxPages %}
                     <a href="
                         {% if filter == 'author' %}
-                            {{ path('show-books-by-author', {page: i, id: author.id}) }}
+                            {{ path('show-books-by-author', {page: i, slug: author.slug}) }}
                         {% elseif filter == 'genre' %}
-                            {{ path('show-books-by-genre', {page: i, id: genre.id}) }}
+                            {{ path('show-books-by-genre', {page: i, slug: genre.slug}) }}
                         {% else %}
                             {{ path('show-catalog', {page: i}) }}
                         {% endif %}
@@ -64,9 +64,9 @@
                 <!-- Next link -->
                 <a href="
                     {% if filter == 'author' %}
-                        {{ path('show-books-by-author', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, id: author.id}) }}
+                        {{ path('show-books-by-author', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, slug: author.slug}) }}
                     {% elseif filter == 'genre' %}
-                        {{ path('show-books-by-genre', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, id: genre.id}) }}
+                        {{ path('show-books-by-genre', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, slug: genre.slug}) }}
                     {% else %}
                         {{ path('show-catalog', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage}) }}
                     {% endif %}

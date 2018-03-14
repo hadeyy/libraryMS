@@ -123,12 +123,12 @@
         {% if app.user %}
             <!-- Favorite toggle -->
             {% if book in app.user.favorites %}
-                <a id="toggleFavorite" href="{{ path('toggle-favorite', {id: book.id}) }}
+                <a id="toggleFavorite" href="{{ path('toggle-favorite', {bookSlug: book.slug, authorSlug: book.author.slug}) }}
 " data-toggle="tooltip" data-placement="top" title="Remove from favorites">
                     <span class="fa fa-star"></span>
                 </a>
             {% else %}
-                <a id="toggleFavorite" href="{{ path('toggle-favorite', {id: book.id}) }}" data-toggle="tooltip" data-placement="top" title="Add to favorites">
+                <a id="toggleFavorite" href="{{ path('toggle-favorite', {bookSlug: book.slug, authorSlug: book.author.slug}) }}" data-toggle="tooltip" data-placement="top" title="Add to favorites">
                     <span class="fa fa-star-o"></span>
                 </a>
             {% endif %}

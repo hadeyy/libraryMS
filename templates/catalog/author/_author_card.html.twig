@@ -16,7 +16,7 @@
     {% if is_granted('ROLE_LIBRARIAN') %}
         <div id="authorActions">
             <div id="edit">
-                <a href="{{ path('edit-author', {id: author.id}) }}">
+                <a href="{{ path('edit-author', {slug: author.slug}) }}">
                     <span class="fa fa-edit" title="Edit"></span>
                 </a>
             </div>
