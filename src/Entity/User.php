@@ -103,11 +103,6 @@ class User implements UserInterface, \Serializable
     private $bookReservations;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Notification", mappedBy="receiver", cascade={"persist", "remove"})
-     */
-    private $notifications;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="user", cascade={"persist", "remove"})
      */
     private $activities;
@@ -167,7 +162,6 @@ class User implements UserInterface, \Serializable
         $this->roles = $roles;
         $this->password = '123456';
         $this->registeredAt = new \DateTime();
-        $this->notifications = new ArrayCollection();
         $this->bookReservations = new ArrayCollection();
         $this->activities = new ArrayCollection();
         $this->comments = new ArrayCollection();
@@ -253,16 +247,6 @@ class User implements UserInterface, \Serializable
     public function addBookReservation(BookReservation $bookReservation): void
     {
         $this->bookReservations->add($bookReservation);
-    }
-
-    public function getNotifications()
-    {
-        return $this->notifications;
-    }
-
-    public function addNotification(Notification $notification): void
-    {
-        $this->notifications->add($notification);
     }
 
     public function getActivities()

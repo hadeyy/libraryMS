@@ -117,17 +117,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * @TODO
-     * @return Response
-     */
-    public function showNotifications()
-    {
-
-
-        return $this->render('user/notifications.html.twig');
-    }
-
-    /**
      * @param User $user
      * @param Book $book
      *

@@ -18,9 +18,6 @@ change-password:
 show-activity:
     path: /user/activity
     controller: App\Controller\user\UserController::showActivity
-show-notifications:
-    path: /user/notifications
-    controller: App\Controller\user\UserController::showNotifications
 show-user-reservations:
     path: /user/reservations
     controller: App\Controller\user\UserController::showReservations

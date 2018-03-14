@@ -29,7 +29,6 @@
                         <a class="nav-link" href="{{ path('show-readers') }}">Readers</a>
                     </li>
                 {% endif %}
-                </li>
             {% endif %}
         </ul>
         <div class="form-inline my-2 my-lg-0">
@@ -57,10 +56,7 @@
                         <a class="dropdown-item" href="{{ path('show-profile') }}">Profile</a>
                         <a class="dropdown-item" href="{{ path('show-activity') }}">Activity</a>
                         <a class="dropdown-item" href="{{ path('show-user-reservations') }}">Reservations</a>
-                        <a class="dropdown-item" href="{{ path('show-notifications') }}">
-                            Notifications
-                            <span class="badge badge-pill">0</span>
-                        </a>
+
                         <div class="dropdown-divider"></div>
                         <a id="logout" href="{{ path('logout') }}">
                             <button type="button" class="btn btn-small btn-outline-danger text-light">LOGOUT</button>

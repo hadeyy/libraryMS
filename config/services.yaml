@@ -172,10 +172,6 @@ services:
         tags: ['doctrine.fixture.orm']
         arguments:
             - '@lipsum'
-    App\DataFixtures\NotificationFixtures:
-        tags: ['doctrine.fixture.orm']
-        arguments:
-            - '@lipsum'
     App\DataFixtures\UserFixtures:
         tags: ['doctrine.fixture.orm']
         arguments:
