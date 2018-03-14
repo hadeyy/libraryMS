@@ -195,10 +195,10 @@ class LibraryController extends Controller
         return $this->render(
             'librarian/reservations.html.twig',
             [
-                'reserved' => $this->bookReservationManager->getByStatus('reserved'),
-                'reading' => $this->bookReservationManager->getByStatus('reading'),
-                'returned' => $this->bookReservationManager->getByStatus('returned'),
-                'canceled' => $this->bookReservationManager->getByStatus('canceled'),
+                'reserved' => $this->bookReservationManager->findByStatus('reserved'),
+                'reading' => $this->bookReservationManager->findByStatus('reading'),
+                'returned' => $this->bookReservationManager->findByStatus('returned'),
+                'canceled' => $this->bookReservationManager->findByStatus('canceled'),
             ]
         );
     }

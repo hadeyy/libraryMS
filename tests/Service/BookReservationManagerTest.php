@@ -14,7 +14,6 @@ use App\Entity\BookReservation;
 use App\Entity\User;
 use App\Repository\BookReservationRepository;
 use App\Service\BookReservationManager;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -47,15 +46,17 @@ class BookReservationManagerTest extends WebTestCase
         $this->assertEquals($dates['dateTo'], $reservation->getDateTo());
     }
 
-    public function testGetByStatusCallsBookReservationRepository()
+    public function testFindByStatusCallsBookReservationRepository()
     {
-        $reservations = new ArrayCollection();
-
         $reservationRepository = $this->createMock(BookReservationRepository::class);
         $reservationRepository->expects($this->once())
             ->method('findReservationsByStatus')
             ->with($this->isType('string'))
-            ->willReturn($reservations);
+            ->willReturn(null);
+        $reservationRepository->expects($this->once())
+            ->method('findUserReservationsByStatus')
+            ->with($this->isInstanceOf(User::class), $this->isType('string'))
+            ->willReturn(null);
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
@@ -67,16 +68,13 @@ class BookReservationManagerTest extends WebTestCase
 
         $reservationManager = $this->getMockBuilder(BookReservationManager::class)
             ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['getByStatus'])
+            ->setMethodsExcept(['findByStatus', 'findUserReservationsByStatus'])
             ->getMock();
 
-        $result = $reservationManager->getByStatus('status');
+        $user = $this->createMock(User::class);
 
-        $this->assertTrue(
-            $result instanceof ArrayCollection,
-            'Result is an instance of ArrayCollection.'
-        );
-        $this->assertEquals($reservations, $result, 'Retrieved result matches expected.');
+        $reservationManager->findByStatus('status');
+        $reservationManager->findUserReservationsByStatus($user, 'status');
     }
 
 
@@ -86,22 +84,10 @@ class BookReservationManagerTest extends WebTestCase
      */
     public function testUpdateStatusToReturnedOrCanceled($status)
     {
-        $book = $this->createMock(Book::class);
-
         $reservationManager = $this->getMockBuilder(BookReservationManager::class)
             ->disableOriginalConstructor()
-            ->setMethodsExcept([
-                'updateStatus',
-                'setStatus',
-                'setUpdatedAt',
-                'getFine',
-                'setFine',
-            ])
+            ->setMethodsExcept(['updateStatus'])
             ->getMock();
-        $reservationManager->expects($this->once())
-            ->method('getBook')
-            ->with($this->isInstanceOf(BookReservation::class))
-            ->willReturn($book);
         $reservationManager->expects($this->once())
             ->method('saveChanges');
 
@@ -127,21 +113,6 @@ class BookReservationManagerTest extends WebTestCase
             ->disableOriginalConstructor()
             ->setMethodsExcept(['updateStatus'])
             ->getMock();
-        $reservationManager->expects($this->once())
-            ->method('setStatus')
-            ->with($this->isInstanceOf(BookReservation::class), $this->isType('string'));
-        $reservationManager->expects($this->once())
-            ->method('setUpdatedAt')
-            ->with(
-                $this->isInstanceOf(BookReservation::class),
-                $this->isInstanceOf(\DateTime::class)
-            );
-        $reservationManager->expects($this->exactly(0))
-            ->method('getFine');
-        $reservationManager->expects($this->exactly(0))
-            ->method('setFine');
-        $reservationManager->expects($this->exactly(0))
-            ->method('getBook');
         $reservationManager->expects($this->once())
             ->method('saveChanges');
 
@@ -173,7 +144,7 @@ class BookReservationManagerTest extends WebTestCase
 
         $reservationManager = $this->getMockBuilder(BookReservationManager::class)
             ->disableOriginalConstructor()
-            ->setMethodsExcept(['updateStatus', 'getFine', 'setFine', 'getBook'])
+            ->setMethodsExcept(['updateStatus'])
             ->getMock();
 
         $this->assertEquals(1.5, $reservation->getFine());
@@ -224,8 +195,6 @@ class BookReservationManagerTest extends WebTestCase
             ->with($this->isInstanceOf(BookReservation::class));
         $entityManager->expects($this->exactly(2))
             ->method('flush');
-        $entityManager->expects($this->exactly(2))
-            ->method('clear');
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
             ->disableOriginalConstructor()
@@ -236,10 +205,102 @@ class BookReservationManagerTest extends WebTestCase
 
         $reservationManager = $this->getMockBuilder(BookReservationManager::class)
             ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['save', 'saveChanges', 'getBook'])
+            ->setMethodsExcept(['save', 'saveChanges'])
             ->getMock();
 
         $reservationManager->save($reservation);
         $reservationManager->saveChanges();
+    }
+
+    public function testCheckReservationsCallBookReservationRepository()
+    {
+        $reservationRepository = $this->createMock(BookReservationRepository::class);
+        $reservationRepository->expects($this->once())
+            ->method('findReservationsWithApproachingEndDate')
+            ->with($this->isInstanceOf(User::class))
+            ->willReturn(null);
+        $reservationRepository->expects($this->once())
+            ->method('findReservationsWithMissedEndDate')
+            ->with($this->isInstanceOf(User::class))
+            ->willReturn(null);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager');
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->with($this->isType('string'))
+            ->willReturn($reservationRepository);
+
+        $reservationManager = $this->getMockBuilder(BookReservationManager::class)
+            ->setConstructorArgs([$doctrine])
+            ->setMethodsExcept([
+                'checkReservationsForApproachingReturnDate',
+                'checkReservationsForMissedReturnDate',
+            ])
+            ->getMock();
+
+        $user = $this->createMock(User::class);
+
+        $reservationManager->checkReservationsForApproachingReturnDate($user);
+        $reservationManager->checkReservationsForMissedReturnDate($user);
+    }
+
+    public function testCheckIfIsReservedWithNoResult()
+    {
+        $reservationRepository = $this->createMock(BookReservationRepository::class);
+        $reservationRepository->expects($this->once())
+            ->method('findActiveReservationsByBookAndUser')
+            ->with($this->isInstanceOf(Book::class), $this->isInstanceOf(User::class))
+            ->willReturn(array());
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager');
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->with($this->isType('string'))
+            ->willReturn($reservationRepository);
+
+        $reservationManager = $this->getMockBuilder(BookReservationManager::class)
+            ->setConstructorArgs([$doctrine])
+            ->setMethodsExcept(['checkIfIsReserved'])
+            ->getMock();
+
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
+
+        $result = $reservationManager->checkIfIsReserved($book, $user);
+        $this->assertFalse($result);
+    }
+
+    public function testCheckIfIsReservedWithResult()
+    {
+        $reservation = $this->createMock(BookReservation::class);
+
+        $reservationRepository = $this->createMock(BookReservationRepository::class);
+        $reservationRepository->expects($this->once())
+            ->method('findActiveReservationsByBookAndUser')
+            ->with($this->isInstanceOf(Book::class), $this->isInstanceOf(User::class))
+            ->willReturn(array($reservation));
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager');
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->with($this->isType('string'))
+            ->willReturn($reservationRepository);
+
+        $reservationManager = $this->getMockBuilder(BookReservationManager::class)
+            ->setConstructorArgs([$doctrine])
+            ->setMethodsExcept(['checkIfIsReserved'])
+            ->getMock();
+
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
+
+        $result = $reservationManager->checkIfIsReserved($book, $user);
+        $this->assertTrue($result);
     }
 }

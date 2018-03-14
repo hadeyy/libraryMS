@@ -30,17 +30,17 @@ class BookReservationManager
         User $reader,
         array $dates
     ): BookReservation {
-        return new BookReservation(
-            $book,
-            $reader,
-            $dates['dateFrom'],
-            $dates['dateTo']
-        );
+        return new BookReservation($book, $reader, $dates['dateFrom'], $dates['dateTo']);
     }
 
-    public function getByStatus(string $status)
+    public function findByStatus(string $status)
     {
         return $this->repository->findReservationsByStatus($status);
+    }
+
+    public function findUserReservationsByStatus(User $user, string $string)
+    {
+        return $this->repository->findUserReservationsByStatus($user, $string);
     }
 
     public function updateStatus(BookReservation $reservation, string $status, \DateTime $updatedAt)
@@ -78,7 +78,8 @@ class BookReservationManager
 
     /**
      * @param User $user
-     * @return null|BookReservation[]
+     *
+     * @return BookReservation[]|null
      */
     public function checkReservationsForApproachingReturnDate(User $user)
     {
@@ -87,11 +88,24 @@ class BookReservationManager
 
     /**
      * @param User $user
-     * @return null|BookReservation[]
+     *
+     * @return BookReservation[]|null
      */
     public function checkReservationsForMissedReturnDate(User $user)
     {
         return $this->repository->findReservationsWithMissedEndDate($user);
+    }
+
+    public function checkIfIsReserved(Book $book, User $user)
+    {
+        $reservations = $this->repository->findActiveReservationsByBookAndUser($book, $user);
+
+        return empty($reservations) ? false : true;
+    }
+
+    private function getBook(BookReservation $bookReservation)
+    {
+        return $bookReservation->getBook();
     }
 
     public function save(BookReservation $bookReservation)
@@ -105,22 +119,5 @@ class BookReservationManager
     public function saveChanges()
     {
         $this->em->flush();
-    }
-
-    private function getBook(BookReservation $bookReservation)
-    {
-        return $bookReservation->getBook();
-    }
-
-    public function findUserReservationsByStatus(User $user, string $string)
-    {
-        return $this->repository->findUserReservationsByStatus($user, $string);
-    }
-
-    public function checkIfIsReserved(Book $book, User $user)
-    {
-        $reservations = $this->repository->findActiveReservationsByBookAndUser($book, $user);
-
-        return empty($reservations) ? false : true;
     }
 }

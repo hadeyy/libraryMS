@@ -187,7 +187,7 @@ class UserManagerTest extends WebTestCase
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function testGetReservationsByStatusCallsUserRepository(string $status)
+    public function testfindReservationsByStatusCallsUserRepository(string $status)
     {
         $book = $this->createMock(Book::class);
         $date = $this->createMock(\DateTime::class);
@@ -200,7 +200,7 @@ class UserManagerTest extends WebTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $userRepository->expects($this->once())
-            ->method('findUserJoinedToReservations')
+            ->method('findUserJoinedToReservationsByStatus')
             ->with($this->user, $status)
             ->will($this->returnArgument(0));
 
@@ -215,7 +215,7 @@ class UserManagerTest extends WebTestCase
 
         $userManager = $this->getMockBuilder(UserManager::class)
             ->setConstructorArgs([$doctrine, $fileManager, null])
-            ->setMethodsExcept(['getReservationsByStatus'])
+            ->setMethodsExcept(['findReservationsByStatus'])
             ->getMock();
 
         $reservations = $userManager->findReservationsByStatus($this->user, $status);
