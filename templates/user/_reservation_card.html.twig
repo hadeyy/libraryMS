@@ -1,8 +1,19 @@
 <div class="portlet reservation-card" id="{{ reservation.id }}" draggable="true">
     <div class="portlet-header">
-        <a class="book-title" href="{{ path('show-book', {id: reservation.book.id}) }}">
+        <a class="book-title"
+           href="{{ path('show-book', {id: reservation.book.id}) }}"
+           title="Go to book"
+        >
             {{ reservation.book.title }}
         </a>
+        {% if reservation.status == 'reserved' %}
+            <a class="cancel-reservation"
+               href="{{ path('cancel-reservation', {id: reservation.id}) }}"
+               title="Cancel reservation"
+            >
+                <span class="fa fa-times-circle"></span>
+            </a>
+        {% endif %}
     </div>
     <div class="portlet-content">
         <p>

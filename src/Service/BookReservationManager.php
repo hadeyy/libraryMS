@@ -45,11 +45,11 @@ class BookReservationManager
 
     public function updateStatus(BookReservation $reservation, string $status, \DateTime $updatedAt)
     {
-        $this->setStatus($reservation, $status);
-        $this->setUpdatedAt($reservation, $updatedAt);
+        $reservation->setStatus($status);
+        $reservation->setUpdatedAt($updatedAt);
 
         if ($status === 'returned' || $status === 'canceled') {
-            0 >= $this->getFine($reservation) ?: $this->setFine($reservation, 0);
+            0 >= $reservation->getFine() ?: $reservation->setFine(0);
 
             $book = $this->getBook($reservation);
             $this->updateBookAfterClosingReservation($book);
@@ -107,27 +107,7 @@ class BookReservationManager
         $this->em->flush();
     }
 
-    public function setStatus(BookReservation $reservation, string $status)
-    {
-        $reservation->setStatus($status);
-    }
-
-    public function setUpdatedAt(BookReservation $reservation, \DateTime $datetime)
-    {
-        $reservation->setUpdatedAt($datetime);
-    }
-
-    public function getFine(BookReservation $reservation)
-    {
-        return $reservation->getFine();
-    }
-
-    public function setFine(BookReservation $reservation, float $amount)
-    {
-        $reservation->setFine($amount);
-    }
-
-    public function getBook(BookReservation $bookReservation)
+    private function getBook(BookReservation $bookReservation)
     {
         return $bookReservation->getBook();
     }

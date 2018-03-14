@@ -38,7 +38,6 @@ show-books-by-author:
     path: /catalog/books-by-author/{id}/{page}
     controller: App\Controller\catalog\CatalogController::showAuthorCatalog
     defaults:
-        id: 1
         page: 1
     requirements:
         id: '[a-f0-9-]+'
@@ -47,7 +46,6 @@ show-books-by-genre:
     path: /catalog/books-by-genre/{id}/{page}
     controller: App\Controller\catalog\CatalogController::showGenreCatalog
     defaults:
-        id: 1
         page: 1
     requirements:
         id: '[a-f0-9-]+'
@@ -55,22 +53,21 @@ show-books-by-genre:
 show-book:
     path: /catalog/book/{id}
     controller: App\Controller\catalog\BookController::showBook
-    defaults:
-        id: 1
     requirements:
         id: '[a-f0-9-]+'
 show-author:
     path: /catalog/author/{id}
     controller: App\Controller\catalog\AuthorController::showAuthor
-    defaults:
-        id: 1
     requirements:
         id: '[a-f0-9-]+'
 reserve-book:
     path: /catalog/book/{id}/reserve
     controller: App\Controller\reader\LibraryController::reserveBook
-    defaults:
-        id: 1
+    requirements:
+        id: '[a-f0-9-]+'
+cancel-reservation:
+    path: /user/reservations/{id}/cancel
+    controller: App\Controller\reader\LibraryController::cancelReservation
     requirements:
         id: '[a-f0-9-]+'
 toggle-favorite:

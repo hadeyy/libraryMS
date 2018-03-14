@@ -10,6 +10,7 @@ namespace App\Controller\reader;
 
 
 use App\Entity\Book;
+use App\Entity\BookReservation;
 use App\Form\BookReservationType;
 use App\Service\ActivityManager;
 use App\Service\BookReservationManager;
@@ -67,5 +68,17 @@ class LibraryController extends Controller
                 'form' => $form->createView(),
             ]
         );
+    }
+
+    /**
+     * @param BookReservation $reservation
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function cancelReservation(BookReservation $reservation)
+    {
+        $this->bookReservationManager->updateStatus($reservation, 'canceled', new \DateTime());
+
+        return $this->redirectToRoute('show-user-reservations');
     }
 }
