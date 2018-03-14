@@ -32,7 +32,11 @@ class AuthorFixtures extends Fixture
     {
         $lipsum = new LoremIpsum();
 
-        for ($i = 0; $i < 20; $i++) {
+        $authorLoremIpsum = new Author('lorem', 'ipsum', 'lorem');
+        $manager->persist($authorLoremIpsum);
+        $this->addReference('author0', $authorLoremIpsum);
+
+        for ($i = 1; $i < 20; $i++) {
             $firstName = $lipsum->word();
             $lastName = $lipsum->word();
             $country = $lipsum->word();

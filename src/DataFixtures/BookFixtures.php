@@ -37,7 +37,11 @@ class BookFixtures extends Fixture implements DependentFixtureInterface
 
         for ($i = 0; $i < 100; $i++) {
             $ISBN = mt_rand(1000, 9999) . '-' . mt_rand(10, 99) . '-' . mt_rand(100, 999) . '-' . mt_rand(0, 9);
-            $title = $this->lipsum->words(mt_rand(1, 4));
+            if  (0 === $i) {
+                $title = $this->lipsum->words(2);
+            } else {
+                $title = $this->lipsum->words(mt_rand(1, 4));
+            }
             /** @var Author $author */
             $author = $this->getReference('author' . mt_rand(0, 19));
             $pages = mt_rand(20, 1024);
