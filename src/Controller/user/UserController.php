@@ -11,9 +11,11 @@ namespace App\Controller\user;
 
 use App\Entity\Book;
 use App\Entity\User;
+use App\Form\PasswordEditType;
 use App\Form\UserEditType;
 use App\Service\ActivityManager;
 use App\Service\BookReservationManager;
+use App\Service\PasswordManager;
 use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,17 +33,20 @@ class UserController extends AbstractController
     private $userManager;
     private $activityManager;
     private $bookReservationManager;
+    private $passwordManager;
 
     public function __construct(
         UserManager $userManager,
         TokenStorage $tokenStorage,
         ActivityManager $activityManager,
-        BookReservationManager $bookReservationManager
+        BookReservationManager $bookReservationManager,
+        PasswordManager $passwordManager
     ) {
         $this->userManager = $userManager;
         $this->activityManager = $activityManager;
         $this->user = $tokenStorage->getToken()->getUser();
         $this->bookReservationManager = $bookReservationManager;
+        $this->passwordManager = $passwordManager;
     }
 
     /**
@@ -55,8 +60,10 @@ class UserController extends AbstractController
             [
                 'user' => $this->user,
                 'favorites' => $this->userManager->getFavoriteBooks($this->user),
-                'activeReservations' => $this->bookReservationManager->findUserReservationsByStatus($this->user, 'reading'),
-                'closedReservations' => $this->bookReservationManager->findUserReservationsByStatus($this->user, 'returned'),
+                'activeReservations' => $this->bookReservationManager->findUserReservationsByStatus($this->user,
+                    'reading'),
+                'closedReservations' => $this->bookReservationManager->findUserReservationsByStatus($this->user,
+                    'returned'),
             ]
         );
     }
@@ -79,6 +86,24 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/edit.html.twig', ['form' => $form->createView()]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $form = $this->createForm(PasswordEditType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $newPassword = $data['newPassword'];
+            $this->passwordManager->changePassword($this->user, $newPassword);
+
+            return $this->redirectToRoute('show-profile');
+        }
+
+        return $this->render(
+            'user/edit_password.html.twig',
+            ['form' => $form->createView()]
+        );
     }
 
     /**

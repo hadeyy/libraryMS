@@ -47,6 +47,7 @@ services:
             - '@security.token_storage'
             - '@app.activity_manager'
             - '@app.book_reservation_manager'
+            - '@app.password_manager'
     App\Controller\DefaultController:
         tags: ['controller.service_arguments']
         arguments:
@@ -104,6 +105,7 @@ services:
         class: App\Service\PasswordManager
         arguments:
             - '@security.user_password_encoder.generic'
+            - '@doctrine'
     app.library_manager:
         class: App\Service\LibraryManager
         arguments:

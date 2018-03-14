@@ -2,9 +2,14 @@
     <div class="card-header">
         Reader Card
         {% if user == app.user %}
-            <a href="{{ path('edit-profile') }}" class="new-btn">
-                <button class="btn float-right">EDIT</button>
-            </a>
+            <div class="float-right">
+                <a href="{{ path('change-password') }}" class="new-btn" title="Change password">
+                    <button class="btn fa fa-key"></button>
+                </a>
+                <a href="{{ path('edit-profile') }}" class="new-btn">
+                    <button class="btn">EDIT</button>
+                </a>
+            </div>
         {% endif %}
     </div>
     <div class="card-body row">

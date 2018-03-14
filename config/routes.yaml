@@ -12,6 +12,9 @@ show-profile:
 edit-profile:
     path: /user/profile/edit
     controller: App\Controller\user\UserController::editProfile
+change-password:
+    path: /user/profile/change-password
+    controller: App\Controller\user\UserController::changePassword
 show-activity:
     path: /user/activity
     controller: App\Controller\user\UserController::showActivity
