@@ -13,6 +13,7 @@ use App\Entity\Book;
 use App\Entity\User;
 use App\Form\CommentType;
 use App\Service\ActivityManager;
+use App\Service\BookReservationManager;
 use App\Service\CommentManager;
 use App\Service\RatingManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -27,17 +28,20 @@ class BookController extends AbstractController
     private $commentManager;
     private $ratingManager;
     private $activityManager;
+    private $bookReservationManager;
     private $user;
 
     public function __construct(
         CommentManager $commentManager,
         RatingManager $ratingManager,
         ActivityManager $activityManager,
+        BookReservationManager $bookReservationManager,
         TokenStorage $tokenStorage
     ) {
         $this->commentManager = $commentManager;
         $this->ratingManager = $ratingManager;
         $this->activityManager = $activityManager;
+        $this->bookReservationManager = $bookReservationManager;
         $this->user = $tokenStorage->getToken()->getUser();
     }
 
@@ -86,6 +90,8 @@ class BookController extends AbstractController
                 $this->ratingManager->rate($book, $this->user, $value);
                 $this->activityManager->log($this->user, $book, 'Rated a book');
             }
+
+            $isReserved = $this->bookReservationManager->checkIfIsReserved($book, $this->user);
         }
 
         return $this->render(
@@ -95,6 +101,7 @@ class BookController extends AbstractController
                 'bookRating' => $this->ratingManager->getAverageRating($book),
                 'commentForm' => isset($commentForm) ? $commentForm->createView() : null,
                 'ratingForm' => isset($ratingForm) ? $ratingForm->createView() : null,
+                'isReserved' => isset($isReserved) ? $isReserved : null,
             ]
         );
     }

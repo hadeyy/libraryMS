@@ -64,6 +64,7 @@ services:
             - '@app.comment_manager'
             - '@app.rating_manager'
             - '@app.activity_manager'
+            - '@app.book_reservation_manager'
             - '@security.token_storage'
     App\Controller\catalog\AuthorController:
         tags: ['controller.service_arguments']

@@ -116,4 +116,11 @@ class BookReservationManager
     {
         return $this->repository->findUserReservationsByStatus($user, $string);
     }
+
+    public function checkIfIsReserved(Book $book, User $user)
+    {
+        $reservations = $this->repository->findActiveReservationsByBookAndUser($book, $user);
+
+        return empty($reservations) ? false : true;
+    }
 }

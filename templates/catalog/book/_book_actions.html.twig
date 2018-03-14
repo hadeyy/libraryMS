@@ -1,10 +1,14 @@
-{% if app.user and 0 < book.availableCopies %}
+{% if isReserved %}
+    <a class="book-action" title="Book already reserved">
+        <button type="button" class="btn" disabled>RESERVE BOOK</button>
+    </a>
+{% elseif app.user and 0 < book.availableCopies %}
     <a class="book-action" href="{{ path('reserve-book', {id: book.id}) }}">
         <!-- Reservation modal trigger -->
         <button type="button" class="btn">RESERVE BOOK</button>
     </a>
 {% elseif app.user and 1 > book.availableCopies %}
-    <a class="book-action">
+    <a class="book-action" title="No available copies">
         <button type="button" class="btn" disabled>RESERVE BOOK</button>
     </a>
 {% endif %}

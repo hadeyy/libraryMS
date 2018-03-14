@@ -9,6 +9,7 @@
 namespace App\Repository;
 
 
+use App\Entity\Book;
 use App\Entity\BookReservation;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
@@ -77,6 +78,21 @@ class BookReservationRepository extends EntityRepository
             ->andWhere('br.dateTo < CURRENT_DATE()')
             ->andWhere('br.reader = :user')
             ->setParameters(['user' => $user, 'status' => 'reading'])
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findActiveReservationsByBookAndUser(Book $book, User $user)
+    {
+        return $this->createQueryBuilder('br')
+            ->andwhere('br.book = :book')
+            ->andWhere('br.reader = :reader')
+            ->andWhere('br.status IN (:statuses)')
+            ->setParameters([
+                'book' => $book,
+                'reader' => $user,
+                'statuses' => ['reserved', 'reading'],
+            ])
             ->getQuery()
             ->getResult();
     }
