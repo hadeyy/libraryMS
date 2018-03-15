@@ -43,6 +43,38 @@ class ActivityManager
     }
 
     /**
+     * @param User $user
+     *
+     * @return mixed
+     */
+    public function findUserActivity(User $user)
+    {
+        $repository = $this->em->getRepository(Activity::class);
+
+        return $repository->findUserActivities($user);
+    }
+
+    /**
+     * @param User $user
+     * @param string $filter
+     *
+     * @return mixed
+     */
+    public function findUserActivityByDateLimit(User $user, string $filter)
+    {
+        $repository = $this->em->getRepository(Activity::class);
+
+        $dates = [
+            'today' => 'today',
+            'this-week' => 'monday this week',
+            'this-month' => 'first day of this month',
+            'this-year' => 'first day of January this year',
+        ];
+
+        return $repository->findUserActivitiesByDateLimit($user, $dates[$filter]);
+    }
+
+    /**
      * @param Activity $activity The instance to make managed and persistent.
      */
     public function save(Activity $activity)

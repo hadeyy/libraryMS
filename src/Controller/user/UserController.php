@@ -59,7 +59,7 @@ class UserController extends AbstractController
             'user/profile.html.twig',
             [
                 'user' => $this->user,
-                'favorites' => $this->userManager->getFavoriteBooks($this->user),
+                'favorites' => $this->userManager->findFavoriteBooks($this->user),
                 'activeReservations' => $this->bookReservationManager->findUserReservationsByStatus($this->user,
                     'reading'),
                 'closedReservations' => $this->bookReservationManager->findUserReservationsByStatus($this->user,
@@ -111,9 +111,22 @@ class UserController extends AbstractController
      */
     public function showActivity()
     {
-        $activities = $this->userManager->getActivity($this->user);
+        $activities = $this->activityManager->findUserActivity($this->user);
 
-        return $this->render('user/activities.html.twig', ['activities' => $activities]);
+        return $this->render(
+            'user/activities.html.twig',
+            ['activities' => $activities]
+        );
+    }
+
+    public function showActivityFilteredByDate(string $filter)
+    {
+        $activity = $this->activityManager->findUserActivityByDateLimit($this->user, $filter);
+
+        return $this->render(
+            'user/activities.html.twig',
+            ['activities' => $activity]
+        );
     }
 
     /**

@@ -24,8 +24,7 @@ class AppManager
         ManagerRegistry $doctrine,
         FileManager $fileManager,
         UserManager $userManager
-    )
-    {
+    ) {
         $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
         $this->userManager = $userManager;
@@ -65,11 +64,25 @@ class AppManager
         $this->remove($comment);
     }
 
-    public function getAllActivity()
+    public function findAllActivity()
     {
         $repository = $this->em->getRepository(Activity::class);
 
         return $repository->findRecentActivity();
+    }
+
+    public function findActivityByDateLimit(string $filter)
+    {
+        $repository = $this->em->getRepository(Activity::class);
+
+        $dates = [
+            'today' => 'today',
+            'this-week' => 'monday this week',
+            'this-month' => 'first day of this month',
+            'this-year' => 'first day of January this year',
+        ];
+
+        return $repository->findActivityByDateLimit($dates[$filter]);
     }
 
     public function save(User $user)

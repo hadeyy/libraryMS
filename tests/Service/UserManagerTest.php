@@ -165,10 +165,10 @@ class UserManagerTest extends WebTestCase
 
         $userManager = $this->getMockBuilder(UserManager::class)
             ->setConstructorArgs([$doctrine, $fileManager, null])
-            ->setMethodsExcept(['getFavoriteBooks'])
+            ->setMethodsExcept(['findFavoriteBooks'])
             ->getMock();
 
-        $favorites = $userManager->getFavoriteBooks($this->user);
+        $favorites = $userManager->findFavoriteBooks($this->user);
 
         $this->assertTrue(
             $favorites instanceof ArrayCollection,
@@ -356,29 +356,6 @@ class UserManagerTest extends WebTestCase
         $this->assertEquals(
             'photo', $user->getPhoto(),
             'Original photo was not changed.'
-        );
-    }
-
-    public function testGetActivity()
-    {
-        $activity = $this->createMock(Activity::class);
-
-        $this->user->addActivity($activity);
-        $this->user->addActivity($activity);
-
-        $userManager = $this->getMockBuilder(UserManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['getActivity'])
-            ->getMock();
-
-        $activities = $userManager->getActivity($this->user);
-        $this->assertTrue(
-            $activities instanceof ArrayCollection,
-            'Result is an instance of ArrayCollection.'
-        );
-        $this->assertCount(
-            2, $activities,
-            'Retrieved activity.html.twig count is correct.'
         );
     }
 

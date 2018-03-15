@@ -74,10 +74,10 @@ class AppManagerTest extends WebTestCase
 
         $appManager = $this->getMockBuilder(AppManager::class)
             ->setConstructorArgs([$doctrine, $fileManager, $userManager])
-            ->setMethodsExcept(['getAllActivity'])
+            ->setMethodsExcept(['findAllActivity'])
             ->getMock();
 
-        $result = $appManager->getAllActivity();
+        $result = $appManager->findAllActivity();
         $this->assertEquals(new ArrayCollection(), $result);
     }
 

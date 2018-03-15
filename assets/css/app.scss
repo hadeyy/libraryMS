@@ -890,3 +890,17 @@ div.comment-trash {
     color: darkred;
   }
 }
+
+.filter-group a {
+  background-color: $palette-dark;
+  color: $palette-medium-dark !important;
+  font-weight: bold;
+  cursor: pointer;
+  &:hover {
+    background-color: $palette-medium-light;
+  }
+  &.active {
+    background-color: $palette-medium-dark;
+    color: $palette-dark !important;
+  }
+}

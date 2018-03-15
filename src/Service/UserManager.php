@@ -80,7 +80,7 @@ class UserManager
      * @return mixed
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getFavoriteBooks(User $user)
+    public function findFavoriteBooks(User $user)
     {
         $user = $this->repository->findUserJoinedToFavoriteBooks($user);
 
@@ -118,11 +118,6 @@ class UserManager
         $user->setEmail($data['email']);
 
         $this->saveChanges();
-    }
-
-    public function getActivity(User $user)
-    {
-        return $user->getActivities();
     }
 
     public function findUsersByRole(string $role)

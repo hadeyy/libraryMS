@@ -94,7 +94,7 @@ class AdminController extends AbstractController
             'user/profile.html.twig',
             [
                 'user' => $user,
-                'favorites' => $this->userManager->getFavoriteBooks($user),
+                'favorites' => $this->userManager->findFavoriteBooks($user),
                 'activeReservations' => $this->userManager
                     ->findReservationsByStatus($user, 'reading'),
                 'closedReservations' => $this->userManager
@@ -105,7 +105,17 @@ class AdminController extends AbstractController
 
     public function showActivity()
     {
-        $activity = $this->appManager->getAllActivity();
+        $activity = $this->appManager->findAllActivity();
+
+        return $this->render(
+            'admin/activity.html.twig',
+            ['activities' => $activity]
+        );
+    }
+
+    public function showActivityFilteredByDate(string $filter)
+    {
+        $activity = $this->appManager->findActivityByDateLimit($filter);
 
         return $this->render(
             'admin/activity.html.twig',

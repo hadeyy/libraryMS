@@ -15,9 +15,14 @@ edit-profile:
 change-password:
     path: /user/profile/change-password
     controller: App\Controller\user\UserController::changePassword
-show-activity:
+show-user-activity:
     path: /user/activity
     controller: App\Controller\user\UserController::showActivity
+show-user-activity-filtered-by-date:
+    path: /user/activity/{filter}
+    controller: App\Controller\user\UserController::showActivityFilteredByDate
+    requirements:
+        filter: '(today|this-week|this-month|this-year)'
 show-user-reservations:
     path: /user/reservations
     controller: App\Controller\user\UserController::showReservations
@@ -138,8 +143,13 @@ edit-user:
     requirements:
         id: '[a-f0-9-]+'
 show-all-activity:
-    path: /admin/all-activity
+    path: /admin/activity
     controller: App\Controller\admin\AdminController::showActivity
+show-activity-filtered-by-date:
+    path: /admin/activity/{filter}
+    controller: App\Controller\admin\AdminController::showActivityFilteredByDate
+    requirements:
+        filter: '(today|this-week|this-month|this-year)'
 show-user:
     path: /admin/users/{id}/profile
     controller: App\Controller\admin\AdminController::showUser
