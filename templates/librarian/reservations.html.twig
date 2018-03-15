@@ -56,10 +56,21 @@
                     portletID = activePortlet.id;
                     // selected portlet's original column name (id)
                     startStatus = activePortlet.parentNode.id;
+
+                    if (startStatus === 'returned' || startStatus === 'canceled') {
+                        alert("Cannot change reservation status for '" + startStatus + "' reservations!");
+                    }
                 },
                 stop: function (event, ui) {
                     stopStatus = ui.item[0].parentNode.id;
-                    if (stopStatus !== startStatus) {
+
+                    if (
+                        (startStatus === 'reserved' && stopStatus === 'returned') ||
+                        (startStatus === 'reading' && (stopStatus === 'reserved' || stopStatus === 'canceled'))
+                    ) {
+                        $(this).sortable('cancel');
+                        alert("Cannot move reservation from '" + startStatus + "' to '" + stopStatus + "'!");
+                    } else if (stopStatus !== startStatus) {
                         update(portletID, stopStatus);
                     }
                 }
