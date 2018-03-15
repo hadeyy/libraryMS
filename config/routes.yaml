@@ -97,10 +97,10 @@ new-author:
     path: /catalog/authors/new
     controller: App\Controller\librarian\LibraryController::newAuthor
 edit-author:
-    path: /catalog/{authorSlug}/edit
+    path: /catalog/{slug}/edit
     controller: App\Controller\librarian\LibraryController::editAuthor
     requirements:
-        authorSlug: '[a-z-]+'
+        slug: '[a-z-]+'
 delete-author:
     path: /catalog/{slug}/delete
     controller: App\Controller\librarian\LibraryController::deleteAuthor
