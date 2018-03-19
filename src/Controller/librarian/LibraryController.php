@@ -117,6 +117,13 @@ class LibraryController extends Controller
         return $this->render('catalog/book/edit.html.twig', ['form' => $form->createView()]);
     }
 
+    /**
+     * @param Book $book
+     *
+     * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
+     *
+     * @return RedirectResponse
+     */
     public function deleteBook(Book $book)
     {
         $this->bookManager->remove($book);
@@ -159,7 +166,7 @@ class LibraryController extends Controller
         $form = $this->createForm(AuthorType::class, $data);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->authorManager->updateAuthor($author, $data);
+            $this->authorManager->updateAuthor($author, $form->getData());
 
             return $this->redirectToRoute('show-author', ['slug' => $author->getSlug()]);
         }

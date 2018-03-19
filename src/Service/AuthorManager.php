@@ -67,8 +67,9 @@ class AuthorManager
     {
         $photo = $data['portrait'];
         if ($photo instanceof UploadedFile) {
-            $photoPath = $this->portraitDirectory . '/' . $author->getPortrait();
-            !isset($photoPath) ?: $this->fileManager->deleteFile($photoPath);
+            $portrait = $author->getPortrait();
+            $photoPath = $this->portraitDirectory . '/' . $portrait;
+            !isset($portrait) ?: $this->fileManager->deleteFile($photoPath);
 
             $filename = $this->fileManager->upload($photo, $this->portraitDirectory);
             $author->setPortrait($filename);
