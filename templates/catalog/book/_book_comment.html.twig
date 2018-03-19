@@ -9,7 +9,7 @@
     </div>
     {% if is_granted("ROLE_ADMIN") %}
         <div class="comment-trash">
-            <a title="Delete" href="{{ path('delete-comment', {id: comment.id, book: comment.book}) }}">
+            <a title="Delete" href="{{ path('delete-comment', {id: comment.id, bookSlug: comment.book.slug}) }}">
                 <span class="fa fa-trash-o"></span>
             </a>
         </div>

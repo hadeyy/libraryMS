@@ -15,6 +15,7 @@ use App\Entity\User;
 use App\Service\AppManager;
 use App\Service\BookReservationManager;
 use App\Service\UserManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -127,10 +128,25 @@ class AdminController extends AbstractController
         );
     }
 
+    /**
+     * @param Comment $comment
+     * @param Book $book
+     *
+     * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function deleteComment(Comment $comment, Book $book)
     {
         $this->appManager->deleteComment($comment);
+        $author = $book->getAuthor();
 
-        return $this->redirectToRoute('show-book', ['book' => $book]);
+        return $this->redirectToRoute(
+            'show-book',
+            [
+                'authorSlug' => $author->getSlug(),
+                'bookSlug' => $book->getSlug()
+            ]
+        );
     }
 }

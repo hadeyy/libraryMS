@@ -156,7 +156,8 @@ show-user:
     requirements:
         id: '[a-f0-9-]+'
 delete-comment:
-    path: /admin/comment/{id}/delete
+    path: /admin/{bookSlug}/comment/{id}/delete
     controller: App\Controller\admin\AdminController::deleteComment
     requirements:
+        bookSlug: '[a-z-]+'
         id: '[a-f0-9-]+'
