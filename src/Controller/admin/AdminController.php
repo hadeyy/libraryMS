@@ -13,6 +13,7 @@ use App\Entity\Book;
 use App\Entity\Comment;
 use App\Entity\User;
 use App\Service\AppManager;
+use App\Service\BookReservationManager;
 use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,13 +27,16 @@ class AdminController extends AbstractController
 {
     private $appManager;
     private $userManager;
+    private $reservationManager;
 
     public function __construct(
         AppManager $appManager,
-        UserManager $userManager
+        UserManager $userManager,
+        BookReservationManager $reservationManager
     ) {
         $this->appManager = $appManager;
         $this->userManager = $userManager;
+        $this->reservationManager = $reservationManager;
     }
 
     public function showAllUsers()
@@ -95,10 +99,10 @@ class AdminController extends AbstractController
             [
                 'user' => $user,
                 'favorites' => $this->userManager->findFavoriteBooks($user),
-                'activeReservations' => $this->userManager
-                    ->findReservationsByStatus($user, 'reading'),
-                'closedReservations' => $this->userManager
-                    ->findReservationsByStatus($user, 'returned'),
+                'activeReservations' => $this->reservationManager
+                    ->findUserReservationsByStatus($user, 'reading'),
+                'closedReservations' => $this->reservationManager
+                    ->findUserReservationsByStatus($user, 'returned'),
             ]
         );
     }
