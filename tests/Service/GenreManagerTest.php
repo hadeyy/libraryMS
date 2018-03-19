@@ -44,9 +44,6 @@ class GenreManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Genre::class));
         $entityManager->expects($this->once())
             ->method('flush');
-        $entityManager->expects($this->once())
-            ->method('clear');
-
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
             ->method('getManager')

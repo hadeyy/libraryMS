@@ -75,8 +75,6 @@ class ActivityManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Activity::class));
         $entityManager->expects($this->once())
             ->method('flush');
-        $entityManager->expects($this->once())
-            ->method('clear');
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())

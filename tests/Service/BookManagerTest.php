@@ -11,8 +11,10 @@ namespace App\Tests\Service;
 
 use App\Entity\Author;
 use App\Entity\Book;
+use App\Entity\Genre;
 use App\Service\BookManager;
 use App\Service\FileManager;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -87,7 +89,7 @@ class BookManagerTest extends WebTestCase
         $data = $userManager->createArrayFromBook($book);
         $this->assertTrue(is_array($data), 'Result is an array.');
         $this->assertCount(
-            10, $data,
+            11, $data,
             'Array contains the correct number of elements.'
         );
         $this->assertArrayHasKey('ISBN', $data);
@@ -110,6 +112,8 @@ class BookManagerTest extends WebTestCase
         $this->assertEquals($data['cover'], $file);
         $this->assertArrayHasKey('annotation', $data);
         $this->assertEquals($data['annotation'], $book->getAnnotation());
+        $this->assertArrayHasKey('genres', $data);
+        $this->assertEquals($data['genres'], $book->getGenres());
     }
 
     /**
@@ -124,8 +128,6 @@ class BookManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Book::class));
         $entityManager->expects($this->once())
             ->method('flush');
-        $entityManager->expects($this->once())
-            ->method('clear');
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
@@ -155,8 +157,6 @@ class BookManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Book::class));
         $entityManager->expects($this->exactly(2))
             ->method('flush');
-        $entityManager->expects($this->exactly(2))
-            ->method('clear');
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
             ->disableOriginalConstructor()
@@ -217,6 +217,7 @@ class BookManagerTest extends WebTestCase
 
         $filePath = 'test_update_cover.jpg';
         fopen($filePath, 'w');
+        $genre = new Genre('genre');
         $newData = [
             'ISBN' => 'testISBN',
             'title' => 'testTitle',
@@ -227,7 +228,8 @@ class BookManagerTest extends WebTestCase
             'publicationDate' => new \DateTime(),
             'availableCopies' => 22,
             'annotation' => 'testAnnotation',
-            'cover' => new UploadedFile($filePath, $filePath)
+            'cover' => new UploadedFile($filePath, $filePath),
+            'genres' => [$genre],
         ];
 
         $doctrine = $this->createMock(ManagerRegistry::class);
@@ -291,7 +293,11 @@ class BookManagerTest extends WebTestCase
         );
         $this->assertEquals(
             'filename', $book->getCover(),
-            "Book cover has been updated."
+            'Book cover has been updated.'
+        );
+        $this->assertEquals(
+            new ArrayCollection([$genre]), $book->getGenres(),
+            'Book genres have been updated.'
         );
 
         unlink('test_update_cover.jpg');
@@ -314,6 +320,7 @@ class BookManagerTest extends WebTestCase
             'annotation'
         );
 
+        $genre = new Genre('genre');
         $newData = [
             'ISBN' => 'testISBN',
             'title' => 'testTitle',
@@ -324,7 +331,8 @@ class BookManagerTest extends WebTestCase
             'publicationDate' => new \DateTime(),
             'availableCopies' => 22,
             'annotation' => 'testAnnotation',
-            'cover' => null
+            'cover' => null,
+            'genres' => [$genre],
         ];
 
         $doctrine = $this->createMock(ManagerRegistry::class);

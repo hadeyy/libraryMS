@@ -177,8 +177,6 @@ class RatingManagerTest extends WebTestCase
             ->with($this->isInstanceOf(Rating::class));
         $entityManager->expects($this->exactly(2))
             ->method('flush');
-        $entityManager->expects($this->exactly(2))
-            ->method('clear');
 
         $doctrine = $this->getMockBuilder(ManagerRegistry::class)
             ->disableOriginalConstructor()
