@@ -93,6 +93,5 @@ class RatingManager
     public function saveChanges()
     {
         $this->em->flush();
-        $this->em->clear();
     }
 }

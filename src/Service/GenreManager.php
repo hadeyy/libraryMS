@@ -43,6 +43,5 @@ class GenreManager
     {
         $this->em->persist($genre);
         $this->em->flush();
-        $this->em->clear();
     }
 }

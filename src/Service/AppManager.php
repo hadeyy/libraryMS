@@ -94,7 +94,6 @@ class AppManager
     public function saveChanges()
     {
         $this->em->flush();
-        $this->em->clear();
     }
 
     public function remove($entity)

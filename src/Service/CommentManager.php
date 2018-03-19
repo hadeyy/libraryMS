@@ -32,7 +32,6 @@ class CommentManager
     {
         $this->em->persist($comment);
         $this->em->flush();
-        $this->em->clear();
     }
 
 }
