@@ -21,51 +21,22 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ActivityManagerTest extends WebTestCase
 {
-    public function testLogCallsCreateAndSave()
+    private $user;
+    private $book;
+    private $activities;
+
+    public function setUp()
     {
-        $activityManager = $this->getMockBuilder(ActivityManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['log'])
-            ->getMock();
-        $activityManager->expects($this->once())
-            ->method('save')
-            ->with($this->isInstanceOf(Activity::class));
+        $this->user = $this->createMock(User::class);
+        $this->book = $this->createMock(Book::class);
 
-        $user = $this->createMock(User::class);
-        $book = $this->createMock(Book::class);
-
-        $activityManager->log($user, $book, 'title');
+        $this->activities = new ArrayCollection([
+            new Activity($this->user, $this->book, 'activity 1'),
+            new Activity($this->user, $this->book, 'activity 2'),
+        ]);
     }
 
-    public function testGetRecentActivityCallsActivityRepository()
-    {
-        $activityRepository = $this->createMock(ActivityRepository::class);
-        $activityRepository->expects($this->once())
-            ->method('findRecentActivity')
-            ->with($this->isType('int'))
-            ->willReturn(new ArrayCollection());
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-        $doctrine->expects($this->once())
-            ->method('getManager');
-        $doctrine->expects($this->once())
-            ->method('getRepository')
-            ->willReturn($activityRepository);
-
-        $activityManager = $this->getMockBuilder(ActivityManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['getRecentActivity'])
-            ->getMock();
-
-        $result = $activityManager->getRecentActivity();
-
-        $this->assertTrue(
-            $result instanceof ArrayCollection,
-            'Result is an instance of ArrayCollection.'
-        );
-    }
-
-    public function testSaveCallsEntityManager()
+    public function testLog()
     {
         $entityManager = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
@@ -81,40 +52,86 @@ class ActivityManagerTest extends WebTestCase
             ->method('getManager')
             ->willReturn($entityManager);
 
-        $activityManager = $this->getMockBuilder(ActivityManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['save'])
-            ->getMock();
+        $activityManager = new ActivityManager($doctrine);
 
         $user = $this->createMock(User::class);
         $book = $this->createMock(Book::class);
 
-        $activityManager->save(new Activity($user, $book, 'title'));
+        $activityManager->log($user, $book, 'title');
     }
 
-    public function testFindUserActivityByDateLimitCallsActivityRepository()
+    public function testGetRecentActivity()
     {
         $activityRepository = $this->createMock(ActivityRepository::class);
         $activityRepository->expects($this->once())
-            ->method('findUserActivitiesByDateLimit');
-
-        $entityManager = $this->createMock(EntityManager::class);
-        $entityManager->expects($this->once())
-            ->method('getRepository')
-            ->willReturn($activityRepository);
+            ->method('findRecentActivity')
+            ->with($this->isType('int'))
+            ->willReturn($this->activities);
 
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
-            ->method('getManager')
-            ->willReturn($entityManager);
+            ->method('getRepository')
+            ->willReturn($activityRepository);
 
-        $activityManager = $this->getMockBuilder(ActivityManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['findUserActivityByDateLimit'])
-            ->getMock();
+        $activityManager = new ActivityManager($doctrine);
 
-        $user = $this->createMock(User::class);
+        $result = $activityManager->getRecentActivity(2);
 
-        $activityManager->findUserActivityByDateLimit($user, 'today');
+        $this->assertEquals($this->activities, $result);
+    }
+
+    public function testFindUserActivity()
+    {
+        $activityRepository = $this->createMock(ActivityRepository::class);
+        $activityRepository->expects($this->once())
+            ->method('findUserActivities')
+            ->with($this->isInstanceOf(User::class))
+            ->willReturn($this->activities);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->willReturn($activityRepository);
+
+        $activityManager = new ActivityManager($doctrine);
+
+        $result = $activityManager->findUserActivity($this->user);
+
+        $this->assertEquals($this->activities, $result);
+    }
+
+    /**
+     * @param $filter
+     * @param $date
+     * @dataProvider dateFilterProvider
+     */
+    public function testFindUserActivityByDateLimit($filter, $date)
+    {
+        $activityRepository = $this->createMock(ActivityRepository::class);
+        $activityRepository->expects($this->once())
+            ->method('findUserActivitiesByDateLimit')
+            ->with($this->isInstanceOf(User::class), $date)
+            ->willReturn($this->activities);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->willReturn($activityRepository);
+
+        $activityManager = new ActivityManager($doctrine);
+
+        $result = $activityManager->findUserActivityByDateLimit($this->user, $filter);
+
+        $this->assertEquals($this->activities, $result);
+    }
+
+    public function dateFilterProvider()
+    {
+        return [
+            ['today', 'today'],
+            ['this-week', 'monday this week'],
+            ['this-month', 'first day of this month'],
+            ['this-year', 'first day of January this year'],
+        ];
     }
 }

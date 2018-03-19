@@ -17,12 +17,12 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 class ActivityManager
 {
     private $em;
-    private $activityRepository;
+    private $repository;
 
     public function __construct(ManagerRegistry $doctrine)
     {
         $this->em = $doctrine->getManager();
-        $this->activityRepository = $doctrine->getRepository(Activity::class);
+        $this->repository = $doctrine->getRepository(Activity::class);
     }
 
     /**
@@ -39,7 +39,7 @@ class ActivityManager
 
     public function getRecentActivity(int $limit = 7)
     {
-        return $this->activityRepository->findRecentActivity($limit);
+        return $this->repository->findRecentActivity($limit);
     }
 
     /**
@@ -49,9 +49,7 @@ class ActivityManager
      */
     public function findUserActivity(User $user)
     {
-        $repository = $this->em->getRepository(Activity::class);
-
-        return $repository->findUserActivities($user);
+        return $this->repository->findUserActivities($user);
     }
 
     /**
@@ -62,8 +60,6 @@ class ActivityManager
      */
     public function findUserActivityByDateLimit(User $user, string $filter)
     {
-        $repository = $this->em->getRepository(Activity::class);
-
         $dates = [
             'today' => 'today',
             'this-week' => 'monday this week',
@@ -71,7 +67,7 @@ class ActivityManager
             'this-year' => 'first day of January this year',
         ];
 
-        return $repository->findUserActivitiesByDateLimit($user, $dates[$filter]);
+        return $this->repository->findUserActivitiesByDateLimit($user, $dates[$filter]);
     }
 
     /**
