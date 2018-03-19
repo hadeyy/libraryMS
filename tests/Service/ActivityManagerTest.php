@@ -93,4 +93,30 @@ class ActivityManagerTest extends WebTestCase
 
         $activityManager->save(new Activity($user, $book, 'title'));
     }
+
+    public function testFindUserActivityByDateLimitCallsActivityRepository()
+    {
+        $activityRepository = $this->createMock(ActivityRepository::class);
+        $activityRepository->expects($this->once())
+            ->method('findUserActivitiesByDateLimit');
+
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('getRepository')
+            ->willReturn($activityRepository);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $activityManager = $this->getMockBuilder(ActivityManager::class)
+            ->setConstructorArgs([$doctrine])
+            ->setMethodsExcept(['findUserActivityByDateLimit'])
+            ->getMock();
+
+        $user = $this->createMock(User::class);
+
+        $activityManager->findUserActivityByDateLimit($user, 'today');
+    }
 }

@@ -220,4 +220,31 @@ class AppManagerTest extends WebTestCase
 
         $appManager->deleteComment(new Comment($user, $book, 'comment'));
     }
+
+    public function testFindActivityByDateLimitCallsActivityRepository()
+    {
+        $activityRepository = $this->createMock(ActivityRepository::class);
+        $activityRepository->expects($this->once())
+            ->method('findActivityByDateLimit');
+
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('getRepository')
+            ->willReturn($activityRepository);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+        $userManager = $this->createMock(UserManager::class);
+
+        $appManager = $this->getMockBuilder(AppManager::class)
+            ->setConstructorArgs([$doctrine, $fileManager, $userManager])
+            ->setMethodsExcept(['findActivityByDateLimit'])
+            ->getMock();
+
+        $appManager->findActivityByDateLimit('today');
+    }
 }
