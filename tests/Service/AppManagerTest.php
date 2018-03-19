@@ -23,35 +23,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AppManagerTest extends WebTestCase
 {
-    public function testCreateUserAddsDataToUser()
-    {
-        $appManager = $this->getMockBuilder(AppManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['createUser'])
-            ->getMock();
-
-        $data = [
-            'firstName' => 'firstName',
-            'lastName' => 'lastName',
-            'username' => 'username',
-            'email' => 'email',
-            'photo' => 'photo',
-            'plainPassword' => 'plainPassword',
-        ];
-
-        $user = $appManager->createUser($data);
-        $this->assertTrue(
-            $user instanceof User,
-            'Result is an instance of User class.'
-        );
-        $this->assertEquals('firstName', $user->getFirstName());
-        $this->assertEquals('lastName', $user->getLastName());
-        $this->assertEquals('username', $user->getUsername());
-        $this->assertEquals('email', $user->getEmail());
-        $this->assertEquals('photo', $user->getPhoto());
-        $this->assertEquals('plainPassword', $user->getPlainPassword());
-    }
-
     public function testGetAllActivityCallsActivityRepository()
     {
         $activityRepository = $this->createMock(ActivityRepository::class);

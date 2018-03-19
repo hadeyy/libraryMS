@@ -30,18 +30,6 @@ class AppManager
         $this->userManager = $userManager;
     }
 
-    public function createUser(array $data): User
-    {
-        return new User(
-            $data['firstName'],
-            $data['lastName'],
-            $data['username'],
-            $data['email'],
-            $data['photo'],
-            $data['plainPassword']
-        );
-    }
-
     public function changeRole(User $user, string $role)
     {
         $user->resetRoles();
