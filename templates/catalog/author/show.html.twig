@@ -2,11 +2,11 @@
 
 {% block title %}{{ author.firstName }} {{ author.lastName }}{% endblock %}
 {% block content %}
-    <div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center">
         {% include 'catalog/author/_author_card.html.twig' with {'author': author } %}
     </div>
 
-    <div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <h4>Books ({{ author.books|length }})</h4>
         <hr>
         <div class="row d-flex justify-content-center">
