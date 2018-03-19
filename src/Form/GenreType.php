@@ -27,7 +27,7 @@ class GenreType extends AbstractType
                     new Length([
                         'min' => 2,
                         'minMessage' => 'Genre name must be at least {{ limit }} characters long.',
-                        'max' => 25,
+                        'max' => 35,
                         'maxMessage' => 'Genre name cannot be longer than {{ limit }} characters.',
                     ])
                 ],

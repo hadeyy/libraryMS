@@ -13,6 +13,7 @@ use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\BookReservation;
 use App\Form\AuthorType;
+use App\Form\BookEditType;
 use App\Form\BookType;
 use App\Form\GenreType;
 use App\Service\ActivityManager;
@@ -21,6 +22,7 @@ use App\Service\BookManager;
 use App\Service\BookReservationManager;
 use App\Service\GenreManager;
 use App\Service\UserManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -87,16 +89,18 @@ class LibraryController extends Controller
      * @param Request $request
      * @param Book $book
      *
+     * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
+     *
      * @return RedirectResponse|Response
      */
     public function editBook(Request $request, Book $book)
     {
-        $data =$this->bookManager->createArrayFromBook($book);
+        $data = $this->bookManager->createArrayFromBook($book);
 
-        $form = $this->createForm(BookType::class, $data);
+        $form = $this->createForm(BookEditType::class, $data);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->bookManager->updateBook($book, $data);
+            $this->bookManager->updateBook($book, $form->getData());
             $this->activityManager->log($this->user, $book, 'Updated a book');
 
             $author = $book->getAuthor();

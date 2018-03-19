@@ -60,6 +60,7 @@ class BookManager
             'availableCopies' => $book->getAvailableCopies(),
             'cover' => $this->fileManager->createFileFromPath($photoPath),
             'annotation' => $book->getAnnotation(),
+            'genres' => $book->getGenres(),
         ];
     }
 
@@ -89,6 +90,11 @@ class BookManager
         $book->setPublicationDate($data['publicationDate']);
         $book->setAvailableCopies($data['availableCopies']);
         $book->setAnnotation($data['annotation']);
+
+        $book->resetGenres();
+        foreach ($data['genres'] as $genre) {
+            $book->addGenre($genre);
+        }
 
         $this->saveChanges();
     }

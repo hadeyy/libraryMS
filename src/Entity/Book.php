@@ -325,6 +325,11 @@ class Book
         $this->genres->add($genre);
     }
 
+    public function resetGenres(): void
+    {
+        $this->genres = new ArrayCollection();
+    }
+
     public function getPublisher(): string
     {
         return $this->publisher;

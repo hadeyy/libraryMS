@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: evita.sivakova
- * Date: 1/16/2018
- * Time: 12:52 PM
+ * Date: 3/19/2018
+ * Time: 1:02 PM
  */
 
 namespace App\Form;
@@ -26,19 +26,17 @@ use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Isbn;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThan;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Valid;
 
-class BookType extends AbstractType
+class BookEditType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('title', TextType::class, [
                 'constraints' => [
-                    new NotBlank(),
                     new Length([
                         'min' => 1,
                         'minMessage' => 'Title must be at least {{ limit }} characters long.',
@@ -51,13 +49,11 @@ class BookType extends AbstractType
                 'class' => Author::class,
                 'placeholder' => '- Choose author -',
                 'constraints' => [
-                    new NotBlank(),
                     new Valid(),
                 ],
             ])
             ->add('cover', FileType::class, [
                 'constraints' => [
-                    new NotBlank(),
                     new Image([
                         'minWidth' => 50,
                         'minWidthMessage' => 'Minimum width expected is {{ min_width }}px.',
@@ -73,7 +69,6 @@ class BookType extends AbstractType
             ->add('annotation', TextareaType::class, [
                 'attr' => ['class' => 'tinymce'],
                 'constraints' => [
-                    new NotBlank(),
                     new Length([
                         'min' => 140,
                         'minMessage' => 'Annotation must be at least {{ limit }} characters long.',
@@ -84,13 +79,11 @@ class BookType extends AbstractType
             ])
             ->add('ISBN', TextType::class, [
                 'constraints' => [
-                    new NotBlank(),
                     new Isbn(),
                 ],
             ])
             ->add('pages', IntegerType::class, [
                 'constraints' => [
-                    new NotBlank(),
                     new Type([
                         'type' => 'integer',
                         'message' => 'The value {{ value }} is not a valid {{ type }}.',
@@ -105,7 +98,6 @@ class BookType extends AbstractType
             ])
             ->add('language', TextType::class, [
                 'constraints' => [
-                    new NotBlank(),
                     new Length([
                         'min' => 2,
                         'minMessage' => 'Language name must be at least {{ limit }} characters long.',
@@ -121,7 +113,6 @@ class BookType extends AbstractType
                 'required' => true,
                 'placeholder' => '- Choose genre(s) -',
                 'constraints' => [
-                    new NotBlank(),
                     new Count([
                         'min' => 1,
                         'minMessage' => 'You must specify at least one genre.',
@@ -132,7 +123,6 @@ class BookType extends AbstractType
             ])
             ->add('publisher', TextType::class, [
                 'constraints' => [
-                    new NotBlank(),
                     new Length([
                         'min' => 2,
                         'minMessage' => 'Publisher name must be at least {{ limit }} characters long.',
@@ -145,14 +135,12 @@ class BookType extends AbstractType
                 'widget' => 'choice',
                 'years' => range(date('Y') - 150, date('Y')),
                 'constraints' => [
-                    new NotBlank(),
                     new Date(),
                     new LessThan('today'),
                 ],
             ])
             ->add('availableCopies', IntegerType::class, [
                 'constraints' => [
-                    new NotBlank(),
                     new Type([
                         'type' => 'integer',
                         'message' => 'The value {{ value }} is not a valid {{ type }}.',

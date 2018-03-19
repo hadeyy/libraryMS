@@ -36,7 +36,7 @@ class Genre
      * @Assert\NotBlank()
      * @Assert\Length(
      *     min = 2,
-     *     max = 25,
+     *     max = 35,
      *     minMessage="Genre name must be at least {{ limit }} characters long.",
      *     maxMessage="Genre name cannot be longer than {{ limit }} characters."
      * )
