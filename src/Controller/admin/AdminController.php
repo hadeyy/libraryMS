@@ -12,6 +12,7 @@ namespace App\Controller\admin;
 use App\Entity\Book;
 use App\Entity\Comment;
 use App\Entity\User;
+use App\Service\ActivityManager;
 use App\Service\AppManager;
 use App\Service\BookReservationManager;
 use App\Service\UserManager;
@@ -29,15 +30,18 @@ class AdminController extends AbstractController
     private $appManager;
     private $userManager;
     private $reservationManager;
+    private $activityManager;
 
     public function __construct(
         AppManager $appManager,
         UserManager $userManager,
-        BookReservationManager $reservationManager
+        BookReservationManager $reservationManager,
+        ActivityManager $activityManager
     ) {
         $this->appManager = $appManager;
         $this->userManager = $userManager;
         $this->reservationManager = $reservationManager;
+        $this->activityManager = $activityManager;
     }
 
     public function showAllUsers()
@@ -110,7 +114,7 @@ class AdminController extends AbstractController
 
     public function showActivity()
     {
-        $activity = $this->appManager->findAllActivity();
+        $activity = $this->activityManager->findAllActivity();
 
         return $this->render(
             'admin/activity.html.twig',
@@ -120,7 +124,7 @@ class AdminController extends AbstractController
 
     public function showActivityFilteredByDate(string $filter)
     {
-        $activity = $this->appManager->findActivityByDateLimit($filter);
+        $activity = $this->activityManager->findActivityByDateLimit($filter);
 
         return $this->render(
             'admin/activity.html.twig',

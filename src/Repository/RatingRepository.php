@@ -4,11 +4,16 @@ namespace App\Repository;
 
 
 use App\Entity\Book;
+use App\Entity\Rating;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 class RatingRepository extends EntityRepository
 {
+    /**
+     * @param Book $book
+     * @return Rating[]|null
+     */
     public function findRatingsByBook(Book $book)
     {
         return $this->createQueryBuilder('r')
@@ -22,7 +27,7 @@ class RatingRepository extends EntityRepository
      * @param Book $book
      * @param User $user
      *
-     * @return mixed
+     * @return Rating|null
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findRatingByBookAndUser(Book $book, User $user)

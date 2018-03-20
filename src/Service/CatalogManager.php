@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: evita.sivakova
- * Date: 2/15/2018
- * Time: 2:24 PM
+ * Date: 3/20/2018
+ * Time: 11:22 AM
  */
 
 namespace App\Service;
@@ -15,27 +15,14 @@ use App\Entity\Genre;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
-class LibraryManager
+class CatalogManager
 {
     private $bookRepository;
-    private $authorRepository;
-    private $genreRepository;
 
-    public function __construct(ManagerRegistry $doctrine)
-    {
+    public function __construct(
+        ManagerRegistry $doctrine
+    ) {
         $this->bookRepository = $doctrine->getRepository(Book::class);
-        $this->authorRepository = $doctrine->getRepository(Author::class);
-        $this->genreRepository = $doctrine->getRepository(Genre::class);
-    }
-
-    public function getPopularBooks()
-    {
-        return $this->bookRepository->findAllOrderedByTimesBorrowed();
-    }
-
-    public function getNewestBooks()
-    {
-        return $this->bookRepository->findAllOrderedByPublicationDate();
     }
 
     /**
@@ -49,14 +36,28 @@ class LibraryManager
         return $this->bookRepository->findAllAndPaginate($currentPage, $booksPerPage);
     }
 
-    public function getAllAuthors()
+    /**
+     * @param Author $author
+     * @param int $currentPage
+     * @param int $booksPerPage
+     *
+     * @return Paginator
+     */
+    public function getPaginatedAuthorCatalog(Author $author, int $currentPage, int $booksPerPage)
     {
-        return $this->authorRepository->findAllAuthorsJoinedToBooks();
+        return $this->bookRepository->findAuthorBooksAndPaginate($author, $currentPage, $booksPerPage);
     }
 
-    public function getAllGenres()
+    /**
+     * @param Genre $genre
+     * @param int $currentPage
+     * @param int $booksPerPage
+     *
+     * @return Paginator
+     */
+    public function getPaginatedGenreCatalog(Genre $genre, int $currentPage, int $booksPerPage)
     {
-        return $this->genreRepository->findAllGenresJoinedToBooks();
+        return $this->bookRepository->findGenreBooksAndPaginate($genre, $currentPage, $booksPerPage);
     }
 
     /**

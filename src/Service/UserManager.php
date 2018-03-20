@@ -19,16 +19,19 @@ class UserManager
     private $em;
     private $repository;
     private $fileManager;
+    private $activityManager;
     private $photoDirectory;
 
     public function __construct(
         ManagerRegistry $doctrine,
         FileManager $fileManager,
+        ActivityManager $activityManager,
         $userPhotoDirectory
     ) {
         $this->em = $doctrine->getManager();
         $this->repository = $doctrine->getRepository(User::class);
         $this->fileManager = $fileManager;
+        $this->activityManager = $activityManager;
         $this->photoDirectory = $userPhotoDirectory;
     }
 
@@ -72,6 +75,8 @@ class UserManager
         $user->setPhoto($filename);
         $user->setPassword($password);
         $user->addRole($role);
+
+        $this->save($user);
     }
 
     /**
@@ -136,19 +141,20 @@ class UserManager
         $this->em->flush();
     }
 
-    public function getFavorites(User $user)
+    public function toggleFavorite(User $user, Book $book)
     {
-        return $user->getFavorites();
-    }
+        $favorites = $user->getFavorites();
+        $isAFavorite = $favorites->contains($book);
 
-    public function addFavorite(User $user, Book $book)
-    {
-        $user->addFavorite($book);
-    }
+        if ($isAFavorite) {
+            $user->removeFavorite($book);
+            $this->activityManager->log($user, $book, 'Removed a book from favorites');
+        } else {
+            $user->addFavorite($book);
+            $this->activityManager->log($user, $book, 'Added a book to favorites');
+        }
 
-    public function removeFavorite(User $user, Book $book)
-    {
-        $user->removeFavorite($book);
+        $this->saveChanges();
     }
 
     public function getPhotoDirectory()

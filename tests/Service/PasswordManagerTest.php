@@ -18,35 +18,17 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PasswordManagerTest extends WebTestCase
 {
-    public function testEncodeCallsUserPasswordEncoderInterface()
+    public function testEncode()
     {
-        $user = $this->createMock(User::class);
-        $user->expects($this->once())
-            ->method('getPlainPassword')
-            ->willReturn('plainPassword');
-
         $passwordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
         $passwordEncoder->expects($this->once())
             ->method('encodePassword')
-            ->with($this->isInstanceOf(User::class), $this->isType('string'))
-            ->willReturn('encoded password');
+            ->with($this->isInstanceOf(User::class), $this->isType('string'));
+
         $doctrine = $this->createMock(ManagerRegistry::class);
 
-        $passwordManager = $this->getMockBuilder(PasswordManager::class)
-            ->setConstructorArgs([$passwordEncoder, $doctrine])
-            ->setMethodsExcept(['encode'])
-            ->getMock();
+        $passwordManager = new PasswordManager($passwordEncoder, $doctrine);
 
-        $result = $passwordManager->encode($user);
-
-        $this->assertEquals(
-            'encoded password', $result,
-            'Retrieved result matches expected.'
-        );
-    }
-
-    public function testChangePasswordUpdatesUserData()
-    {
         $user = new User(
             'firstName',
             'lastName',
@@ -55,28 +37,44 @@ class PasswordManagerTest extends WebTestCase
             'photo',
             'plainPassword'
         );
-        $newPassword = 'newPass';
+        $passwordManager->encode($user);
+    }
 
+    public function testChangePassword()
+    {
         $entityManager = $this->createMock(EntityManager::class);
         $entityManager->expects($this->once())
             ->method('flush');
 
-        $passwordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
             ->method('getManager')
             ->willReturn($entityManager);
 
-        $passwordManager = $this->getMockBuilder(PasswordManager::class)
-            ->setConstructorArgs([$passwordEncoder, $doctrine])
-            ->setMethodsExcept(['changePassword', 'saveChanges'])
-            ->getMock();
-        $passwordManager->expects($this->once())
-            ->method('encode')
-            ->with($this->isInstanceOf(User::class))
-            ->willReturn('newPass');
+        $passwordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
+        $passwordEncoder->expects($this->once())
+            ->method('encodePassword')
+            ->with($this->isInstanceOf(User::class), $this->isType('string'))
+            ->willReturn('encodedPassword');
 
-        $passwordManager->changePassword($user, $newPassword);
-        $this->assertEquals($newPassword, $user->getPassword());
+        $passwordManager = new PasswordManager($passwordEncoder, $doctrine);
+
+        $user = new User(
+            'firstName',
+            'lastName',
+            'username',
+            'email',
+            'photo',
+            'plainPassword'
+        );
+        $this->assertEquals(
+            '123456', $user->getPassword(),
+            'User has the default password.'
+        );
+        $passwordManager->changePassword($user, 'newPassword');
+        $this->assertEquals(
+            'encodedPassword', $user->getPassword(),
+            'Password has been encoded.'
+        );
     }
 }

@@ -53,9 +53,8 @@ class LibraryController extends Controller
         $form = $this->createForm(BookReservationType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $reservation = $this->bookReservationManager->create($book, $this->user, $form->getData());
+            $this->bookReservationManager->create($book, $this->user, $form->getData());
 
-            $this->bookReservationManager->save($reservation);
             $this->activityManager->log($this->user, $book, 'Reserved a book');
 
             $author = $book->getAuthor();

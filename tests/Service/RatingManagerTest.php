@@ -21,53 +21,39 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RatingManagerTest extends WebTestCase
 {
-    public function testCreate()
-    {
-        $book = $this->createMock(Book::class);
-        $user = $this->createMock(User::class);
-        $value = 7;
-
-        $ratingManager = $this->getMockBuilder(RatingManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['create'])
-            ->getMock();
-
-        $rating = $ratingManager->create($book, $user, $value);
-        $this->assertTrue(
-            $rating instanceof Rating,
-            'Result is an instance of Rating class.'
-        );
-        $this->assertEquals($book, $rating->getBook());
-        $this->assertEquals($user, $rating->getRater());
-        $this->assertEquals($value, $rating->getValue());
-    }
-
     /**
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function testRateCreatesNewRating()
     {
-        $doctrine = $this->createMock(ManagerRegistry::class);
-
-        $ratingManager = $this->getMockBuilder(RatingManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['rate'])
-            ->getMock();
-        $ratingManager->expects($this->once())
-            ->method('checkIfRatingExists')
-            ->with($this->isInstanceOf(Book::class), $this->isInstanceOf(User::class))
-            ->willReturn(null);
-        $ratingManager->expects($this->once())
-            ->method('save')
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('persist')
             ->with($this->isInstanceOf(Rating::class));
-        $ratingManager->expects($this->exactly(0))
-            ->method('setValue');
-        $ratingManager->expects($this->exactly(0))
-            ->method('saveChanges');
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $ratingRepository = $this->createMock(RatingRepository::class);
+        $ratingRepository->expects($this->once())
+            ->method('findRatingByBookAndUser')
+            ->with(
+                $this->isInstanceOf(Book::class),
+                $this->isInstanceOf(User::class)
+            );
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->with($this->isType('string'))
+            ->willReturn($ratingRepository);
+
+        $ratingManager = new RatingManager($doctrine);
 
         $book = $this->createMock(Book::class);
         $user = $this->createMock(User::class);
-
         $ratingManager->rate($book, $user, 7);
     }
 
@@ -78,23 +64,31 @@ class RatingManagerTest extends WebTestCase
     {
         $book = $this->createMock(Book::class);
         $user = $this->createMock(User::class);
-
         $rating = new Rating(3, $book, $user);
 
-        $doctrine = $this->createMock(ManagerRegistry::class);
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('flush');
 
-        $ratingManager = $this->getMockBuilder(RatingManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['rate', 'setValue'])
-            ->getMock();
-        $ratingManager->expects($this->once())
-            ->method('checkIfRatingExists')
-            ->with($this->isInstanceOf(Book::class), $this->isInstanceOf(User::class))
-            ->willReturn($rating);
-        $ratingManager->expects($this->once())
-            ->method('saveChanges');
-        $ratingManager->expects($this->exactly(0))
-            ->method('save');
+        $ratingRepository = $this->createMock(RatingRepository::class);
+        $ratingRepository->expects($this->once())
+            ->method('findRatingByBookAndUser')
+            ->with(
+                $this->isInstanceOf(Book::class),
+                $this->isInstanceOf(User::class)
+            )
+        ->willReturn($rating);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->with($this->isType('string'))
+            ->willReturn($ratingRepository);
+
+        $ratingManager = new RatingManager($doctrine);
 
         $this->assertEquals(
             3, $rating->getValue(),
@@ -105,33 +99,6 @@ class RatingManagerTest extends WebTestCase
             7, $rating->getValue(),
             'Rating value has been successfully changed to 7.'
         );
-    }
-
-    /**
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function testCheckIfRatingExistsCallsRepository()
-    {
-        $ratingRepository = $this->createMock(RatingRepository::class);
-        $ratingRepository->expects($this->once())
-            ->method('findRatingByBookAndUser')
-            ->with($this->isInstanceOf(Book::class), $this->isInstanceOf(User::class));
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-        $doctrine->expects($this->once())
-            ->method('getRepository')
-            ->with($this->isType('string'))
-            ->willReturn($ratingRepository);
-
-        $ratingManager = $this->getMockBuilder(RatingManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['checkIfRatingExists'])
-            ->getMock();
-
-        $book = $this->createMock(Book::class);
-        $user = $this->createMock(User::class);
-
-        $ratingManager->checkIfRatingExists($book, $user);
     }
 
     public function testGetAverageRating()
@@ -155,44 +122,12 @@ class RatingManagerTest extends WebTestCase
             ->with($this->isType('string'))
             ->willReturn($ratingRepository);
 
-        $ratingManager = $this->getMockBuilder(RatingManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['getAverageRating', 'getValue'])
-            ->getMock();
+        $ratingManager = new RatingManager($doctrine);
 
         $average = $ratingManager->getAverageRating($book);
         $this->assertEquals(
             5, $average,
             'Average book rating result matches expected.'
         );
-    }
-
-    public function testSavingMethodsCallEntityManagerMethods()
-    {
-        $entityManager = $this->getMockBuilder(EntityManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $entityManager->expects($this->once())
-            ->method('persist')
-            ->with($this->isInstanceOf(Rating::class));
-        $entityManager->expects($this->exactly(2))
-            ->method('flush');
-
-        $doctrine = $this->getMockBuilder(ManagerRegistry::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $doctrine->expects($this->once())
-            ->method('getManager')
-            ->willReturn($entityManager);
-
-        $ratingManager = $this->getMockBuilder(RatingManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['save', 'saveChanges'])
-            ->getMock();
-
-        $rating = $this->createMock(Rating::class);
-
-        $ratingManager->save($rating);
-        $ratingManager->saveChanges();
     }
 }

@@ -18,6 +18,7 @@ class BookManager
     private $em;
     private $fileManager;
     private $coverDirectory;
+    private $repository;
 
     public function __construct(
         ManagerRegistry $doctrine,
@@ -27,11 +28,12 @@ class BookManager
         $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
         $this->coverDirectory = $bookCoverDirectory;
+        $this->repository = $doctrine->getRepository(Book::class);
     }
 
-    public function create(array $data): Book
+    public function createFromArray(array $data): Book
     {
-        return new Book(
+        $book = new Book(
             $data['ISBN'],
             $data['title'],
             $data['author'],
@@ -43,6 +45,10 @@ class BookManager
             $data['cover'],
             $data['annotation']
         );
+
+        $this->save($book);
+
+        return $book;
     }
 
     public function createArrayFromBook(Book $book): array
@@ -64,13 +70,13 @@ class BookManager
         ];
     }
 
-    private function uploadCover(Book $book)
+    private function uploadCover(Book $book): void
     {
         $filename = $this->fileManager->upload($book->getCover(), $this->coverDirectory);
         $book->setCover($filename);
     }
 
-    public function updateBook(Book $book, $data)
+    public function updateBook(Book $book, $data): void
     {
         $photo = $data['cover'];
         if ($photo instanceof UploadedFile) {
@@ -99,7 +105,17 @@ class BookManager
         $this->saveChanges();
     }
 
-    public function remove(Book $book)
+    public function getPopularBooks()
+    {
+        return $this->repository->findAllOrderedByTimesBorrowed();
+    }
+
+    public function getNewestBooks()
+    {
+        return $this->repository->findAllOrderedByPublicationDate();
+    }
+
+    public function remove(Book $book): void
     {
         $this->fileManager->deleteFile($this->coverDirectory . '/' . $book->getCover());
 
@@ -107,7 +123,7 @@ class BookManager
         $this->saveChanges();
     }
 
-    public function save(Book $book)
+    public function save(Book $book): void
     {
         $this->uploadCover($book);
 
@@ -115,7 +131,7 @@ class BookManager
         $this->saveChanges();
     }
 
-    public function saveChanges()
+    public function saveChanges(): void
     {
         $this->em->flush();
     }

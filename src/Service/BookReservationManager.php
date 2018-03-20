@@ -29,8 +29,10 @@ class BookReservationManager
         Book $book,
         User $reader,
         array $dates
-    ): BookReservation {
-        return new BookReservation($book, $reader, $dates['dateFrom'], $dates['dateTo']);
+    ) {
+        $bookReservation = new BookReservation($book, $reader, $dates['dateFrom'], $dates['dateTo']);
+
+        $this->save($bookReservation);
     }
 
     public function findByStatus(string $status)
@@ -43,15 +45,15 @@ class BookReservationManager
         return $this->repository->findUserReservationsByStatus($user, $string);
     }
 
-    public function updateStatus(BookReservation $reservation, string $status, \DateTime $updatedAt)
+    public function updateStatus(BookReservation $reservation, string $status)
     {
         $reservation->setStatus($status);
-        $reservation->setUpdatedAt($updatedAt);
+        $reservation->setUpdatedAt(new \DateTime());
 
         if ($status === 'returned' || $status === 'canceled') {
             0 >= $reservation->getFine() ?: $reservation->setFine(0);
 
-            $book = $this->getBook($reservation);
+            $book = $reservation->getBook();
             $this->updateBookAfterClosingReservation($book);
         }
 
@@ -96,21 +98,16 @@ class BookReservationManager
         return $this->repository->findReservationsWithMissedEndDate($user);
     }
 
-    public function checkIfIsReserved(Book $book, User $user)
+    public function checkIfIsAvailable(Book $book, User $user)
     {
         $reservations = $this->repository->findActiveReservationsByBookAndUser($book, $user);
 
-        return empty($reservations) ? false : true;
-    }
-
-    private function getBook(BookReservation $bookReservation)
-    {
-        return $bookReservation->getBook();
+        return empty($reservations);
     }
 
     public function save(BookReservation $bookReservation)
     {
-        $this->updateBookAfterReservation($this->getBook($bookReservation));
+        $this->updateBookAfterReservation($bookReservation->getBook());
 
         $this->em->persist($bookReservation);
         $this->saveChanges();

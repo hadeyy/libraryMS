@@ -10,20 +10,20 @@ namespace App\Controller;
 
 
 use App\Service\ActivityManager;
-use App\Service\LibraryManager;
+use App\Service\BookManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends AbstractController
 {
-    private $libraryManager;
+    private $bookManager;
     private $activityManager;
 
     public function __construct(
-        LibraryManager $libraryManager,
+        BookManager $bookManager,
         ActivityManager $activityManager
     ) {
-        $this->libraryManager = $libraryManager;
+        $this->bookManager = $bookManager;
         $this->activityManager = $activityManager;
     }
 
@@ -35,9 +35,9 @@ class DefaultController extends AbstractController
         return $this->render(
             'index.html.twig',
             [
-                'popularBooks' => $this->libraryManager->getPopularBooks(),
-                'newBooks' => $this->libraryManager->getNewestBooks(),
-                'recentActivity' => $this->activityManager->getRecentActivity(),
+                'popularBooks' => $this->bookManager->getPopularBooks(),
+                'newBooks' => $this->bookManager->getNewestBooks(),
+                'recentActivity' => $this->activityManager->findAllActivity(7),
             ]
         );
     }

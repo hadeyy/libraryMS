@@ -18,14 +18,7 @@ class FileManagerTest extends WebTestCase
 {
     public function testUpload()
     {
-        $fileManager = $this->getMockBuilder(FileManager::class)
-            ->setMethodsExcept([
-                'upload',
-                'generateFilename',
-                'guessExtension',
-                'move',
-            ])
-            ->getMock();
+        $fileManager = new FileManager();
 
         $filename = 'test_upload_file.jpg';
         fopen($filename, 'w');
@@ -57,9 +50,7 @@ class FileManagerTest extends WebTestCase
         $filePath = 'test_create_file.jpg';
         fopen($filePath, 'w');
 
-        $fileManager = $this->getMockBuilder(FileManager::class)
-            ->setMethodsExcept(['createFileFromPath'])
-            ->getMock();
+        $fileManager = new FileManager();
 
         $result = $fileManager->createFileFromPath($filePath);
         $this->assertTrue($result instanceof File, 'Result is an instance of File');
@@ -75,10 +66,7 @@ class FileManagerTest extends WebTestCase
 
         $this->assertFileExists($filePath, 'File exists.');
 
-        $fileManager = $this->getMockBuilder(FileManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['deleteFile'])
-            ->getMock();
+        $fileManager = new FileManager();
 
         $fileManager->deleteFile($filePath);
 

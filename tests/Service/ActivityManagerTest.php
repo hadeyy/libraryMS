@@ -38,9 +38,7 @@ class ActivityManagerTest extends WebTestCase
 
     public function testLog()
     {
-        $entityManager = $this->getMockBuilder(EntityManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $entityManager = $this->createMock(EntityManager::class);
         $entityManager->expects($this->once())
             ->method('persist')
             ->with($this->isInstanceOf(Activity::class));
@@ -60,7 +58,7 @@ class ActivityManagerTest extends WebTestCase
         $activityManager->log($user, $book, 'title');
     }
 
-    public function testGetRecentActivity()
+    public function testFindAllActivityWithLimit()
     {
         $activityRepository = $this->createMock(ActivityRepository::class);
         $activityRepository->expects($this->once())
@@ -75,7 +73,52 @@ class ActivityManagerTest extends WebTestCase
 
         $activityManager = new ActivityManager($doctrine);
 
-        $result = $activityManager->getRecentActivity(2);
+        $result = $activityManager->findAllActivity(2);
+
+        $this->assertEquals($this->activities, $result);
+    }
+
+    public function testFindAllActivityWithoutLimit()
+    {
+        $activityRepository = $this->createMock(ActivityRepository::class);
+        $activityRepository->expects($this->once())
+            ->method('findRecentActivity')
+            ->with(null)
+            ->willReturn($this->activities);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->willReturn($activityRepository);
+
+        $activityManager = new ActivityManager($doctrine);
+
+        $result = $activityManager->findAllActivity();
+
+        $this->assertEquals($this->activities, $result);
+    }
+
+    /**
+     * @param string $filter
+     * @param string $date
+     * @dataProvider dateFilterProvider
+     */
+    public function testFindActivityByDateLimit(string $filter, string $date)
+    {
+        $activityRepository = $this->createMock(ActivityRepository::class);
+        $activityRepository->expects($this->once())
+            ->method('findActivityByDateLimit')
+            ->with($date)
+            ->willReturn($this->activities);
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->willReturn($activityRepository);
+
+        $activityManager = new ActivityManager($doctrine);
+
+        $result = $activityManager->findActivityByDateLimit($filter);
 
         $this->assertEquals($this->activities, $result);
     }
@@ -105,7 +148,7 @@ class ActivityManagerTest extends WebTestCase
      * @param $date
      * @dataProvider dateFilterProvider
      */
-    public function testFindUserActivityByDateLimit($filter, $date)
+    public function testFindUserActivityByDateLimit(string $filter, string $date)
     {
         $activityRepository = $this->createMock(ActivityRepository::class);
         $activityRepository->expects($this->once())

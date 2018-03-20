@@ -59,7 +59,6 @@ class RegistrationController extends AbstractController
             $encodedPassword = $this->passwordManager->encode($user);
 
             $this->userManager->register($user, $filename, $encodedPassword, $this->defaultRegistrationRole);
-            $this->userManager->save($user);
 
             $this->addFlash('success', 'Registration successful!');
 

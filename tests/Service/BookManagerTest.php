@@ -23,15 +23,27 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BookManagerTest extends WebTestCase
 {
-    public function testCreateAddsDataToBook()
+    public function testCreateBookFromArray()
     {
-        $bookManager = $this->getMockBuilder(BookManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['create'])
-            ->getMock();
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('persist')
+            ->with($this->isInstanceOf(Book::class));
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+
+        $bookManager = new BookManager($doctrine, $fileManager, 'path/to/directory');
 
         $author = $this->createMock(Author::class);
         $date = $this->createMock(\DateTime::class);
+        $cover = $this->createMock(UploadedFile::class);
         $data = [
             'ISBN' => 'ISBN',
             'title' => 'title',
@@ -41,11 +53,11 @@ class BookManagerTest extends WebTestCase
             'publisher' => 'publisher',
             'publicationDate' => $date,
             'availableCopies' => 1,
-            'cover' => 'cover',
+            'cover' => $cover,
             'annotation' => 'annotation'
         ];
 
-        $book = $bookManager->create($data);
+        $book = $bookManager->createFromArray($data);
 
         $this->assertTrue(
             $book instanceof Book,
@@ -59,14 +71,13 @@ class BookManagerTest extends WebTestCase
         $this->assertEquals('publisher', $book->getPublisher());
         $this->assertEquals($date, $book->getPublicationDate());
         $this->assertEquals(1, $book->getAvailableCopies());
-        $this->assertEquals('cover', $book->getCover());
         $this->assertEquals('annotation', $book->getAnnotation());
 
         return $book;
     }
 
     /**
-     * @depends testCreateAddsDataToBook
+     * @depends testCreateBookFromArray
      * @param Book $book
      */
     public function testCreateArrayFromBook(Book $book)
@@ -81,12 +92,10 @@ class BookManagerTest extends WebTestCase
 
         $doctrine = $this->createMock(ManagerRegistry::class);
 
-        $userManager = $this->getMockBuilder(BookManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, 'path/to/directory'])
-            ->setMethodsExcept(['createArrayFromBook'])
-            ->getMock();
+        $bookManager = new BookManager($doctrine, $fileManager, 'path/to/directory');
 
-        $data = $userManager->createArrayFromBook($book);
+        $data = $bookManager->createArrayFromBook($book);
+
         $this->assertTrue(is_array($data), 'Result is an array.');
         $this->assertCount(
             11, $data,
@@ -116,8 +125,173 @@ class BookManagerTest extends WebTestCase
         $this->assertEquals($data['genres'], $book->getGenres());
     }
 
+    public function testUpdateBookWithNewCover()
+    {
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+        $fileManager->expects($this->once())
+            ->method('deleteFile')
+            ->with($this->isType('string'));
+        $fileManager->expects($this->once())
+            ->method('upload')
+            ->with(
+                $this->isInstanceOf(UploadedFile::class),
+                $this->isType('string')
+            )
+            ->willReturn('filename');
+
+        $bookManager = new BookManager($doctrine, $fileManager, 'path/to/directory');
+
+        $author = new Author('firstName', 'lastName', 'country');
+        $date = new \DateTime();
+        $book = new Book(
+            'ISBN',
+            'title',
+            $author,
+            111,
+            'language',
+            'publisher',
+            $date,
+            1,
+            'cover',
+            'annotation'
+        );
+
+        $newAuthor = new Author('Test', 'Testerson', 'Testland');
+        $newDate = new \DateTime();
+        $filePath = 'test_update_cover.jpg';
+        fopen($filePath, 'w');
+        $genre = new Genre('genre');
+        $newData = [
+            'ISBN' => 'newISBN',
+            'title' => 'newTitle',
+            'author' => $newAuthor,
+            'pages' => 739,
+            'language' => 'newLanguage',
+            'publisher' => 'newPublisher',
+            'publicationDate' => $newDate,
+            'availableCopies' => 22,
+            'annotation' => 'newAnnotation',
+            'cover' => new UploadedFile($filePath, $filePath),
+            'genres' => [$genre],
+        ];
+
+        $bookManager->updateBook($book, $newData);
+
+        $this->assertEquals(
+            'newISBN', $book->getISBN(),
+            'ISBN has been updated.'
+        );
+        $this->assertEquals(
+            'newTitle', $book->getTitle(),
+            'Title has been updated.'
+        );
+        $this->assertEquals(
+            $newAuthor, $book->getAuthor(),
+            'Author has been updated.'
+        );
+        $this->assertEquals(
+            739, $book->getPages(),
+            'Page number has been updated.'
+        );
+        $this->assertEquals(
+            'newLanguage', $book->getLanguage(),
+            'Language has been updated.'
+        );
+        $this->assertEquals(
+            'newPublisher', $book->getPublisher(),
+            'Publisher has been updated.'
+        );
+        $this->assertEquals(
+            $newDate, $book->getPublicationDate(),
+            'Publication date has been updated.'
+        );
+        $this->assertEquals(
+            22, $book->getAvailableCopies(),
+            'Available copy number has been updated.'
+        );
+        $this->assertEquals(
+            'newAnnotation', $book->getAnnotation(),
+            'Annotation has been updated.'
+        );
+        $this->assertEquals(
+            'filename', $book->getCover(),
+            'Book cover has been updated.'
+        );
+        $this->assertEquals(
+            new ArrayCollection([$genre]), $book->getGenres(),
+            'Book genres have been updated.'
+        );
+
+        unlink('test_update_cover.jpg');
+    }
+
+    public function testUpdateBookWithoutNewCover()
+    {
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+        $fileManager->expects($this->exactly(0))
+            ->method('deleteFile');
+        $fileManager->expects($this->exactly(0))
+            ->method('upload');
+
+        $bookManager = new BookManager($doctrine, $fileManager, 'path/to/directory');
+
+        $author = new Author('firstName', 'lastName', 'country');
+        $date = new \DateTime();
+        $book = new Book(
+            'ISBN',
+            'title',
+            $author,
+            111,
+            'language',
+            'publisher',
+            $date,
+            1,
+            'cover',
+            'annotation'
+        );
+        $genre = new Genre('genre');
+        $newData = [
+            'ISBN' => 'testISBN',
+            'title' => 'testTitle',
+            'author' => new Author('Test', 'Testerson', 'Testeria'),
+            'pages' => 739,
+            'language' => 'testLanguage',
+            'publisher' => 'testPublisher',
+            'publicationDate' => new \DateTime(),
+            'availableCopies' => 22,
+            'annotation' => 'testAnnotation',
+            'cover' => null,
+            'genres' => [$genre],
+        ];
+
+        $bookManager->updateBook($book, $newData);
+
+        $this->assertEquals(
+            'cover', $book->getCover(),
+            'Original cover was not changed.'
+        );
+    }
+
     /**
-     * @depends testCreateAddsDataToBook
+     * @depends testCreateBookFromArray
      * @param Book $book
      */
     public function testRemoveCallsFileAndEntityManagers(Book $book)
@@ -139,222 +313,8 @@ class BookManagerTest extends WebTestCase
             ->method('deleteFile')
             ->with($this->isType('string'));
 
-        $bookManager = $this->getMockBuilder(BookManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, ''])
-            ->setMethodsExcept(['remove', 'saveChanges'])
-            ->getMock();
+        $bookManager = new BookManager($doctrine, $fileManager, 'path/to/directory');
 
         $bookManager->remove($book);
-    }
-
-    public function testSavingMethodsCallEntityManager()
-    {
-        $entityManager = $this->getMockBuilder(EntityManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $entityManager->expects($this->once())
-            ->method('persist')
-            ->with($this->isInstanceOf(Book::class));
-        $entityManager->expects($this->exactly(2))
-            ->method('flush');
-
-        $doctrine = $this->getMockBuilder(ManagerRegistry::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $doctrine->expects($this->once())
-            ->method('getManager')
-            ->willReturn($entityManager);
-
-        $fileManager = $this->createMock(FileManager::class);
-        $fileManager->expects($this->once())
-            ->method('upload')
-            ->with(
-                $this->isInstanceOf(UploadedFile::class),
-                $this->isType('string')
-            )
-            ->willReturn('filename');
-
-        $bookManager = $this->getMockBuilder(BookManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, ''])
-            ->setMethodsExcept(['save', 'saveChanges', 'getCover', 'setCover'])
-            ->getMock();
-
-        $author = $this->createMock(Author::class);
-        $cover = $this->createMock(UploadedFile::class);
-        $book = new Book(
-            'ISBN',
-            'title',
-            $author,
-            111,
-            'language',
-            'publisher',
-            new \DateTime(),
-            1,
-            $cover,
-            'annotation'
-        );
-
-        $bookManager->save($book);
-        $bookManager->saveChanges();
-    }
-
-    public function testUpdateBookChangesBookDataWithNewCover()
-    {
-        $author = new Author('firstName', 'lastName', 'country');
-        $date = new \DateTime();
-        $book = new Book(
-            'ISBN',
-            'title',
-            $author,
-            111,
-            'language',
-            'publisher',
-            $date,
-            1,
-            'cover',
-            'annotation'
-        );
-
-        $filePath = 'test_update_cover.jpg';
-        fopen($filePath, 'w');
-        $genre = new Genre('genre');
-        $newData = [
-            'ISBN' => 'testISBN',
-            'title' => 'testTitle',
-            'author' => new Author('Test', 'Testerson', 'Testeria'),
-            'pages' => 739,
-            'language' => 'testLanguage',
-            'publisher' => 'testPublisher',
-            'publicationDate' => new \DateTime(),
-            'availableCopies' => 22,
-            'annotation' => 'testAnnotation',
-            'cover' => new UploadedFile($filePath, $filePath),
-            'genres' => [$genre],
-        ];
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-
-        $fileManager = $this->createMock(FileManager::class);
-        $fileManager->expects($this->once())
-            ->method('deleteFile')
-            ->with($this->isType('string'));
-        $fileManager->expects($this->once())
-            ->method('upload')
-            ->with(
-                $this->isInstanceOf(UploadedFile::class),
-                $this->isType('string')
-            )
-            ->willReturn('filename');
-
-        $bookManager = $this->getMockBuilder(BookManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, ''])
-            ->setMethodsExcept(['updateBook'])
-            ->getMock();
-        $bookManager->expects($this->once())
-            ->method('saveChanges');
-
-        $bookManager->updateBook($book, $newData);
-
-        $this->assertNotEquals(
-            'ISBN', $book->getISBN(),
-            'Updated ISBN is not equal to original.'
-        );
-        $this->assertNotEquals(
-            'title', $book->getTitle(),
-            'Updated title is not equal to original.'
-        );
-        $this->assertNotEquals(
-            $author, $book->getAuthor(),
-            'Updated Author is not equal to original.'
-        );
-        $this->assertNotEquals(
-            111, $book->getPages(),
-            'Updated page number is not equal to original.'
-        );
-        $this->assertNotEquals(
-            'language', $book->getLanguage(),
-            'Updated language is not equal to original.'
-        );
-        $this->assertNotEquals(
-            'publisher', $book->getPublisher(),
-            'Updated publisher is not equal to original.'
-        );
-        $this->assertNotEquals(
-            $date, $book->getPublicationDate(),
-            'Updated publication date is not equal to original.'
-        );
-        $this->assertNotEquals(
-            1, $book->getAvailableCopies(),
-            'Updated available copy number is not equal to original.'
-        );
-        $this->assertNotEquals(
-            'annotation', $book->getAnnotation(),
-            'Updated annotation is not equal to original.'
-        );
-        $this->assertEquals(
-            'filename', $book->getCover(),
-            'Book cover has been updated.'
-        );
-        $this->assertEquals(
-            new ArrayCollection([$genre]), $book->getGenres(),
-            'Book genres have been updated.'
-        );
-
-        unlink('test_update_cover.jpg');
-    }
-
-    public function testUpdateBookWithoutNewCover()
-    {
-        $author = new Author('firstName', 'lastName', 'country');
-        $date = new \DateTime();
-        $book = new Book(
-            'ISBN',
-            'title',
-            $author,
-            111,
-            'language',
-            'publisher',
-            $date,
-            1,
-            'cover',
-            'annotation'
-        );
-
-        $genre = new Genre('genre');
-        $newData = [
-            'ISBN' => 'testISBN',
-            'title' => 'testTitle',
-            'author' => new Author('Test', 'Testerson', 'Testeria'),
-            'pages' => 739,
-            'language' => 'testLanguage',
-            'publisher' => 'testPublisher',
-            'publicationDate' => new \DateTime(),
-            'availableCopies' => 22,
-            'annotation' => 'testAnnotation',
-            'cover' => null,
-            'genres' => [$genre],
-        ];
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-
-        $fileManager = $this->createMock(FileManager::class);
-        $fileManager->expects($this->exactly(0))
-            ->method('deleteFile');
-        $fileManager->expects($this->exactly(0))
-            ->method('upload');
-
-        $bookManager = $this->getMockBuilder(BookManager::class)
-            ->setConstructorArgs([$doctrine, $fileManager, ''])
-            ->setMethodsExcept(['updateBook'])
-            ->getMock();
-        $bookManager->expects($this->once())
-            ->method('saveChanges');
-
-        $bookManager->updateBook($book, $newData);
-
-        $this->assertEquals(
-            'cover', $book->getCover(),
-            'Original cover was not changed.'
-        );
     }
 }

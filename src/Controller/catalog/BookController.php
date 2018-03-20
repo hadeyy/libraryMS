@@ -62,8 +62,8 @@ class BookController extends AbstractController
             $commentForm->handleRequest($request);
             if ($commentForm->isSubmitted() && $commentForm->isValid()) {
                 $data = $commentForm->getData();
-                $comment = $this->commentManager->create($this->user, $book, $data['content']);
-                $this->commentManager->save($comment);
+                $this->commentManager->create($this->user, $book, $data['content']);
+
                 $this->activityManager->log($this->user, $book, "Commented on a book's page");
             }
 
@@ -91,7 +91,7 @@ class BookController extends AbstractController
                 $this->activityManager->log($this->user, $book, 'Rated a book');
             }
 
-            $isReserved = $this->bookReservationManager->checkIfIsReserved($book, $this->user);
+            $isAvailable = $this->bookReservationManager->checkIfIsAvailable($book, $this->user);
         }
 
         return $this->render(
@@ -101,7 +101,7 @@ class BookController extends AbstractController
                 'bookRating' => $this->ratingManager->getAverageRating($book),
                 'commentForm' => isset($commentForm) ? $commentForm->createView() : null,
                 'ratingForm' => isset($ratingForm) ? $ratingForm->createView() : null,
-                'isReserved' => isset($isReserved) ? $isReserved : null,
+                'isAvailable' => isset($isAvailable) ? $isAvailable : null,
             ]
         );
     }

@@ -10,44 +10,37 @@ namespace App\Service;
 
 
 use App\Entity\Author;
-use App\Entity\Book;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class AuthorManager
 {
-    private $doctrine;
     private $em;
     private $portraitDirectory;
     private $fileManager;
+    private $repository;
 
     public function __construct(
         ManagerRegistry $doctrine,
         FileManager $fileManager,
         $portraitDirectory
     ) {
-        $this->doctrine = $doctrine;
         $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
         $this->portraitDirectory = $portraitDirectory;
+        $this->repository = $doctrine->getRepository(Author::class);
     }
 
-    public function getPaginatedCatalog(Author $author, int $currentPage, int $booksPerPage)
+    public function createFromArray(array $data)
     {
-        /** @todo get books from AuthorRepository */
-        $bookRepository = $this->doctrine->getRepository(Book::class);
-
-        return $bookRepository->findAuthorBooksAndPaginate($author, $currentPage, $booksPerPage);
-    }
-
-    public function create(array $data): Author
-    {
-        return new Author(
+        $author = new Author(
             $data['firstName'],
             $data['lastName'],
             $data['country'],
             $data['portrait']
         );
+
+        $this->save($author);
     }
 
     public function createArrayFromAuthor(Author $author): array
@@ -82,15 +75,15 @@ class AuthorManager
         $this->saveChanges();
     }
 
+    public function findAllAuthors()
+    {
+        return $this->repository->findAllAuthorsJoinedToBooks();
+    }
+
     public function save(Author $author)
     {
         $this->em->persist($author);
         $this->saveChanges();
-    }
-
-    public function saveChanges()
-    {
-        $this->em->flush();
     }
 
     public function remove(Author $author)
@@ -100,5 +93,10 @@ class AuthorManager
 
         $this->em->remove($author);
         $this->saveChanges();
+    }
+
+    public function saveChanges()
+    {
+        $this->em->flush();
     }
 }

@@ -138,17 +138,7 @@ class UserController extends AbstractController
      */
     public function toggleFavorite(Book $book)
     {
-        $userFavorites = $this->userManager->getFavorites($this->user);
-
-        $isAFavorite = $userFavorites->contains($book);
-
-        if ($isAFavorite) {
-            $this->userManager->removeFavorite($this->user, $book);
-            $this->activityManager->log($this->user, $book, 'Removed a book from favorites');
-        } else {
-            $this->userManager->addFavorite($this->user, $book);
-            $this->activityManager->log($this->user, $book, 'Added a book to favorites');
-        }
+        $this->userManager->toggleFavorite($this->user, $book);
 
         $author = $book->getAuthor();
 

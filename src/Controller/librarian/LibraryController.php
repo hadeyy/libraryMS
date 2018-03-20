@@ -71,9 +71,8 @@ class LibraryController extends Controller
         $form = $this->createForm(BookType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $book = $this->bookManager->create($form->getData());
+            $book = $this->bookManager->createFromArray($form->getData());
 
-            $this->bookManager->save($book);
             $this->activityManager->log($this->user, $book, 'Added a book');
 
             return $this->redirectToRoute('show-catalog');
@@ -141,8 +140,7 @@ class LibraryController extends Controller
         $form = $this->createForm(AuthorType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $author = $this->authorManager->create($form->getData());
-            $this->authorManager->save($author);
+            $this->authorManager->createFromArray($form->getData());
 
             return $this->redirectToRoute('show-catalog');
         }
@@ -194,8 +192,7 @@ class LibraryController extends Controller
         $form = $this->createForm(GenreType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $genre = $this->genreManager->create($form->getData());
-            $this->genreManager->save($genre);
+            $this->genreManager->create($form->getData());
 
             return $this->redirectToRoute('show-catalog');
         }
@@ -230,7 +227,7 @@ class LibraryController extends Controller
      */
     public function updateReservationStatus(BookReservation $reservation, string $status)
     {
-        $this->bookReservationManager->updateStatus($reservation, $status, new \DateTime());
+        $this->bookReservationManager->updateStatus($reservation, $status);
 
         return $this->redirectToRoute('show-reservations');
     }

@@ -12,26 +12,26 @@ namespace App\Controller\catalog;
 use App\Entity\Author;
 use App\Entity\Genre;
 use App\Service\AuthorManager;
+use App\Service\CatalogManager;
 use App\Service\GenreManager;
-use App\Service\LibraryManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 class CatalogController extends AbstractController
 {
-    private $libraryManager;
     private $authorManager;
     private $genreManager;
+    private $catalogManager;
 
     public function __construct(
-        LibraryManager $libraryManager,
         AuthorManager $authorManager,
-        GenreManager $genreManager
+        GenreManager $genreManager,
+        CatalogManager $catalogManager
     ) {
-        $this->libraryManager = $libraryManager;
         $this->authorManager = $authorManager;
         $this->genreManager = $genreManager;
+        $this->catalogManager = $catalogManager;
     }
 
     /**
@@ -43,16 +43,16 @@ class CatalogController extends AbstractController
      */
     public function showCatalog(int $page = 1, int $limit = 18, string $filter = 'main')
     {
-        $books = $this->libraryManager->getPaginatedBookCatalog($page, $limit);
+        $books = $this->catalogManager->getPaginatedBookCatalog($page, $limit);
 
         return $this->render(
             'catalog/index.html.twig',
             [
                 'books' => $books,
-                'maxPages' => $this->libraryManager->getMaxPages($books, $limit),
+                'maxPages' => $this->catalogManager->getMaxPages($books, $limit),
                 'currentPage' => $page,
-                'authors' => $this->libraryManager->getAllAuthors(),
-                'genres' => $this->libraryManager->getAllGenres(),
+                'authors' => $this->authorManager->findAllAuthors(),
+                'genres' => $this->genreManager->findAllGenres(),
                 'filter' => $filter,
             ]
         );
@@ -74,16 +74,16 @@ class CatalogController extends AbstractController
         int $limit = 12,
         string $filter = 'author'
     ) {
-        $books = $this->authorManager->getPaginatedCatalog($author, $page, $limit);
+        $books = $this->catalogManager->getPaginatedAuthorCatalog($author, $page, $limit);
 
         return $this->render(
             'catalog/_books_by_author.html.twig',
             [
-                'authors' => $this->libraryManager->getAllAuthors(),
-                'genres' => $this->libraryManager->getAllGenres(),
+                'authors' => $this->authorManager->findAllAuthors(),
+                'genres' => $this->genreManager->findAllGenres(),
                 'author' => $author,
                 'books' => $books,
-                'maxPages' => $this->libraryManager->getMaxPages($books, $limit),
+                'maxPages' => $this->catalogManager->getMaxPages($books, $limit),
                 'currentPage' => $page,
                 'filter' => $filter,
             ]
@@ -106,14 +106,14 @@ class CatalogController extends AbstractController
         int $limit = 12,
         string $filter = 'genre'
     ) {
-        $books = $this->genreManager->getPaginatedCatalog($genre, $page, $limit);
+        $books = $this->catalogManager->getPaginatedGenreCatalog($genre, $page, $limit);
 
         return $this->render('catalog/_books_by_genre.html.twig', [
-            'authors' => $this->libraryManager->getAllAuthors(),
-            'genres' => $this->libraryManager->getAllGenres(),
+            'authors' => $this->authorManager->findAllAuthors(),
+            'genres' => $this->genreManager->findAllGenres(),
             'genre' => $genre,
             'books' => $books,
-            'maxPages' => $this->libraryManager->getMaxPages($books, $limit),
+            'maxPages' => $this->catalogManager->getMaxPages($books, $limit),
             'currentPage' => $page,
             'filter' => $filter,
         ]);

@@ -51,14 +51,14 @@ services:
     App\Controller\DefaultController:
         tags: ['controller.service_arguments']
         arguments:
-            - '@app.library_manager'
+            - '@app.book_manager'
             - '@app.activity_manager'
     App\Controller\catalog\CatalogController:
         tags: ['controller.service_arguments']
         arguments:
-            - '@app.library_manager'
             - '@app.author_manager'
             - '@app.genre_manager'
+            - '@app.catalog_manager'
     App\Controller\catalog\BookController:
         tags: ['controller.service_arguments']
         arguments:
@@ -91,6 +91,7 @@ services:
             - '@app.app_manager'
             - '@app.user_manager'
             - '@app.book_reservation_manager'
+            - '@app.activity_manager'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -99,6 +100,7 @@ services:
         arguments:
             - '@doctrine'
             - '@app.file_manager'
+            - '@app.activity_manager'
             - '%app.user_photo_dir%'
     app.file_manager:
         class: App\Service\FileManager
@@ -106,10 +108,6 @@ services:
         class: App\Service\PasswordManager
         arguments:
             - '@security.user_password_encoder.generic'
-            - '@doctrine'
-    app.library_manager:
-        class: App\Service\LibraryManager
-        arguments:
             - '@doctrine'
     app.activity_manager:
        class: App\Service\ActivityManager
@@ -149,6 +147,10 @@ services:
             - '@doctrine'
             - '@app.file_manager'
             - '@app.user_manager'
+    app.catalog_manager:
+        class: App\Service\CatalogManager
+        arguments:
+            - '@doctrine'
 
     lipsum:
         class: joshtronic\LoremIpsum

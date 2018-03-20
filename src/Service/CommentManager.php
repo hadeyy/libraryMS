@@ -23,9 +23,11 @@ class CommentManager
         $this->em = $doctrine->getManager();
     }
 
-    public function create(User $user, Book $book, string $content): Comment
+    public function create(User $user, Book $book, string $content)
     {
-        return new Comment($user, $book, $content);
+        $comment = new Comment($user, $book, $content);
+
+        $this->save($comment);
     }
 
     public function save(Comment $comment)

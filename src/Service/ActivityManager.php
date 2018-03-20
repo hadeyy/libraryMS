@@ -37,9 +37,21 @@ class ActivityManager
         $this->save($activity);
     }
 
-    public function getRecentActivity(int $limit = 7)
+    public function findAllActivity($limit = null)
     {
         return $this->repository->findRecentActivity($limit);
+    }
+
+    public function findActivityByDateLimit(string $filter)
+    {
+        $dates = [
+            'today' => 'today',
+            'this-week' => 'monday this week',
+            'this-month' => 'first day of this month',
+            'this-year' => 'first day of January this year',
+        ];
+
+        return $this->repository->findActivityByDateLimit($dates[$filter]);
     }
 
     /**

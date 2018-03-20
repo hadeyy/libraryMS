@@ -19,45 +19,9 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CommentManagerTest extends WebTestCase
 {
-    public function testCreateAddsUserAndBookToComment()
+    public function testCreate()
     {
-        $user = $this->createMock(User::class);
-        $book = $this->createMock(Book::class);
-
-        $commentManager = $this->getMockBuilder(CommentManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['create'])
-            ->getMock();
-
-        $comment = $commentManager->create($user, $book, 'content');
-
-        $this->assertTrue(
-            $comment instanceof Comment,
-            'Result is an instance of Comment class.'
-        );
-        $this->assertEquals(
-            $user, $comment->getAuthor(),
-            'Comment author matches expected.');
-        $this->assertEquals(
-            $book, $comment->getBook(),
-            'Comment book matches expected.');
-        $this->assertEquals(
-            'content', $comment->getContent(),
-            'Comment content matches expected.');
-
-        return $comment;
-    }
-
-    /**
-     * @depends testCreateAddsUserAndBookToComment
-     *
-     * @param Comment $comment
-     */
-    public function testSaveCallsEntityManager(Comment $comment)
-    {
-        $entityManager = $this->getMockBuilder(EntityManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $entityManager = $this->createMock(EntityManager::class);
         $entityManager->expects($this->once())
             ->method('persist')
             ->with($this->isInstanceOf(Comment::class));
@@ -69,11 +33,10 @@ class CommentManagerTest extends WebTestCase
             ->method('getManager')
             ->willReturn($entityManager);
 
-        $commentManager = $this->getMockBuilder(CommentManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['save'])
-            ->getMock();
+        $commentManager = new CommentManager($doctrine);
 
-        $commentManager->save($comment);
+        $user = $this->createMock(User::class);
+        $book = $this->createMock(Book::class);
+        $commentManager->create($user, $book, 'content');
     }
 }

@@ -17,43 +17,22 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GenreManagerTest extends WebTestCase
 {
-    public function testCreateAddsDataToGenre()
+    public function testCreate()
     {
-        $genreManager = $this->getMockBuilder(GenreManager::class)
-            ->disableOriginalConstructor()
-            ->setMethodsExcept(['create'])
-            ->getMock();
-
-        $data = ['name' => 'genre'];
-        $genre = $genreManager->create($data);
-
-        $this->assertTrue(
-            $genre instanceof Genre,
-            'Result is an instance of Genre class.'
-        );
-        $this->assertEquals('genre', $genre->getName(),'Result matches expected.');
-    }
-
-    public function testSaveCallsEntityManager()
-    {
-        $entityManager = $this->getMockBuilder(EntityManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $entityManager = $this->createMock(EntityManager::class);
         $entityManager->expects($this->once())
             ->method('persist')
             ->with($this->isInstanceOf(Genre::class));
         $entityManager->expects($this->once())
             ->method('flush');
+
         $doctrine = $this->createMock(ManagerRegistry::class);
         $doctrine->expects($this->once())
             ->method('getManager')
             ->willReturn($entityManager);
 
-        $genreManager = $this->getMockBuilder(GenreManager::class)
-            ->setConstructorArgs([$doctrine])
-            ->setMethodsExcept(['save'])
-            ->getMock();
+        $genreManager = new GenreManager($doctrine);
 
-        $genreManager->save(new Genre('name'));
+        $genreManager->create(['name' => 'genre']);
     }
 }
