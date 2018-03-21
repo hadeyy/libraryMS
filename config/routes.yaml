@@ -1,47 +1,26 @@
+index:
+    path: /
+    controller: App\Controller\DefaultController::index
+
 register:
     path: /register
     controller: App\Controller\RegistrationController::register
 login:
     path: /login
-    controller: App\Controller\security\SecurityController::login
+    controller: App\Controller\SecurityController::login
 logout:
     path: /logout
-show-profile:
-    path: /user/profile
-    controller: App\Controller\user\UserController::showProfile
-edit-profile:
-    path: /user/profile/edit
-    controller: App\Controller\user\UserController::editProfile
-change-password:
-    path: /user/profile/change-password
-    controller: App\Controller\user\UserController::changePassword
-show-user-activity:
-    path: /user/activity
-    controller: App\Controller\user\UserController::showActivity
-show-user-activity-filtered-by-date:
-    path: /user/activity/{filter}
-    controller: App\Controller\user\UserController::showActivityFilteredByDate
-    requirements:
-        filter: '(today|this-week|this-month|this-year)'
-show-user-reservations:
-    path: /user/reservations
-    controller: App\Controller\user\UserController::showReservations
-check-active-reservations:
-    path: /user/reservations/check
-    controller: App\Controller\user\UserController::checkActiveReservations
-index:
-    path: /
-    controller: App\Controller\DefaultController::index
+
 show-catalog:
     path: /catalog/books/{page}
-    controller: App\Controller\catalog\CatalogController::showCatalog
+    controller: App\Controller\CatalogController::showCatalog
     defaults:
         page: 1
     requirements:
         page: '\d+'
 show-books-by-author:
     path: /catalog/books-by-author/{slug}/{page}
-    controller: App\Controller\catalog\CatalogController::showAuthorCatalog
+    controller: App\Controller\CatalogController::showAuthorCatalog
     defaults:
         page: 1
     requirements:
@@ -49,7 +28,7 @@ show-books-by-author:
         page: '\d+'
 show-books-by-genre:
     path: /catalog/books-by-genre/{slug}/{page}
-    controller: App\Controller\catalog\CatalogController::showGenreCatalog
+    controller: App\Controller\CatalogController::showGenreCatalog
     defaults:
         page: 1
     requirements:
@@ -57,69 +36,95 @@ show-books-by-genre:
         page: '\d+'
 show-book:
     path: /catalog/books/{authorSlug}/{bookSlug}
-    controller: App\Controller\catalog\BookController::showBook
+    controller: App\Controller\CatalogController::showBook
     requirements:
         authorSlug: '[a-z-]+'
         bookSlug: '[a-z-]+'
 show-author:
     path: /catalog/author/{slug}
-    controller: App\Controller\catalog\AuthorController::showAuthor
+    controller: App\Controller\CatalogController::showAuthor
     requirements:
         slug: '[a-z-]+'
+
+show-profile:
+    path: /user/profile
+    controller: App\Controller\UserController::showProfile
+edit-profile:
+    path: /user/profile/edit
+    controller: App\Controller\UserController::editProfile
+change-password:
+    path: /user/profile/change-password
+    controller: App\Controller\UserController::changePassword
+show-user-activity:
+    path: /user/activity
+    controller: App\Controller\UserController::showActivity
+show-user-activity-filtered-by-date:
+    path: /user/activity/{filter}
+    controller: App\Controller\UserController::showActivityFilteredByDate
+    requirements:
+        filter: '(today|this-week|this-month|this-year)'
+show-user-reservations:
+    path: /user/reservations
+    controller: App\Controller\UserController::showReservations
+check-active-reservations:
+    path: /user/reservations/check
+    controller: App\Controller\UserController::checkActiveReservations
+
 reserve-book:
     path: /catalog/books/{authorSlug}/{bookSlug}/reserve
-    controller: App\Controller\reader\LibraryController::reserveBook
+    controller: App\Controller\ReaderController::reserveBook
     requirements:
         authorSlug: '[a-z-]+'
         bookSlug: '[a-z-]+'
 cancel-reservation:
     path: /user/reservations/{id}/cancel
-    controller: App\Controller\reader\LibraryController::cancelReservation
+    controller: App\Controller\ReaderController::cancelReservation
     requirements:
         id: '[a-f0-9-]+'
 toggle-favorite:
     path: /catalog/books/{authorSlug}/{bookSlug}/toggle-favorite
-    controller: App\Controller\user\UserController::toggleFavorite
+    controller: App\Controller\ReaderController::toggleFavorite
     requirements:
         authorSlug: '[a-z-]+'
         bookSlug: '[a-z-]+'
+
 new-book:
     path: /catalog/books/new
-    controller: App\Controller\librarian\LibraryController::newBook
+    controller: App\Controller\LibrarianController::newBook
 edit-book:
     path: /catalog/{authorSlug}/{bookSlug}/edit
-    controller: App\Controller\librarian\LibraryController::editBook
+    controller: App\Controller\LibrarianController::editBook
     requirements:
         authorSlug: '[a-z-]+'
         bookSlug: '[a-z-]+'
 delete-book:
     path: /catalog/{authorSlug}/{bookSlug}/delete
-    controller: App\Controller\librarian\LibraryController::deleteBook
+    controller: App\Controller\LibrarianController::deleteBook
     requirements:
         authorSlug: '[a-z-]+'
         bookSlug: '[a-z-]+'
 new-author:
     path: /catalog/authors/new
-    controller: App\Controller\librarian\LibraryController::newAuthor
+    controller: App\Controller\LibrarianController::newAuthor
 edit-author:
     path: /catalog/{slug}/edit
-    controller: App\Controller\librarian\LibraryController::editAuthor
+    controller: App\Controller\LibrarianController::editAuthor
     requirements:
         slug: '[a-z-]+'
 delete-author:
     path: /catalog/{slug}/delete
-    controller: App\Controller\librarian\LibraryController::deleteAuthor
+    controller: App\Controller\LibrarianController::deleteAuthor
     requirements:
         slug: '[a-z-]+'
 new-genre:
     path: /catalog/genres/new
-    controller: App\Controller\librarian\LibraryController::newGenre
+    controller: App\Controller\LibrarianController::newGenre
 show-reservations:
     path: /reservations
-    controller: App\Controller\librarian\LibraryController::showReservations
+    controller: App\Controller\LibrarianController::showReservations
 update-reservation:
     path: /reservations/update/{id}/{status}
-    controller: App\Controller\librarian\LibraryController::updateReservationStatus
+    controller: App\Controller\LibrarianController::updateReservationStatus
     methods: [GET]
     defaults:
         id: 1
@@ -128,36 +133,37 @@ update-reservation:
         id: '[a-f0-9-]+'
 show-readers:
     path: /readers
-    controller: App\Controller\librarian\LibraryController::showReaders
+    controller: App\Controller\LibrarianController::showReaders
+
 show-users:
     path: /admin/users
-    controller: App\Controller\admin\AdminController::showAllUsers
+    controller: App\Controller\AdminController::showAllUsers
 delete-user:
     path: /admin/users/{id}/delete
-    controller: App\Controller\admin\AdminController::deleteUser
+    controller: App\Controller\AdminController::deleteUser
     requirements:
         id: '[a-f0-9-]+'
 edit-user:
     path: /admin/users/edit/{id}
-    controller: App\Controller\admin\AdminController::editUser
+    controller: App\Controller\AdminController::editUser
     requirements:
         id: '[a-f0-9-]+'
 show-all-activity:
     path: /admin/activity
-    controller: App\Controller\admin\AdminController::showActivity
+    controller: App\Controller\AdminController::showActivity
 show-activity-filtered-by-date:
     path: /admin/activity/{filter}
-    controller: App\Controller\admin\AdminController::showActivityFilteredByDate
+    controller: App\Controller\AdminController::showActivityFilteredByDate
     requirements:
         filter: '(today|this-week|this-month|this-year)'
 show-user:
     path: /admin/users/{id}/profile
-    controller: App\Controller\admin\AdminController::showUser
+    controller: App\Controller\AdminController::showUser
     requirements:
         id: '[a-f0-9-]+'
 delete-comment:
     path: /admin/{bookSlug}/comment/{id}/delete
-    controller: App\Controller\admin\AdminController::deleteComment
+    controller: App\Controller\AdminController::deleteComment
     requirements:
         bookSlug: '[a-z-]+'
         id: '[a-f0-9-]+'

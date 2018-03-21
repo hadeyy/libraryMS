@@ -28,6 +28,11 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    App\Controller\DefaultController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.book_manager'
+            - '@app.activity_manager'
     App\Controller\RegistrationController:
         tags: ['controller.service_arguments']
         arguments:
@@ -36,11 +41,22 @@ services:
             - '@app.file_manager'
             - '%app.user_photo_dir%'
             - '%app.default_registration_role%'
-    App\Controller\security\SecurityController:
+    App\Controller\SecurityController:
         tags: ['controller.service_arguments']
         arguments:
             - '@security.authentication_utils'
-    App\Controller\user\UserController:
+    App\Controller\CatalogController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.author_manager'
+            - '@app.genre_manager'
+            - '@app.catalog_manager'
+            - '@app.comment_manager'
+            - '@app.activity_manager'
+            - '@app.rating_manager'
+            - '@app.book_reservation_manager'
+            - '@security.token_storage'
+    App\Controller\UserController:
         tags: ['controller.service_arguments']
         arguments:
             - '@app.user_manager'
@@ -48,34 +64,14 @@ services:
             - '@app.activity_manager'
             - '@app.book_reservation_manager'
             - '@app.password_manager'
-    App\Controller\DefaultController:
+    App\Controller\ReaderController:
         tags: ['controller.service_arguments']
         arguments:
+            - '@app.book_reservation_manager'
             - '@app.book_manager'
             - '@app.activity_manager'
-    App\Controller\catalog\CatalogController:
-        tags: ['controller.service_arguments']
-        arguments:
-            - '@app.author_manager'
-            - '@app.genre_manager'
-            - '@app.catalog_manager'
-    App\Controller\catalog\BookController:
-        tags: ['controller.service_arguments']
-        arguments:
-            - '@app.comment_manager'
-            - '@app.rating_manager'
-            - '@app.activity_manager'
-            - '@app.book_reservation_manager'
             - '@security.token_storage'
-    App\Controller\catalog\AuthorController:
-        tags: ['controller.service_arguments']
-    App\Controller\reader\LibraryController:
-        tags: ['controller.service_arguments']
-        arguments:
-            - '@app.book_reservation_manager'
-            - '@app.activity_manager'
-            - '@security.token_storage'
-    App\Controller\librarian\LibraryController:
+    App\Controller\LibrarianController:
         tags: ['controller.service_arguments']
         arguments:
             - '@app.book_manager'
@@ -85,7 +81,7 @@ services:
             - '@app.genre_manager'
             - '@app.user_manager'
             - '@security.token_storage'
-    App\Controller\admin\AdminController:
+    App\Controller\AdminController:
         tags: ['controller.service_arguments']
         arguments:
             - '@app.app_manager'

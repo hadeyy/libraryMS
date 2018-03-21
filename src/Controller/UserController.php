@@ -6,17 +6,15 @@
  * Time: 1:43 PM
  */
 
-namespace App\Controller\user;
+namespace App\Controller;
 
 
-use App\Entity\Book;
 use App\Form\PasswordEditType;
 use App\Form\UserEditType;
 use App\Service\ActivityManager;
 use App\Service\BookReservationManager;
 use App\Service\PasswordManager;
 use App\Service\UserManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -41,7 +39,8 @@ class UserController extends AbstractController
         ActivityManager $activityManager,
         BookReservationManager $bookReservationManager,
         PasswordManager $passwordManager
-    ) {
+    )
+    {
         $this->userManager = $userManager;
         $this->activityManager = $activityManager;
         $this->user = $tokenStorage->getToken()->getUser();
@@ -88,6 +87,11 @@ class UserController extends AbstractController
         return $this->render('user/edit.html.twig', ['form' => $form->createView()]);
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse|Response
+     */
     public function changePassword(Request $request)
     {
         $form = $this->createForm(PasswordEditType::class);
@@ -119,6 +123,11 @@ class UserController extends AbstractController
         );
     }
 
+    /**
+     * @param string $filter
+     *
+     * @return Response
+     */
     public function showActivityFilteredByDate(string $filter)
     {
         $activity = $this->activityManager->findUserActivityByDateLimit($this->user, $filter);
@@ -126,28 +135,6 @@ class UserController extends AbstractController
         return $this->render(
             'user/activities.html.twig',
             ['activities' => $activity]
-        );
-    }
-
-    /**
-     * @param Book $book
-     *
-     * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
-     *
-     * @return RedirectResponse
-     */
-    public function toggleFavorite(Book $book)
-    {
-        $this->userManager->toggleFavorite($this->user, $book);
-
-        $author = $book->getAuthor();
-
-        return $this->redirectToRoute(
-            'show-book',
-            [
-                'bookSlug' => $book->getSlug(),
-                'authorSlug' => $author->getSlug(),
-            ]
         );
     }
 
@@ -167,6 +154,9 @@ class UserController extends AbstractController
         );
     }
 
+    /**
+     * @return RedirectResponse
+     */
     public function checkActiveReservations()
     {
         $approachingEndDate = $this->bookReservationManager->checkReservationsForApproachingReturnDate($this->user);

@@ -6,7 +6,7 @@
  * Time: 2:26 PM
  */
 
-namespace App\Controller\librarian;
+namespace App\Controller;
 
 
 use App\Entity\Author;
@@ -33,7 +33,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 /**
  * @Security("has_role('ROLE_LIBRARIAN')")
  */
-class LibraryController extends Controller
+class LibrarianController extends Controller
 {
     private $bookManager;
     private $bookReservationManager;
@@ -51,7 +51,8 @@ class LibraryController extends Controller
         GenreManager $genreManager,
         UserManager $userManager,
         TokenStorage $tokenStorage
-    ) {
+    )
+    {
         $this->bookManager = $bookManager;
         $this->bookReservationManager = $bookReservationManager;
         $this->genreManager = $genreManager;

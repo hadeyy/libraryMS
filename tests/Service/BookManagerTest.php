@@ -12,6 +12,7 @@ namespace App\Tests\Service;
 use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\Genre;
+use App\Entity\User;
 use App\Service\BookManager;
 use App\Service\FileManager;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -23,6 +24,20 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BookManagerTest extends WebTestCase
 {
+    public $user;
+
+    public function setUp()
+    {
+        $this->user = new User(
+            'firstName',
+            'lastName',
+            'username',
+            'email',
+            'photo',
+            'plainPassword'
+        );
+    }
+
     public function testCreateBookFromArray()
     {
         $entityManager = $this->createMock(EntityManager::class);
@@ -288,6 +303,51 @@ class BookManagerTest extends WebTestCase
             'cover', $book->getCover(),
             'Original cover was not changed.'
         );
+    }
+
+    public function testRemoveFavorite()
+    {
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+
+        $bookManager = new BookManager($doctrine, $fileManager, 'path/to/directory');
+
+        $book = $this->createMock(Book::class);
+        $this->user->addFavorite($book);
+
+        $this->assertContains($book, $this->user->getFavorites(), 'Book is in favorites.');
+        $bookManager->toggleFavorite($book, $this->user);
+        $this->assertNotContains($book, $this->user->getFavorites(), 'Book removed from favorites.');
+    }
+
+    public function testAddFavorite()
+    {
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $fileManager = $this->createMock(FileManager::class);
+
+        $bookManager = new BookManager($doctrine, $fileManager, 'path/to/directory');
+
+        $book = $this->createMock(Book::class);
+
+        $this->assertNotContains($book, $this->user->getFavorites(), 'Book is not in favorites.');
+        $bookManager->toggleFavorite($book, $this->user);
+        $this->assertContains($book, $this->user->getFavorites(), 'Book added to favorites.');
     }
 
     /**

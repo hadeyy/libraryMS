@@ -9,7 +9,6 @@
 namespace App\Service;
 
 
-use App\Entity\Book;
 use App\Entity\User;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -19,7 +18,6 @@ class UserManager
     private $em;
     private $repository;
     private $fileManager;
-    private $activityManager;
     private $photoDirectory;
 
     public function __construct(
@@ -31,7 +29,6 @@ class UserManager
         $this->em = $doctrine->getManager();
         $this->repository = $doctrine->getRepository(User::class);
         $this->fileManager = $fileManager;
-        $this->activityManager = $activityManager;
         $this->photoDirectory = $userPhotoDirectory;
     }
 
@@ -139,22 +136,6 @@ class UserManager
     public function saveChanges()
     {
         $this->em->flush();
-    }
-
-    public function toggleFavorite(User $user, Book $book)
-    {
-        $favorites = $user->getFavorites();
-        $isAFavorite = $favorites->contains($book);
-
-        if ($isAFavorite) {
-            $user->removeFavorite($book);
-            $this->activityManager->log($user, $book, 'Removed a book from favorites');
-        } else {
-            $user->addFavorite($book);
-            $this->activityManager->log($user, $book, 'Added a book to favorites');
-        }
-
-        $this->saveChanges();
     }
 
     public function getPhotoDirectory()

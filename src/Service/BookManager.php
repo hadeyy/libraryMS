@@ -10,6 +10,7 @@ namespace App\Service;
 
 
 use App\Entity\Book;
+use App\Entity\User;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -24,7 +25,8 @@ class BookManager
         ManagerRegistry $doctrine,
         FileManager $fileManager,
         string $bookCoverDirectory
-    ) {
+    )
+    {
         $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
         $this->coverDirectory = $bookCoverDirectory;
@@ -113,6 +115,30 @@ class BookManager
     public function getNewestBooks()
     {
         return $this->repository->findAllOrderedByPublicationDate();
+    }
+
+    /**
+     * @param Book $book
+     * @param User $user
+     *
+     * @return string
+     */
+    public function toggleFavorite(Book $book, User $user)
+    {
+        $favorites = $user->getFavorites();
+        $isAFavorite = $favorites->contains($book);
+
+        if ($isAFavorite) {
+            $user->removeFavorite($book);
+            $this->saveChanges();
+
+            return 'Removed a book from favorites';
+        } else {
+            $user->addFavorite($book);
+            $this->saveChanges();
+
+            return 'Added a book to favorites';
+        }
     }
 
     public function remove(Book $book): void

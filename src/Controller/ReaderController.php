@@ -6,17 +6,19 @@
  * Time: 1:25 PM
  */
 
-namespace App\Controller\reader;
+namespace App\Controller;
 
 
 use App\Entity\Book;
 use App\Entity\BookReservation;
 use App\Form\BookReservationType;
 use App\Service\ActivityManager;
+use App\Service\BookManager;
 use App\Service\BookReservationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
@@ -24,18 +26,22 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 /**
  * @Security("has_role('ROLE_READER')")
  */
-class LibraryController extends Controller
+class ReaderController extends Controller
 {
     private $bookReservationManager;
+    private $bookManager;
     private $activityManager;
     private $user;
 
     public function __construct(
         BookReservationManager $bookReservationManager,
+        BookManager $bookManager,
         ActivityManager $activityManager,
         TokenStorage $tokenStorage
-    ) {
+    )
+    {
         $this->bookReservationManager = $bookReservationManager;
+        $this->bookManager = $bookManager;
         $this->activityManager = $activityManager;
         $this->user = $tokenStorage->getToken()->getUser();
     }
@@ -80,12 +86,35 @@ class LibraryController extends Controller
     /**
      * @param BookReservation $reservation
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function cancelReservation(BookReservation $reservation)
     {
-        $this->bookReservationManager->updateStatus($reservation, 'canceled', new \DateTime());
+        $this->bookReservationManager->updateStatus($reservation, 'canceled');
 
         return $this->redirectToRoute('show-user-reservations');
+    }
+
+    /**
+     * @param Book $book
+     *
+     * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
+     *
+     * @return RedirectResponse
+     */
+    public function toggleFavorite(Book $book)
+    {
+        $action = $this->bookManager->toggleFavorite($book, $this->user);
+        $this->activityManager->log($this->user, $book, $action);
+
+        $author = $book->getAuthor();
+
+        return $this->redirectToRoute(
+            'show-book',
+            [
+                'bookSlug' => $book->getSlug(),
+                'authorSlug' => $author->getSlug(),
+            ]
+        );
     }
 }

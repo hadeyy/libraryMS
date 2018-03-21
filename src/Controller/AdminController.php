@@ -6,7 +6,7 @@
  * Time: 1:54 PM
  */
 
-namespace App\Controller\admin;
+namespace App\Controller;
 
 
 use App\Entity\Book;
@@ -20,7 +20,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Security("has_role('ROLE_ADMIN')")
@@ -44,6 +46,9 @@ class AdminController extends AbstractController
         $this->activityManager = $activityManager;
     }
 
+    /**
+     * @return Response
+     */
     public function showAllUsers()
     {
         return $this->render(
@@ -52,6 +57,11 @@ class AdminController extends AbstractController
         );
     }
 
+    /**
+     * @param User $user
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function deleteUser(User $user)
     {
         $this->appManager->deleteUser($user);
@@ -59,6 +69,12 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('show-users');
     }
 
+    /**
+     * @param Request $request
+     * @param User $user
+     *
+     * @return RedirectResponse|Response
+     */
     public function editUser(Request $request, User $user)
     {
         $defaultData = ['message' => 'Select role'];
@@ -94,7 +110,7 @@ class AdminController extends AbstractController
     /**
      * @param User $user
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function showUser(User $user)
@@ -112,6 +128,9 @@ class AdminController extends AbstractController
         );
     }
 
+    /**
+     * @return Response
+     */
     public function showActivity()
     {
         $activity = $this->activityManager->findAllActivity();
@@ -122,6 +141,11 @@ class AdminController extends AbstractController
         );
     }
 
+    /**
+     * @param string $filter
+     *
+     * @return Response
+     */
     public function showActivityFilteredByDate(string $filter)
     {
         $activity = $this->activityManager->findActivityByDateLimit($filter);

@@ -389,53 +389,6 @@ class UserManagerTest extends WebTestCase
         $this->assertEquals($expected, $actual, 'Retrieved result matches expected.');
     }
 
-    public function testRemoveFavorite()
-    {
-        $entityManager = $this->createMock(EntityManager::class);
-        $entityManager->expects($this->once())
-            ->method('flush');
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-        $doctrine->expects($this->once())
-            ->method('getManager')
-            ->willReturn($entityManager);
-
-        $fileManager = $this->createMock(FileManager::class);
-        $activityManager = $this->createMock(ActivityManager::class);
-
-        $userManager = new UserManager($doctrine, $fileManager, $activityManager, 'path/to/directory');
-
-        $book = $this->createMock(Book::class);
-        $this->user->addFavorite($book);
-
-        $this->assertContains($book, $this->user->getFavorites(), 'Book is in favorites.');
-        $userManager->toggleFavorite($this->user, $book);
-        $this->assertNotContains($book, $this->user->getFavorites(), 'Book removed from favorites.');
-    }
-
-    public function testAddFavorite()
-    {
-        $entityManager = $this->createMock(EntityManager::class);
-        $entityManager->expects($this->once())
-            ->method('flush');
-
-        $doctrine = $this->createMock(ManagerRegistry::class);
-        $doctrine->expects($this->once())
-            ->method('getManager')
-            ->willReturn($entityManager);
-
-        $fileManager = $this->createMock(FileManager::class);
-        $activityManager = $this->createMock(ActivityManager::class);
-
-        $userManager = new UserManager($doctrine, $fileManager, $activityManager, 'path/to/directory');
-
-        $book = $this->createMock(Book::class);
-
-        $this->assertNotContains($book, $this->user->getFavorites(), 'Book is not in favorites.');
-        $userManager->toggleFavorite($this->user, $book);
-        $this->assertContains($book, $this->user->getFavorites(), 'Book added to favorites.');
-    }
-
     public function testGetPhotoDirectory()
     {
         $doctrine = $this->createMock(ManagerRegistry::class);
