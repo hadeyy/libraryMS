@@ -154,7 +154,6 @@ class CatalogController extends AbstractController
      * @ParamConverter("book", class="App\Entity\Book", options={"mapping": {"bookSlug": "slug"}})
      *
      * @return Response
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function showBook(Request $request, Book $book)
     {

@@ -50,7 +50,6 @@ class UserController extends AbstractController
 
     /**
      * @return Response
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function showProfile()
     {

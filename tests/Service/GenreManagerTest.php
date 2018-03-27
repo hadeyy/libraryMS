@@ -33,6 +33,6 @@ class GenreManagerTest extends WebTestCase
 
         $genreManager = new GenreManager($doctrine);
 
-        $genreManager->create(['name' => 'genre']);
+        $genreManager->create('genre');
     }
 }

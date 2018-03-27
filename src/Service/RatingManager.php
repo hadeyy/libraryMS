@@ -26,10 +26,14 @@ class RatingManager
     }
 
     /**
+     * Creates a new instance of Rating or replaces an existing one's value
+     * if the user had previously rated this book.
+     *
      * @param Book $book
      * @param User $user
-     * @param int $value
+     * @param int $value Rating value.
      *
+     * @return void
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function rate(Book $book, User $user, int $value)
@@ -45,6 +49,13 @@ class RatingManager
         }
     }
 
+    /**
+     * Returns the average rating of the book.
+     *
+     * @param Book $book
+     *
+     * @return float
+     */
     public function getAverageRating(Book $book): float
     {
         $ratings = $this->repository->findRatingsByBook($book);
@@ -58,6 +69,8 @@ class RatingManager
     }
 
     /**
+     * Looks for the book's rating made by the user.
+     *
      * @param Book $book
      * @param User $user
      *
@@ -69,12 +82,25 @@ class RatingManager
         return $this->repository->findRatingByBookAndUser($book, $user);
     }
 
+    /**
+     * Calls entity manager to make the instance managed and persistent and
+     * to save all changes made to objects to the database.
+     *
+     * @param Rating $rating
+     *
+     * @return void
+     */
     public function save(Rating $rating)
     {
         $this->em->persist($rating);
         $this->saveChanges();
     }
 
+    /**
+     * Saves all changes made to objects to the database.
+     *
+     * @return void
+     */
     public function saveChanges()
     {
         $this->em->flush();

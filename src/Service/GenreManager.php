@@ -23,18 +23,38 @@ class GenreManager
         $this->repository = $doctrine->getRepository(Genre::class);
     }
 
-    public function create(array $data)
+    /**
+     * Creates a new instance of Genre and saves it to the database.
+     *
+     * @param string $name Name of the genre.
+     *
+     * @return void
+     */
+    public function create(string $name)
     {
-        $genre = new Genre($data['name']);
+        $genre = new Genre($name);
 
         $this->save($genre);
     }
 
+    /**
+     * Looks for all genres in the database.
+     *
+     * @return Genre[]|null
+     */
     public function findAllGenres()
     {
         return $this->repository->findAllGenresJoinedToBooks();
     }
 
+    /**
+     * Calls entity manager to make the instance managed and persistent and
+     * to save all changes made to objects to the database.
+     *
+     * @param Genre $genre
+     *
+     * @return void
+     */
     public function save(Genre $genre)
     {
         $this->em->persist($genre);

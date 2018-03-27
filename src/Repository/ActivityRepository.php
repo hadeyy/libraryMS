@@ -9,15 +9,18 @@
 namespace App\Repository;
 
 
+use App\Entity\Activity;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 class ActivityRepository extends EntityRepository
 {
     /**
-     * @param integer|null $limit
+     * Finds all or given number of activities and orders results by time created.
      *
-     * @return mixed
+     * @param integer|null $limit Maximum results.
+     *
+     * @return Activity[]|null
      */
     public function findRecentActivity($limit = null)
     {
@@ -32,6 +35,15 @@ class ActivityRepository extends EntityRepository
             ->getResult();
     }
 
+    /**
+     * Finds all or given number of activities
+     * that have been created on or after the date
+     * and orders results by time created.
+     *
+     * @param string $date Earliest date created.
+     *
+     * @return Activity[]|null
+     */
     public function findActivityByDateLimit(string $date)
     {
         return $this->createQueryBuilder('a')
@@ -47,10 +59,13 @@ class ActivityRepository extends EntityRepository
     }
 
     /**
-     * @param User $user
-     * @param integer|null $limit
+     * Finds all or given number of activities by user
+     * and orders results by time created.
      *
-     * @return mixed
+     * @param User $user
+     * @param integer|null $limit Maximum results.
+     *
+     * @return Activity[]|null
      */
     public function findUserActivities(User $user, $limit = null)
     {
@@ -68,10 +83,13 @@ class ActivityRepository extends EntityRepository
     }
 
     /**
-     * @param User $user
-     * @param string $date
+     * Finds all activities that have been created on or after the date by user
+     * and orders results by time created.
      *
-     * @return mixed
+     * @param User $user
+     * @param string $date Earliest date created.
+     *
+     * @return Activity[]|null
      */
     public function findUserActivitiesByDateLimit(User $user, string $date)
     {

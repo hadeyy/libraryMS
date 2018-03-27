@@ -26,9 +26,13 @@ class ActivityManager
     }
 
     /**
-     * @param User $user
-     * @param Book $book
-     * @param string $title
+     * Creates a new instance of Activity and saves it to the database.
+     *
+     * @param User $user User who performed the activity.
+     * @param Book $book Book on which the activity was performed.
+     * @param string $title Short activity description.
+     *
+     * @return void
      */
     public function log(User $user, Book $book, string $title)
     {
@@ -37,11 +41,25 @@ class ActivityManager
         $this->save($activity);
     }
 
+    /**
+     * Looks for all activities in the database.
+     *
+     * @param integer|null $limit The maximum number of results to retrieve.
+     *
+     * @return Activity[]|null
+     */
     public function findAllActivity($limit = null)
     {
         return $this->repository->findRecentActivity($limit);
     }
 
+    /**
+     * Looks for all activities that have been created after the given date.
+     *
+     * @param string $filter Date filter.
+     *
+     * @return Activity[]|null
+     */
     public function findActivityByDateLimit(string $filter)
     {
         $dates = [
@@ -55,9 +73,11 @@ class ActivityManager
     }
 
     /**
+     * Looks for all activities that have been performed by the given user.
+     *
      * @param User $user
      *
-     * @return mixed
+     * @return Activity[]|null
      */
     public function findUserActivity(User $user)
     {
@@ -65,10 +85,13 @@ class ActivityManager
     }
 
     /**
-     * @param User $user
-     * @param string $filter
+     * Looks for all activities that have been performed by
+     * the given user and have been created after the given date.
      *
-     * @return mixed
+     * @param User $user
+     * @param string $filter Date filter.
+     *
+     * @return Activity[]|null
      */
     public function findUserActivityByDateLimit(User $user, string $filter)
     {
@@ -83,7 +106,12 @@ class ActivityManager
     }
 
     /**
-     * @param Activity $activity The instance to make managed and persistent.
+     * Calls entity manager to make the instance managed and persistent and
+     * to save all changes made to objects to the database.
+     *
+     * @param Activity $activity
+     *
+     * @return void
      */
     public function save(Activity $activity)
     {

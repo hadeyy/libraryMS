@@ -9,10 +9,16 @@
 namespace App\Repository;
 
 
+use App\Entity\Genre;
 use Doctrine\ORM\EntityRepository;
 
 class GenreRepository extends EntityRepository
 {
+    /**
+     * Finds all genres.
+     *
+     * @return Genre[]|null
+     */
     public function findAllGenresJoinedToBooks()
     {
         return $this->createQueryBuilder('g')

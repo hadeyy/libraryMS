@@ -14,6 +14,13 @@ use Doctrine\ORM\EntityRepository;
 
 class UserRepository extends EntityRepository
 {
+    /**
+     * Finds all users by role.
+     *
+     * @param string $role
+     *
+     * @return User[]|null
+     */
     public function findUsersByRole(string $role)
     {
         return $this->createQueryBuilder('u')
@@ -25,11 +32,12 @@ class UserRepository extends EntityRepository
     }
 
     /**
+     * Looks for a user and it's book reservations by status.
+     *
      * @param User $user
      * @param string $status
      *
-     * @return mixed
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return User|null
      */
     public function findUserJoinedToReservationsByStatus(User $user, string $status)
     {
@@ -49,10 +57,11 @@ class UserRepository extends EntityRepository
     }
 
     /**
+     * Looks for a user and it's favorite book.
+     *
      * @param User $user
      *
-     * @return mixed
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return User|null
      */
     public function findUserJoinedToFavoriteBooks(User $user)
     {

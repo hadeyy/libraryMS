@@ -39,7 +39,8 @@ class AdminController extends AbstractController
         UserManager $userManager,
         BookReservationManager $reservationManager,
         ActivityManager $activityManager
-    ) {
+    )
+    {
         $this->appManager = $appManager;
         $this->userManager = $userManager;
         $this->reservationManager = $reservationManager;
@@ -60,7 +61,7 @@ class AdminController extends AbstractController
     /**
      * @param User $user
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function deleteUser(User $user)
     {
@@ -111,7 +112,6 @@ class AdminController extends AbstractController
      * @param User $user
      *
      * @return Response
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function showUser(User $user)
     {

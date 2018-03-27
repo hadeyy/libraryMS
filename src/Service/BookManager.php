@@ -33,7 +33,14 @@ class BookManager
         $this->repository = $doctrine->getRepository(Book::class);
     }
 
-    public function createFromArray(array $data): Book
+    /**
+     * Converts an associative array of data to an instance of Book and saves it to the database.
+     *
+     * @param array $data Data about the book.
+     *
+     * @return Book
+     */
+    public function createFromArray(array $data)
     {
         $book = new Book(
             $data['ISBN'],
@@ -53,7 +60,14 @@ class BookManager
         return $book;
     }
 
-    public function createArrayFromBook(Book $book): array
+    /**
+     * Converts an instance of Book to an associative array.
+     *
+     * @param Book $book
+     *
+     * @return array
+     */
+    public function createArrayFromBook(Book $book)
     {
         $photoPath = $this->coverDirectory . '/' . $book->getCover();
 
@@ -72,13 +86,30 @@ class BookManager
         ];
     }
 
+    /**
+     * Uploads the book's cover to cover directory and
+     * sets the created filename as the cover for the book.
+     *
+     * @param Book $book
+     *
+     * @return void
+     */
     private function uploadCover(Book $book): void
     {
         $filename = $this->fileManager->upload($book->getCover(), $this->coverDirectory);
         $book->setCover($filename);
     }
 
-    public function updateBook(Book $book, $data): void
+    /**
+     * Changes an instance of Book using data from an associative array.
+     * Removes the previous cover photo if there was one when a new one has been provided.
+     *
+     * @param Book $book
+     * @param array $data New data that will replace existing.
+     *
+     * @return void
+     */
+    public function updateBook(Book $book, array $data)
     {
         $photo = $data['cover'];
         if ($photo instanceof UploadedFile) {
@@ -107,21 +138,34 @@ class BookManager
         $this->saveChanges();
     }
 
+    /**
+     * Looks for all books ordered by how many times they have been borrowed.
+     *
+     * @return Book[]|null
+     */
     public function getPopularBooks()
     {
         return $this->repository->findAllOrderedByTimesBorrowed();
     }
 
+    /**
+     * Looks for all books ordered by their publication date.
+     *
+     * @return Book[]|null
+     */
     public function getNewestBooks()
     {
         return $this->repository->findAllOrderedByPublicationDate();
     }
 
     /**
+     * Based on whether or not the given book is in the user's favorites
+     * adds or removes the book from them.
+     *
      * @param Book $book
      * @param User $user
      *
-     * @return string
+     * @return string Made activity description.
      */
     public function toggleFavorite(Book $book, User $user)
     {
@@ -141,7 +185,14 @@ class BookManager
         }
     }
 
-    public function remove(Book $book): void
+    /**
+     * Removes the book instance from the database.
+     *
+     * @param Book $book
+     *
+     * @return void
+     */
+    public function remove(Book $book)
     {
         $this->fileManager->deleteFile($this->coverDirectory . '/' . $book->getCover());
 
@@ -149,7 +200,15 @@ class BookManager
         $this->saveChanges();
     }
 
-    public function save(Book $book): void
+    /**
+     * Calls entity manager to make the instance managed and persistent and
+     * to save all changes made to objects to the database.
+     *
+     * @param Book $book
+     *
+     * @return void
+     */
+    public function save(Book $book)
     {
         $this->uploadCover($book);
 
@@ -157,7 +216,12 @@ class BookManager
         $this->saveChanges();
     }
 
-    public function saveChanges(): void
+    /**
+     * Saves all changes made to objects to the database.
+     *
+     * @return void
+     */
+    public function saveChanges()
     {
         $this->em->flush();
     }

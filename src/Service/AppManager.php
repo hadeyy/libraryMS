@@ -23,12 +23,21 @@ class AppManager
         ManagerRegistry $doctrine,
         FileManager $fileManager,
         UserManager $userManager
-    ) {
+    )
+    {
         $this->em = $doctrine->getManager();
         $this->fileManager = $fileManager;
         $this->userManager = $userManager;
     }
 
+    /**
+     * Resets roles previously assigned to the user and assigns the new one.
+     *
+     * @param User $user
+     * @param string $role New role that will replace existing one.
+     *
+     * @return void
+     */
     public function changeRole(User $user, string $role)
     {
         $user->resetRoles();
@@ -37,6 +46,14 @@ class AppManager
         $this->saveChanges();
     }
 
+    /**
+     * Removes user's photo from user photo directory and
+     * removes the user instance from database.
+     *
+     * @param User $user
+     *
+     * @return void
+     */
     public function deleteUser(User $user)
     {
         $photoDirectory = $this->userManager->getPhotoDirectory();
@@ -46,17 +63,36 @@ class AppManager
         $this->remove($user);
     }
 
+    /**
+     * Removes the comment instance from the database.
+     *
+     * @param Comment $comment
+     *
+     * @return void
+     */
     public function deleteComment(Comment $comment)
     {
         $this->remove($comment);
     }
 
+    /**
+     * Removes an entity instance from the database.
+     *
+     * @param User|Comment $entity
+     *
+     * @return void
+     */
     public function remove($entity)
     {
         $this->em->remove($entity);
         $this->saveChanges();
     }
 
+    /**
+     * Saves all changes made to objects to the database.
+     *
+     * @return void
+     */
     public function saveChanges()
     {
         $this->em->flush();

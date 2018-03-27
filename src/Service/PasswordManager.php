@@ -27,11 +27,26 @@ class PasswordManager
         $this->em = $doctrine->getManager();
     }
 
+    /**
+     * Encodes user's plain text password.
+     *
+     * @param User $user
+     *
+     * @return string Encoded password.
+     */
     public function encode(User $user)
     {
         return $this->encoder->encodePassword($user, $user->getPlainPassword());
     }
 
+    /**
+     * Encodes given string and sets it as user's password.
+     *
+     * @param User $user
+     * @param string $newPassword New password in plain text.
+     *
+     * @return void
+     */
     public function changePassword(User $user, string $newPassword)
     {
         $user->setPlainPassword($newPassword);
@@ -41,6 +56,11 @@ class PasswordManager
         $this->saveChanges();
     }
 
+    /**
+     * Saves all changes made to objects to the database.
+     *
+     * @return void
+     */
     public function saveChanges()
     {
         $this->em->flush();

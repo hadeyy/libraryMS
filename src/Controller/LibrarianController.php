@@ -193,7 +193,8 @@ class LibrarianController extends Controller
         $form = $this->createForm(GenreType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->genreManager->create($form->getData());
+            $data = $form->getData();
+            $this->genreManager->create($data['name']);
 
             return $this->redirectToRoute('show-catalog');
         }

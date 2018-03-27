@@ -59,7 +59,8 @@ class ReaderController extends Controller
         $form = $this->createForm(BookReservationType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->bookReservationManager->create($book, $this->user, $form->getData());
+            $data = $form->getData();
+            $this->bookReservationManager->create($book, $this->user, $data['dateFrom'], $data['dateTo']);
 
             $this->activityManager->log($this->user, $book, 'Reserved a book');
 

@@ -16,6 +16,14 @@ use Doctrine\ORM\EntityRepository;
 
 class BookReservationRepository extends EntityRepository
 {
+    /**
+     * Finds all book reservations by status
+     * and orders results by time updated.
+     *
+     * @param string $status
+     *
+     * @return BookReservation[]|null
+     */
     public function findReservationsByStatus(string $status)
     {
         return $this->createQueryBuilder('br')
@@ -30,6 +38,15 @@ class BookReservationRepository extends EntityRepository
             ->getResult();
     }
 
+    /**
+     * Finds all book reservations by user and status
+     * and orders results by time updated.
+     *
+     * @param User $user
+     * @param string $status
+     *
+     * @return BookReservation[]|null
+     */
     public function findUserReservationsByStatus(User $user, string $status)
     {
         return $this->createQueryBuilder('br')
@@ -45,9 +62,12 @@ class BookReservationRepository extends EntityRepository
     }
 
     /**
+     * Finds all active book reservations by user
+     * where end date is in less than 3 days.
+     *
      * @param User $user
      *
-     * @return null|BookReservation[]
+     * @return BookReservation[]|null
      */
     public function findReservationsWithApproachingEndDate(User $user)
     {
@@ -64,9 +84,12 @@ class BookReservationRepository extends EntityRepository
     }
 
     /**
+     * Finds all active book reservations by user
+     * where end date was in any day before today.
+     *
      * @param User $user
      *
-     * @return null|BookReservation[]
+     * @return BookReservation[]|null
      */
     public function findReservationsWithMissedEndDate(User $user)
     {
@@ -82,6 +105,14 @@ class BookReservationRepository extends EntityRepository
             ->getResult();
     }
 
+    /**
+     * Finds all active book reservations by user and book.
+     *
+     * @param Book $book
+     * @param User $user
+     *
+     * @return BookReservation[]|null
+     */
     public function findActiveReservationsByBookAndUser(Book $book, User $user)
     {
         return $this->createQueryBuilder('br')

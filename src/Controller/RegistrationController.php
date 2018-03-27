@@ -31,7 +31,8 @@ class RegistrationController extends AbstractController
         FileManager $fileManager,
         string $userPhotoDirectory,
         string $defaultRegistrationRole
-    ) {
+    )
+    {
         $this->userManager = $userManager;
         $this->passwordManager = $passwordManager;
         $this->fileManager = $fileManager;

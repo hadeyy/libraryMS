@@ -22,7 +22,8 @@ class DefaultController extends AbstractController
     public function __construct(
         BookManager $bookManager,
         ActivityManager $activityManager
-    ) {
+    )
+    {
         $this->bookManager = $bookManager;
         $this->activityManager = $activityManager;
     }

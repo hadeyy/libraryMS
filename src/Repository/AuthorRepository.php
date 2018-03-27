@@ -9,10 +9,16 @@
 namespace App\Repository;
 
 
+use App\Entity\Author;
 use Doctrine\ORM\EntityRepository;
 
 class AuthorRepository extends EntityRepository
 {
+    /**
+     * Finds all authors.
+     *
+     * @return Author[]|null
+     */
     public function findAllAuthorsJoinedToBooks()
     {
         return $this->createQueryBuilder('a')

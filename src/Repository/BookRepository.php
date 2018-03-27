@@ -10,12 +10,22 @@ namespace App\Repository;
 
 
 use App\Entity\Author;
+use App\Entity\Book;
 use App\Entity\Genre;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class BookRepository extends EntityRepository
 {
+    /**
+     * Finds all books and paginates the results.
+     *
+     * @param int $currentPage Current active page.
+     * @param int $limit Maximum results per page.
+     *
+     * @return Paginator
+     */
     public function findAllAndPaginate(int $currentPage = 1, int $limit = 18)
     {
         $query = $this->createQueryBuilder('b')
@@ -30,6 +40,15 @@ class BookRepository extends EntityRepository
         return $paginator;
     }
 
+    /**
+     * Finds all books by author and paginates results.
+     *
+     * @param Author $author
+     * @param int $currentPage Current active page.
+     * @param int $limit Maximum results per page.
+     *
+     * @return Paginator
+     */
     public function findAuthorBooksAndPaginate(Author $author, int $currentPage = 1, int $limit = 18)
     {
         $query = $this->createQueryBuilder('b')
@@ -45,6 +64,15 @@ class BookRepository extends EntityRepository
         return $paginator;
     }
 
+    /**
+     * Finds all books by genre and paginates results.
+     *
+     * @param Genre $genre
+     * @param int $currentPage Current active page.
+     * @param int $limit Maximum results per page.
+     *
+     * @return Paginator
+     */
     public function findGenreBooksAndPaginate(Genre $genre, int $currentPage = 1, int $limit = 18)
     {
         $query = $this->createQueryBuilder('b')
@@ -60,7 +88,16 @@ class BookRepository extends EntityRepository
         return $paginator;
     }
 
-    private function paginate($query, $page, $limit)
+    /**
+     * Paginates the results of a query.
+     *
+     * @param Query $query Doctrine ORM query or query builder.
+     * @param int $page Current active page number.
+     * @param int $limit Maximum results per page.
+     *
+     * @return Paginator
+     */
+    private function paginate(Query $query, int $page, int $limit)
     {
         $paginator = new Paginator($query);
 
@@ -71,6 +108,11 @@ class BookRepository extends EntityRepository
         return $paginator;
     }
 
+    /**
+     * Finds all books and orders results by the number a book has been borrowed.
+     *
+     * @return Book[]|null
+     */
     public function findAllOrderedByTimesBorrowed()
     {
         return $this->createQueryBuilder('b')
@@ -81,6 +123,11 @@ class BookRepository extends EntityRepository
             ->getResult();
     }
 
+    /**
+     * Finds all books and orders results by publication date.
+     *
+     * @return Book[]|null
+     */
     public function findAllOrderedByPublicationDate()
     {
         return $this->createQueryBuilder('b')

@@ -11,7 +11,10 @@ use Doctrine\ORM\EntityRepository;
 class RatingRepository extends EntityRepository
 {
     /**
+     * Finds all ratings by book.
+     *
      * @param Book $book
+     *
      * @return Rating[]|null
      */
     public function findRatingsByBook(Book $book)
@@ -24,11 +27,12 @@ class RatingRepository extends EntityRepository
     }
 
     /**
+     * Looks for a rating by book and user.
+     *
      * @param Book $book
      * @param User $user
      *
      * @return Rating|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findRatingByBookAndUser(Book $book, User $user)
     {

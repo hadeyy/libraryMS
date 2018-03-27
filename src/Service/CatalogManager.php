@@ -21,13 +21,16 @@ class CatalogManager
 
     public function __construct(
         ManagerRegistry $doctrine
-    ) {
+    )
+    {
         $this->bookRepository = $doctrine->getRepository(Book::class);
     }
 
     /**
-     * @param int $currentPage
-     * @param int $booksPerPage
+     * Looks for all books and paginates the results.
+     *
+     * @param int $currentPage Current page number.
+     * @param int $booksPerPage Number of results to display in a page.
      *
      * @return Paginator
      */
@@ -37,9 +40,11 @@ class CatalogManager
     }
 
     /**
+     * Looks for all books that have the given author and paginates the results.
+     *
      * @param Author $author
-     * @param int $currentPage
-     * @param int $booksPerPage
+     * @param int $currentPage Current page number.
+     * @param int $booksPerPage Number of results to display in a page.
      *
      * @return Paginator
      */
@@ -49,9 +54,11 @@ class CatalogManager
     }
 
     /**
+     * Looks for all books that have the given genre and paginates the results.
+     *
      * @param Genre $genre
-     * @param int $currentPage
-     * @param int $booksPerPage
+     * @param int $currentPage Current page number.
+     * @param int $booksPerPage Number of results to display in a page.
      *
      * @return Paginator
      */
@@ -61,6 +68,8 @@ class CatalogManager
     }
 
     /**
+     * Returns the maximum number of pages based on number of books and book limit per page.
+     *
      * @param Paginator $books All books paginated.
      * @param int $limit Book limit per page.
      *

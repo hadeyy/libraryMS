@@ -50,12 +50,10 @@ class BookReservationManagerTest extends WebTestCase
             'annotation'
         );
         $reader = $this->createMock(User::class);
-        $dates = [
-            'dateFrom' => new \DateTime(),
-            'dateTo' => new \DateTime(),
-        ];
+        $dateFrom = new \DateTime();
+        $dateTo = new \DateTime();
 
-        $reservationManager->create($book, $reader, $dates);
+        $reservationManager->create($book, $reader, $dateFrom, $dateTo);
 
         $this->assertEquals(
             0, $book->getAvailableCopies(),
