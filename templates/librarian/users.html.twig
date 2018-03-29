@@ -24,11 +24,11 @@
                 <th>Last name</th>
                 <th>Username</th>
                 <th>Email</th>
+                <th>Member since</th>
                 {% if is_granted("ROLE_ADMIN") %}
                     <th>Roles</th>
+                    <th>Actions</th>
                 {% endif %}
-                <th>Member since</th>
-                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -38,19 +38,14 @@
                     <td>{{ user.lastName }}</td>
                     <td>{{ user.username }}</td>
                     <td>{{ user.email }}</td>
+                    <td>{{ user.registeredAt|date('d-m-Y H:i') }}</td>
                     {% if is_granted("ROLE_ADMIN") %}
                         <td>
                             {% for role in user.roles %}
                                 {{ role }} <br>
                             {% endfor %}
                         </td>
-                    {% endif %}
-                    <td>{{ user.registeredAt|date('d-m-Y H:i') }}</td>
-                    <td>
-                        <a title="Send email">
-                            <span class="fa fa-envelope-o"></span>
-                        </a>
-                        {% if is_granted("ROLE_ADMIN") %}
+                        <td>
                             <a title="Go to profile" href="{{ path('show-user', {id: user.id}) }}">
                                 <span class="fa fa-user-o"></span>
                             </a>
@@ -60,8 +55,8 @@
                             <a title="Delete" href="{{ path('delete-user', {id: user.id}) }}">
                                 <span class="fa fa-trash-o"></span>
                             </a>
-                        {% endif %}
-                    </td>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>
