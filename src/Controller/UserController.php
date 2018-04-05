@@ -80,6 +80,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->userManager->updateProfile($this->user, $form->getData());
 
+            $this->addFlash('success', 'Profile info updated.');
+
             return $this->redirectToRoute('show-profile');
         }
 
@@ -99,6 +101,8 @@ class UserController extends AbstractController
             $data = $form->getData();
             $newPassword = $data['newPassword'];
             $this->passwordManager->changePassword($this->user, $newPassword);
+
+            $this->addFlash('success', 'Password changed.');
 
             return $this->redirectToRoute('show-profile');
         }

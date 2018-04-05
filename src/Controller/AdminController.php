@@ -67,6 +67,8 @@ class AdminController extends AbstractController
     {
         $this->appManager->deleteUser($user);
 
+        $this->addFlash('success', 'User deleted.');
+
         return $this->redirectToRoute('show-users');
     }
 
@@ -95,6 +97,8 @@ class AdminController extends AbstractController
             $formData = $roleForm->getData();
             $role = $formData['role'];
             $this->appManager->changeRole($user, $role);
+
+            $this->addFlash('success', 'User info updated.');
 
             return $this->redirectToRoute('show-users');
         }
@@ -168,6 +172,8 @@ class AdminController extends AbstractController
     {
         $this->appManager->deleteComment($comment);
         $author = $book->getAuthor();
+
+        $this->addFlash('success', 'Comment deleted.');
 
         return $this->redirectToRoute(
             'show-book',

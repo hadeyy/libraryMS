@@ -66,6 +66,8 @@ class ReaderController extends Controller
 
             $author = $book->getAuthor();
 
+            $this->addFlash('success', 'Book reserved.');
+
             return $this->redirectToRoute(
                 'show-book',
                 [
@@ -93,6 +95,8 @@ class ReaderController extends Controller
     {
         $this->bookReservationManager->updateStatus($reservation, 'canceled');
 
+        $this->addFlash('success', 'Book reservation canceled.');
+
         return $this->redirectToRoute('show-user-reservations');
     }
 
@@ -109,6 +113,8 @@ class ReaderController extends Controller
         $this->activityManager->log($this->user, $book, $action);
 
         $author = $book->getAuthor();
+
+        $this->addFlash('success', $action);
 
         return $this->redirectToRoute(
             'show-book',

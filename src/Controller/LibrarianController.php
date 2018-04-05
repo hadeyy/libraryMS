@@ -74,8 +74,9 @@ class LibrarianController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $book = $this->bookManager->createFromArray($form->getData());
-
             $this->activityManager->log($this->user, $book, 'Added a book');
+
+            $this->addFlash('success', 'Book created.');
 
             return $this->redirectToRoute('show-catalog');
         }
@@ -106,6 +107,8 @@ class LibrarianController extends Controller
 
             $author = $book->getAuthor();
 
+            $this->addFlash('success', 'Book info updated.');
+
             return $this->redirectToRoute(
                 'show-book',
                 [
@@ -129,6 +132,8 @@ class LibrarianController extends Controller
     {
         $this->bookManager->remove($book);
 
+        $this->addFlash('success', 'Book deleted.');
+
         return $this->redirectToRoute('show-catalog');
     }
 
@@ -143,6 +148,8 @@ class LibrarianController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->authorManager->createFromArray($form->getData());
+
+            $this->addFlash('success', 'Author created.');
 
             return $this->redirectToRoute('show-catalog');
         }
@@ -168,6 +175,8 @@ class LibrarianController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $this->authorManager->updateAuthor($author, $form->getData());
 
+            $this->addFlash('success', 'Author info updated.');
+
             return $this->redirectToRoute('show-author', ['slug' => $author->getSlug()]);
         }
 
@@ -180,6 +189,8 @@ class LibrarianController extends Controller
     public function deleteAuthor(Author $author)
     {
         $this->authorManager->remove($author);
+
+        $this->addFlash('success', 'Author deleted.');
 
         return $this->redirectToRoute('show-catalog');
     }
@@ -196,6 +207,8 @@ class LibrarianController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $this->genreManager->create($data['name']);
+
+            $this->addFlash('success', 'Genre created.');
 
             return $this->redirectToRoute('show-catalog');
         }
@@ -222,6 +235,8 @@ class LibrarianController extends Controller
             $data = $form->getData();
             $this->genreManager->changeName($genre, $data['name']);
 
+            $this->addFlash('success', 'Genre info updated.');
+
             return $this->redirectToRoute('show-catalog');
         }
 
@@ -239,6 +254,8 @@ class LibrarianController extends Controller
     public function deleteGenre(Genre $genre)
     {
         $this->genreManager->remove($genre);
+
+        $this->addFlash('success', 'Genre deleted.');
 
         return $this->redirectToRoute('show-catalog');
     }
@@ -268,6 +285,8 @@ class LibrarianController extends Controller
     public function updateReservationStatus(BookReservation $reservation, string $status)
     {
         $this->bookReservationManager->updateStatus($reservation, $status);
+
+        $this->addFlash('success', 'Reservation status updated.');
 
         return $this->redirectToRoute('show-reservations');
     }
