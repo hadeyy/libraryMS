@@ -119,6 +119,16 @@ delete-author:
 new-genre:
     path: /catalog/genres/new
     controller: App\Controller\LibrarianController::newGenre
+edit-genre:
+    path: /catalog/genre/edit/{id}
+    controller: App\Controller\LibrarianController::editGenre
+    requirements:
+        id: '[a-f0-9-]+'
+delete-genre:
+    path: /catalog/genre/delete/{id}
+    controller: App\Controller\LibrarianController::deleteGenre
+    requirements:
+        id: '[a-f0-9-]+'
 show-reservations:
     path: /reservations
     controller: App\Controller\LibrarianController::showReservations

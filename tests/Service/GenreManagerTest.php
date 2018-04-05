@@ -35,4 +35,58 @@ class GenreManagerTest extends WebTestCase
 
         $genreManager->create('genre');
     }
+
+    public function testCreateArrayFromGenre()
+    {
+        $genre = new Genre('test');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $genreManager = new GenreManager($doctrine);
+
+        $result = $genreManager->createArrayFromGenre($genre);
+
+        $this->assertTrue(is_array($result));
+        $this->assertArrayHasKey('name', $result);
+        $this->assertEquals('test', $result['name']);
+    }
+
+    public function testChangeName()
+    {
+        $genre = new Genre('test');
+
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $genreManager = new GenreManager($doctrine);
+
+        $genreManager->changeName($genre, 'new name');
+
+        $this->assertEquals('new name', $genre->getName());
+    }
+
+    public function testRemove()
+    {
+        $genre = new Genre('test');
+
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->once())
+            ->method('remove')
+            ->with($this->isInstanceOf(Genre::class));
+        $entityManager->expects($this->once())
+            ->method('flush');
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager')
+            ->willReturn($entityManager);
+
+        $genreManager = new GenreManager($doctrine);
+        $genreManager->remove($genre);
+    }
 }

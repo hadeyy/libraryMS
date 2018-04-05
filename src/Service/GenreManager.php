@@ -38,6 +38,45 @@ class GenreManager
     }
 
     /**
+     * Converts an instance of Genre to an associative array.
+     *
+     * @param Genre $genre
+     *
+     * @return array
+     */
+    public function createArrayFromGenre(Genre $genre)
+    {
+        return ['name' => $genre->getName()];
+    }
+
+    /**
+     * Changes genre's name.
+     *
+     * @param Genre $genre
+     * @param string $newName
+     *
+     * @return void
+     */
+    public function changeName(Genre $genre, string $newName)
+    {
+        $genre->setName($newName);
+        $this->saveChanges();
+    }
+
+    /**
+     * Removes the genre instance from the database.
+     *
+     * @param Genre $genre
+     *
+     * @return void
+     */
+    public function remove(Genre $genre)
+    {
+        $this->em->remove($genre);
+        $this->saveChanges();
+    }
+
+    /**
      * Looks for all genres in the database.
      *
      * @return Genre[]|null
@@ -58,6 +97,16 @@ class GenreManager
     public function save(Genre $genre)
     {
         $this->em->persist($genre);
+        $this->saveChanges();
+    }
+
+    /**
+     * Saves all changes made to objects to the database.
+     *
+     * @return void
+     */
+    public function saveChanges()
+    {
         $this->em->flush();
     }
 }

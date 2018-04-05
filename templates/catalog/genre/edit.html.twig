@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit genre{% endblock %}
+{% block content %}
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" id="genreForm">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">SAVE</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

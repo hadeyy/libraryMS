@@ -12,6 +12,7 @@ namespace App\Controller;
 use App\Entity\Author;
 use App\Entity\Book;
 use App\Entity\BookReservation;
+use App\Entity\Genre;
 use App\Form\AuthorType;
 use App\Form\BookEditType;
 use App\Form\BookType;
@@ -203,6 +204,43 @@ class LibrarianController extends Controller
             'catalog/genre/new.html.twig',
             ['form' => $form->createView()]
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param Genre $genre
+     *
+     * @return RedirectResponse|Response
+     */
+    public function editGenre(Request $request, Genre $genre)
+    {
+        $data = $this->genreManager->createArrayFromGenre($genre);
+
+        $form = $this->createForm(GenreType::class, $data);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $this->genreManager->changeName($genre, $data['name']);
+
+            return $this->redirectToRoute('show-catalog');
+        }
+
+        return $this->render(
+            'catalog/genre/edit.html.twig',
+            ['form' => $form->createView()]
+        );
+    }
+
+    /**
+     * @param Genre $genre
+     *
+     * @return RedirectResponse
+     */
+    public function deleteGenre(Genre $genre)
+    {
+        $this->genreManager->remove($genre);
+
+        return $this->redirectToRoute('show-catalog');
     }
 
     /**
