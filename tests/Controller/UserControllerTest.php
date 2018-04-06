@@ -38,7 +38,12 @@ class UserControllerTest extends WebTestCase
         return [
             ['/user/profile'],
             ['/user/profile/edit'],
+            ['/user/profile/change-password'],
             ['/user/activity'],
+            ['/user/activity/today'],
+            ['/user/activity/this-week'],
+            ['/user/activity/this-month'],
+            ['/user/activity/this-year'],
             ['/user/reservations'],
         ];
     }
@@ -59,6 +64,7 @@ class UserControllerTest extends WebTestCase
         return [
             ['/catalog/books/lorem-ipsum/lorem-ipsum/toggle-favorite'],
             ['/catalog/books/lorem-ipsum/lorem-ipsum/toggle-favorite'],
+            ['/user/reservations/check'],
             ['/logout'],
         ];
     }

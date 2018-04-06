@@ -12,7 +12,7 @@ namespace App\Tests\Controller\reader;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class LibraryControllerTest extends WebTestCase
+class ReaderControllerTest extends WebTestCase
 {
     /** @var Client */
     private $client;

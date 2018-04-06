@@ -12,7 +12,7 @@ namespace App\Tests\Controller\librarian;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class LibraryControllerTest extends WebTestCase
+class LibrarianControllerTest extends WebTestCase
 {
     /** @var Client */
     private $client;
@@ -39,9 +39,12 @@ class LibraryControllerTest extends WebTestCase
     {
         return [
             ['/catalog/books/new'],
+            ['/catalog/lorem-ipsum/lorem-ipsum/edit'],
             ['/catalog/authors/new'],
+            ['/catalog/lorem-ipsum/edit'],
             ['/catalog/genres/new'],
             ['/reservations'],
+            ['readers'],
         ];
     }
 }

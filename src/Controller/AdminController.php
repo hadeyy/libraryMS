@@ -116,6 +116,7 @@ class AdminController extends AbstractController
      * @param User $user
      *
      * @return Response
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function showUser(User $user)
     {
