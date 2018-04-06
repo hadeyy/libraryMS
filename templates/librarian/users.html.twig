@@ -49,12 +49,14 @@
                             <a title="Go to profile" href="{{ path('show-user', {id: user.id}) }}">
                                 <span class="fa fa-user-o"></span>
                             </a>
-                            <a title="Change role" href="{{ path('edit-user', {id: user.id}) }}">
-                                <span class="fa fa-edit"></span>
-                            </a>
-                            <a title="Delete" data-toggle="modal" data-target="#remove{{ user.id }}">
-                                <span class="fa fa-trash-o"></span>
-                            </a>
+                            {% if user != app.user %}
+                                <a title="Change role" href="{{ path('edit-user', {id: user.id}) }}">
+                                    <span class="fa fa-edit"></span>
+                                </a>
+                                <a title="Delete" data-toggle="modal" data-target="#remove{{ user.id }}">
+                                    <span class="fa fa-trash-o"></span>
+                                </a>
+                            {% endif %}
 
                             <!-- User removal validation modal -->
                             <div class="modal" id="remove{{ user.id }}" tabindex="-1" role="dialog" aria-hidden="true">
