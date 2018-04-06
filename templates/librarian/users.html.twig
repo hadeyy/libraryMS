@@ -52,9 +52,15 @@
                             <a title="Change role" href="{{ path('edit-user', {id: user.id}) }}">
                                 <span class="fa fa-edit"></span>
                             </a>
-                            <a title="Delete" href="{{ path('delete-user', {id: user.id}) }}">
+                            <a title="Delete" data-toggle="modal" data-target="#remove{{ user.id }}">
                                 <span class="fa fa-trash-o"></span>
                             </a>
+
+                            <!-- User removal validation modal -->
+                            <div class="modal" id="remove{{ user.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                {% include 'admin/_removal_validation.html.twig' with {'user': user} %}
+                            </div>
+                            <!-- user removal validation modal end. -->
                         </td>
                     {% endif %}
                 </tr>
