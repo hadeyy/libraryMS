@@ -87,8 +87,6 @@ class BookReservationManager
         $reservation->setUpdatedAt(new \DateTime());
 
         if ($status === 'returned' || $status === 'canceled') {
-            0 >= $reservation->getFine() ?: $reservation->setFine(0);
-
             $book = $reservation->getBook();
             $this->updateBookAfterClosingReservation($book);
         }

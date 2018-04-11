@@ -23,10 +23,5 @@
             <span class="from">from</span> <span class="date">{{ reservation.dateFrom|date('d M Y') }}</span>
             <span class="to">to</span> <span class="date">{{ reservation.dateTo|date('d M Y') }}</span>
         </p>
-        {% if reservation.fine > 0 %}
-            <p class="fine">
-                <span>fine</span> <span class="amount">{{ reservation.fine }}</span>
-            </p>
-        {% endif %}
     </div>
 </div>

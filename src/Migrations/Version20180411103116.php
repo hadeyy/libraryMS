@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20180314144127 extends AbstractMigration
+class Version20180411103116 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
@@ -60,13 +60,13 @@ class Version20180314144127 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_FD9C07D9A33F7DF7 ON books_and_genres (bookId)');
         $this->addSql('DROP INDEX IDX_F8E9C5FE1717D737');
         $this->addSql('DROP INDEX IDX_F8E9C5FE16A2B381');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_book_reservations AS SELECT id, book_id, reader_id, date_from, date_to, status, fine, updated_at FROM app_book_reservations');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_book_reservations AS SELECT id, book_id, reader_id, date_from, date_to, status, updated_at FROM app_book_reservations');
         $this->addSql('DROP TABLE app_book_reservations');
         $this->addSql('CREATE TABLE app_book_reservations (id CHAR(36) NOT NULL COLLATE BINARY --(DC2Type:guid)
         , book_id CHAR(36) DEFAULT NULL COLLATE BINARY --(DC2Type:guid)
         , reader_id CHAR(36) DEFAULT NULL COLLATE BINARY --(DC2Type:guid)
-        , date_from DATETIME NOT NULL, date_to DATETIME NOT NULL, status VARCHAR(255) NOT NULL COLLATE BINARY, fine DOUBLE PRECISION NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_F8E9C5FE16A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_F8E9C5FE1717D737 FOREIGN KEY (reader_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
-        $this->addSql('INSERT INTO app_book_reservations (id, book_id, reader_id, date_from, date_to, status, fine, updated_at) SELECT id, book_id, reader_id, date_from, date_to, status, fine, updated_at FROM __temp__app_book_reservations');
+        , date_from DATETIME NOT NULL, date_to DATETIME NOT NULL, status VARCHAR(255) NOT NULL COLLATE BINARY, updated_at DATETIME NOT NULL, PRIMARY KEY(id), CONSTRAINT FK_F8E9C5FE16A2B381 FOREIGN KEY (book_id) REFERENCES app_books (id) NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_F8E9C5FE1717D737 FOREIGN KEY (reader_id) REFERENCES app_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('INSERT INTO app_book_reservations (id, book_id, reader_id, date_from, date_to, status, updated_at) SELECT id, book_id, reader_id, date_from, date_to, status, updated_at FROM __temp__app_book_reservations');
         $this->addSql('DROP TABLE __temp__app_book_reservations');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE1717D737 ON app_book_reservations (reader_id)');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE16A2B381 ON app_book_reservations (book_id)');
@@ -115,13 +115,13 @@ class Version20180314144127 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_E3EA0499A76ED395 ON app_activities (user_id)');
         $this->addSql('DROP INDEX IDX_F8E9C5FE16A2B381');
         $this->addSql('DROP INDEX IDX_F8E9C5FE1717D737');
-        $this->addSql('CREATE TEMPORARY TABLE __temp__app_book_reservations AS SELECT id, book_id, reader_id, date_from, date_to, status, fine, updated_at FROM app_book_reservations');
+        $this->addSql('CREATE TEMPORARY TABLE __temp__app_book_reservations AS SELECT id, book_id, reader_id, date_from, date_to, status, updated_at FROM app_book_reservations');
         $this->addSql('DROP TABLE app_book_reservations');
         $this->addSql('CREATE TABLE app_book_reservations (id CHAR(36) NOT NULL --(DC2Type:guid)
         , book_id CHAR(36) DEFAULT NULL --(DC2Type:guid)
         , reader_id CHAR(36) DEFAULT NULL --(DC2Type:guid)
-        , date_from DATETIME NOT NULL, date_to DATETIME NOT NULL, status VARCHAR(255) NOT NULL, fine DOUBLE PRECISION NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('INSERT INTO app_book_reservations (id, book_id, reader_id, date_from, date_to, status, fine, updated_at) SELECT id, book_id, reader_id, date_from, date_to, status, fine, updated_at FROM __temp__app_book_reservations');
+        , date_from DATETIME NOT NULL, date_to DATETIME NOT NULL, status VARCHAR(255) NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('INSERT INTO app_book_reservations (id, book_id, reader_id, date_from, date_to, status, updated_at) SELECT id, book_id, reader_id, date_from, date_to, status, updated_at FROM __temp__app_book_reservations');
         $this->addSql('DROP TABLE __temp__app_book_reservations');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE16A2B381 ON app_book_reservations (book_id)');
         $this->addSql('CREATE INDEX IDX_F8E9C5FE1717D737 ON app_book_reservations (reader_id)');

@@ -72,16 +72,6 @@ class BookReservation
     private $status;
 
     /**
-     * @ORM\Column(type="float")
-     * @Assert\NotBlank()
-     * @Assert\Type(
-     *     type="float",
-     *     message="The value {{ value }} is not a valid {{ type }}."
-     * )
-     */
-    private $fine;
-
-    /**
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank()
      * @Assert\Date()
@@ -100,7 +90,6 @@ class BookReservation
         $this->dateTo = $dateTo;
         $this->reader = $reader;
         $this->status = 'reserved';
-        $this->fine = 0;
         $this->updatedAt = new \DateTime();
     }
 
@@ -137,16 +126,6 @@ class BookReservation
     public function setStatus(string $status): void
     {
         $this->status = $status;
-    }
-
-    public function getFine(): float
-    {
-        return $this->fine;
-    }
-
-    public function setFine(float $fine): void
-    {
-        $this->fine = $fine;
     }
 
     public function getUpdatedAt(): \DateTime

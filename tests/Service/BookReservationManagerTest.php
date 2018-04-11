@@ -132,17 +132,12 @@ class BookReservationManagerTest extends WebTestCase
         $book->setReservedCopies(1);
         $reader = $this->createMock(User::class);
         $bookReservation = new BookReservation($book, $reader, new \DateTime(), new \DateTime());
-        $bookReservation->setFine(1.5);
 
         $reservationManager->updateStatus($bookReservation, $status);
 
         $this->assertEquals(
             $status, $bookReservation->getStatus(),
             'Status has been updated.'
-        );
-        $this->assertEquals(
-            0, $bookReservation->getFine(),
-            'Fine has been reset.'
         );
         $this->assertEquals(
             0, $book->getReservedCopies(),
