@@ -295,4 +295,60 @@ class BookReservationManagerTest extends WebTestCase
         $result = $reservationManager->checkIfIsAvailable($book, $user);
         $this->assertFalse($result);
     }
+
+    public function testFindNextReturnDate()
+    {
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
+        $dateFrom = new \DateTime();
+        $dateTo = new \DateTime();
+        $reservation = new BookReservation($book, $user, $dateFrom, $dateTo);
+
+        $reservationRepository = $this->createMock(BookReservationRepository::class);
+        $reservationRepository->expects($this->once())
+            ->method('findActiveReservationsByBook')
+            ->with($this->isInstanceOf(Book::class))
+            ->willReturn(array($reservation));
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager');
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->with($this->isType('string'))
+            ->willReturn($reservationRepository);
+
+        $reservationManager = new BookReservationManager($doctrine);
+        $result = $reservationManager->findNextReturnDate($book);
+
+        $this->assertEquals($dateTo, $result);
+    }
+
+    public function testFindWhoHasTheBook()
+    {
+        $book = $this->createMock(Book::class);
+        $user = $this->createMock(User::class);
+        $dateFrom = new \DateTime();
+        $dateTo = new \DateTime();
+        $reservation = new BookReservation($book, $user, $dateFrom, $dateTo);
+
+        $reservationRepository = $this->createMock(BookReservationRepository::class);
+        $reservationRepository->expects($this->once())
+            ->method('findActiveReservationsByBook')
+            ->with($this->isInstanceOf(Book::class))
+            ->willReturn(array($reservation));
+
+        $doctrine = $this->createMock(ManagerRegistry::class);
+        $doctrine->expects($this->once())
+            ->method('getManager');
+        $doctrine->expects($this->once())
+            ->method('getRepository')
+            ->with($this->isType('string'))
+            ->willReturn($reservationRepository);
+
+        $reservationManager = new BookReservationManager($doctrine);
+        $result = $reservationManager->findWhoHasTheBook($book);
+
+        $this->assertEquals($user, $result[0]);
+    }
 }

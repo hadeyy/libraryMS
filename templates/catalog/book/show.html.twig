@@ -16,17 +16,17 @@
             to access comment section.
         {% elseif null != commentForm %}
             {{ form_start(commentForm, {'attr': {'id': 'commentForm'}}) }}
-                <div class="row">
-                    {{ form_errors(commentForm.content) }}
+            <div class="row">
+                {{ form_errors(commentForm.content) }}
+            </div>
+            <div class="row">
+                <div class="col-md-10 d-flex align-items-center">
+                    {{ form_widget(commentForm.content) }}
                 </div>
-                <div class="row">
-                    <div class="col-md-10 d-flex align-items-center">
-                        {{ form_widget(commentForm.content) }}
-                    </div>
-                    <div class="col-md-2 d-flex align-items-center">
-                        <button id="commentBtn" type="submit" class="btn">POST</button>
-                    </div>
+                <div class="col-md-2 d-flex align-items-center">
+                    <button id="commentBtn" type="submit" class="btn">POST</button>
                 </div>
+            </div>
             {{ form_end(commentForm) }}
             {% for comment in book.comments %}
                 {% include 'catalog/book/_book_comment.html.twig' with {'comment': comment } %}
@@ -37,11 +37,27 @@
         <h2>Actions</h2>
         <hr>
         {% include 'catalog/book/_book_actions.html.twig' with {'book': book } %}
+
+        <br><br>
+        {% if nextAvailableDate is not null %}
+            <hr>
+            <b>Book will be available on:</b> {{ nextAvailableDate|date('d M Y') }}
+        {% endif %}
+
+        {% if (reservedBy is not empty) and is_granted('ROLE_LIBRARIAN') %}
+            <hr>
+            <h6>Currently reserved by:</h6>
+            <ul>
+                {% for user in reservedBy %}
+                    <li>{{ user }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 {% endblock %}
 {% block javascripts %}
     <script>
-        $(function() {
+        $(function () {
             $('#commentForm').find("textarea").val("");
         });
     </script>

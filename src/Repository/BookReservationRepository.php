@@ -128,4 +128,25 @@ class BookReservationRepository extends EntityRepository
             ->getResult();
     }
 
+    /**
+     * Finds all active book reservations by book and orders results by reservation end date.
+     *
+     * @param Book $book
+     *
+     * @return BookReservation[]|null
+     */
+    public function findActiveReservationsByBook(Book $book)
+    {
+        return $this->createQueryBuilder('br')
+            ->andwhere('br.book = :book')
+            ->andWhere('br.status IN (:statuses)')
+            ->setParameters([
+                'book' => $book,
+                'statuses' => ['reserved', 'reading'],
+            ])
+            ->orderBy('br.dateTo', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }

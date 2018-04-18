@@ -183,7 +183,6 @@ class CatalogController extends AbstractController
                     ],
                 ])
                 ->getForm();
-
             $ratingForm->handleRequest($request);
             if ($ratingForm->isSubmitted() && $ratingForm->isValid()) {
                 $formData = $ratingForm->getData();
@@ -191,6 +190,13 @@ class CatalogController extends AbstractController
 
                 $this->ratingManager->rate($book, $this->user, $value);
                 $this->activityManager->log($this->user, $book, 'Rated a book');
+            }
+
+            if (0 === $book->getAvailableCopies()) {
+                $nextAvailableDate = $this->bookReservationManager->findNextReturnDate($book);
+            }
+            if (0 < $book->getReservedCopies()) {
+                $reservedBy = $this->bookReservationManager->findWhoHasTheBook($book);
             }
 
             $isAvailable = $this->bookReservationManager->checkIfIsAvailable($book, $this->user);
@@ -203,7 +209,9 @@ class CatalogController extends AbstractController
                 'bookRating' => $this->ratingManager->getAverageRating($book),
                 'commentForm' => isset($commentForm) ? $commentForm->createView() : null,
                 'ratingForm' => isset($ratingForm) ? $ratingForm->createView() : null,
-                'isAvailable' => isset($isAvailable) ? $isAvailable : null,
+                'available' => isset($isAvailable) ? $isAvailable : null,
+                'nextAvailableDate' => isset($nextAvailableDate) ? $nextAvailableDate : null,
+                'reservedBy' => isset($reservedBy) ? $reservedBy : null,
             ]
         );
     }

@@ -172,6 +172,40 @@ class BookReservationManager
     }
 
     /**
+     * Finds the closest date a copy of the book will be returned at.
+     *
+     * @param Book $book
+     *
+     * @return \DateTime
+     */
+    public function findNextReturnDate(Book $book)
+    {
+        $reservations = $this->repository->findActiveReservationsByBook($book);
+        $nextReturn = $reservations[0];
+
+        return $nextReturn->getDateTo();
+    }
+
+    /**
+     * Finds all users that have an active reservation of the book.
+     *
+     * @param Book $book
+     *
+     * @return User[]
+     */
+    public function findWhoHasTheBook(Book $book)
+    {
+        $reservations = $this->repository->findActiveReservationsByBook($book);
+
+        $readers = [];
+        foreach ($reservations as $reservation) {
+            $readers[] = $reservation->getReader();
+        }
+
+        return $readers;
+    }
+
+    /**
      * Calls entity manager to make the instance managed and persistent and
      * to save all changes made to objects to the database.
      *
