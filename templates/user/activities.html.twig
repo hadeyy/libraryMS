@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity{% endblock %}
+{% block content %}
+    <div class="col-md-12 col-lg-12">
+        <div class="d-flex justify-content-between">
+            <h2>Recent activity</h2>
+            <div class="btn-group filter-group" role="group">
+                <a href="{{ path('show-user-activity-filtered-by-date', {filter: 'today'}) }}"
+                   class="btn {{ 'today' in app.request.uri ? 'active' }}">
+                    Today
+                </a>
+                <a href="{{ path('show-user-activity-filtered-by-date', {filter: 'this-week'}) }}"
+                   class="btn {{ 'week' in app.request.uri ? 'active' }}">
+                    This Week
+                </a>
+                <a href="{{ path('show-user-activity-filtered-by-date', {filter: 'this-month'}) }}"
+                   class="btn {{ 'month' in app.request.uri ? 'active' }}">
+                    This Month
+                </a>
+                <a href="{{ path('show-user-activity-filtered-by-date', {filter: 'this-year'}) }}"
+                   class="btn {{ 'year' in app.request.uri ? 'active' }}">
+                    This Year
+                </a>
+            </div>
+        </div>
+        <hr>
+        {% if activities|length == 0 %}
+            <h5>Nothing to display.</h5>
+        {% else %}
+            {% for activity in activities %}
+                {% include 'user/_activity.html.twig' with {'activity': activity } %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

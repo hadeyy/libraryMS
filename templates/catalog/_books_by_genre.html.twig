@@ -1,0 +1,26 @@
+{% extends 'catalog/index.html.twig' %}
+
+{% block catalogTitle %}
+    <a href="{{ path('show-catalog') }}"><span class="fa fa-angle-left"></span></a>
+    <span class="float-right">
+        <span class="filter-title">{{ genre.name }}</span>
+        <small> books</small>
+        {% if is_granted("ROLE_LIBRARIAN") %}
+            |
+            <a href="{{ path('edit-genre', {id: genre.id}) }}" title="Edit genre">
+                <span class="fa fa-edit"></span>
+            </a>
+            <a title="Delete genre">
+                <span class="fa fa-trash" data-toggle="modal" data-target="#removalModal"></span>
+            </a>
+        {% endif %}
+    </span>
+
+    {% if is_granted('ROLE_LIBRARIAN') %}
+        <!-- Genre removal validation modal -->
+        <div class="modal" id="removalModal" tabindex="-1" role="dialog" aria-hidden="true">
+            {% include 'catalog/genre/_removal_validation.html.twig' with {'genre': genre} %}
+        </div>
+        <!-- genre removal validation modal end. -->
+    {% endif %}
+{% endblock %}

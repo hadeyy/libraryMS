@@ -1,0 +1,29 @@
+<div id="userCard" class="card">
+    <div class="card-header">
+        Reader Card
+        {% if user == app.user %}
+            <div class="float-right">
+                <a href="{{ path('change-password') }}" class="new-btn" title="Change password">
+                    <button class="btn fa fa-key"></button>
+                </a>
+                <a href="{{ path('edit-profile') }}" class="new-btn">
+                    <button class="btn">EDIT</button>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="card-body row">
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-2">
+            <img id="userPhoto" src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="User photo">
+        </div>
+        <div id="readerInfo" class="col-xs-12 col-sm-12 col-md-9 col-lg-10">
+            <h5 class="card-title">
+                {{ user.firstName }} {{ user.lastName }}
+            </h5>
+            <h6>Email:</h6>
+            <p>{{ user.email }}</p>
+            <h6>Member since:</h6>
+            <p>{{ user.registeredAt|date('d.m.Y') }}</p>
+        </div>
+    </div>
+</div>

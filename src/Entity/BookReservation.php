@@ -10,119 +10,131 @@ namespace App\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Table(name="app_book_reservations")
+ * @ORM\Entity(repositoryClass="App\Repository\BookReservationRepository")
  */
 class BookReservation
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Book", inversedBy="reservations")
      * @ORM\JoinColumn(name="book_id", referencedColumnName="id")
+     * @Assert\NotBlank()
+     * @Assert\Valid
      */
     private $book;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank()
+     * @Assert\Date()
+     * @Assert\GreaterThanOrEqual(
+     *     value="today",
+     *     message="Earliest book reservation start date can be today."
+     * )
      */
     private $dateFrom;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank()
+     * @Assert\Date()
+     * @Assert\Expression(
+     *     "this.getDateFrom() < value",
+     *     message="End date cannot be before start date!"
+     * )
      */
     private $dateTo;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="bookReservations")
      * @ORM\JoinColumn(name="reader_id", referencedColumnName="id")
+     * @Assert\NotBlank()
+     * @Assert\Valid
      */
     private $reader;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      */
     private $status;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="datetime")
+     * @Assert\NotBlank()
+     * @Assert\Date()
      */
-    private $fine;
+    private $updatedAt;
+
+    public function __construct(
+        Book $book,
+        User $reader,
+        \DateTime $dateFrom,
+        \DateTime $dateTo
+    ) {
+        $this->id = Uuid::uuid4();
+        $this->book = $book;
+        $this->dateFrom = $dateFrom;
+        $this->dateTo = $dateTo;
+        $this->reader = $reader;
+        $this->status = 'reserved';
+        $this->updatedAt = new \DateTime();
+    }
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getBook()
+    public function getBook(): Book
     {
         return $this->book;
     }
 
-    public function setBook($book): void
-    {
-        $this->book = $book;
-    }
-
-    public function getDateFrom()
+    public function getDateFrom(): \DateTime
     {
         return $this->dateFrom;
     }
 
-    public function setDateFrom($dateFrom): void
-    {
-        $this->dateFrom = $dateFrom;
-    }
-
-    public function getDateTo()
+    public function getDateTo(): \DateTime
     {
         return $this->dateTo;
     }
 
-    public function setDateTo($dateTo): void
-    {
-        $this->dateTo = $dateTo;
-    }
-
-    public function getReader()
+    public function getReader(): User
     {
         return $this->reader;
     }
 
-    public function setReader($reader): void
-    {
-        $this->reader = $reader;
-    }
-
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function setStatus($status): void
+    public function setStatus(string $status): void
     {
         $this->status = $status;
     }
 
-    public function getFine()
+    public function getUpdatedAt(): \DateTime
     {
-        return $this->fine;
+        return $this->updatedAt;
     }
 
-    public function setFine($fine): void
+    public function setUpdatedAt(\DateTime $updatedAt): void
     {
-        $this->fine = $fine;
+        $this->updatedAt = $updatedAt;
     }
-
 }

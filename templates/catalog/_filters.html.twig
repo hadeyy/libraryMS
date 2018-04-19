@@ -1,0 +1,48 @@
+<div id="filters">
+    <div id="authors">
+        <h2>
+            Authors
+            {% if is_granted("ROLE_LIBRARIAN") %}
+                <a href="{{ path('new-author') }}" id="newAuthorLink" class="new-btn">
+                    <button class="btn float-right"><span class="plus">+</span>NEW</button>
+                </a>
+            {% endif %}
+        </h2>
+        <hr>
+        <div class="filter-list">
+            <ul id="authorList">
+                {% for author in authors %}
+                    <li class="d-flex justify-content-between align-items-center">
+                        <a href="{{ path('show-books-by-author', {slug: author.slug}) }}">
+                            {{ author.firstName }} {{ author.lastName }}
+                        </a>
+                        <span class="badge badge-info badge-pill">{{ author.books|length }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div id="genres">
+        <h2>
+            Genres
+            {% if is_granted("ROLE_LIBRARIAN") %}
+                <a href="{{ path('new-genre') }}" id="newGenreLink" class="new-btn">
+                    <button class="btn float-right"><span class="plus">+</span>NEW</button>
+                </a>
+            {% endif %}
+        </h2>
+        <hr>
+        <div class="filter-list">
+            <ul id="genreList">
+                {% for genre in genres %}
+                    <li class="d-flex justify-content-between align-items-center">
+                        <a href="{{ path('show-books-by-genre', {slug: genre.slug}) }}">
+                            {{ genre.name|length > 35 ? genre.name|slice(0,35) ~ '...' : genre.name }}
+                        </a>
+                        <span class="badge badge-pill">{{ genre.books|length }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

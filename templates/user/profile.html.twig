@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile{% endblock %}
+{% block content %}
+    <div class="col-md-12 col-lg-6">
+        {% include 'user/_reader_card.html.twig' with {'user': user } %}
+        <br>
+
+        <h2>Favorites</h2>
+        <hr>
+        {% if favorites|length == 0 %}
+            <p class="no-data">Nothing to display.</p>
+        {% else %}
+            <div class="row">
+                {% for book in favorites %}
+                    {% include 'user/_favorite_book.html.twig' with {'book': book } %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-12 col-lg-6">
+        <h2>Currently reading</h2>
+        <hr>
+        {% if activeReservations|length == 0 %}
+            <p class="no-data">Nothing to display.</p>
+        {% else %}
+            <div class="row">
+                {% for reservation in activeReservations %}
+                    {% include 'user/_featured_book.html.twig' with {'book': reservation.book } %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <br>
+
+        <h2>Reading history</h2>
+        <hr>
+        {% if closedReservations|length == 0 %}
+            <p class="no-data">Nothing to display.</p>
+        {% else %}
+            <div class="row">
+                {% for reservation in closedReservations %}
+                    {% include 'user/_featured_book.html.twig' with {'book': reservation.book } %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

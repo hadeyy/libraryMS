@@ -9,3 +9,16 @@
 ###> symfony/web-server-bundle ###
 .web-server-pid
 ###< symfony/web-server-bundle ###
+
+###> symfony/webpack-encore-pack ###
+/node_modules/
+/public/build/
+###< symfony/webpack-encore-pack ###
+
+/public/uploads/
+
+###> symfony/phpunit-bridge ###
+.phpunit
+/phpunit.xml
+/reports
+###< symfony/phpunit-bridge ###

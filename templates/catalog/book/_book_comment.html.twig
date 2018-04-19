@@ -1,0 +1,17 @@
+<div class="comment card">
+    <div class="row card-body">
+        <div class="col-md-2">
+            <img src="{{ asset('uploads/photos/') ~ comment.author.photo }}" alt="User photo">
+            <h5 class="card-title username">{{ comment.author.username }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted published-at">{{ comment.publishedAt|date('d-m-Y H:i') }}</h6>
+        </div>
+        <div class="col-md-10 card-text comment-content">{{ comment.content }}</div>
+    </div>
+    {% if is_granted("ROLE_ADMIN") %}
+        <div class="comment-trash">
+            <a title="Delete" href="{{ path('delete-comment', {id: comment.id, bookSlug: comment.book.slug}) }}">
+                <span class="fa fa-trash-o"></span>
+            </a>
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Edit profile
+{% endblock %}
+{% block content %}
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+        {{ form_start(form, {'attr': {'class': 'wide-form'}}) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.lastName) }}
+        {{ form_row(form.username) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.photo, {'required': false}) }}
+        <button type="submit">SUBMIT</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

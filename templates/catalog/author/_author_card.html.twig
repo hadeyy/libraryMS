@@ -1,0 +1,37 @@
+<div id="authorCard" class="card">
+    <div class="card-body">
+        <div id="authorInfo">
+            {% if author.portrait is defined %}
+                <img id="authorPhoto" src="{{ asset('uploads/portraits/' ~ author.portrait) }}" alt="">
+            {% endif %}
+            <h5 class="card-title">
+                <span id="authorName">{{ author.firstName }} {{ author.lastName }}</span>
+            </h5>
+            <h6 class="card-subtitle mb-2">
+                <small>from</small>
+                <span id="authorCountry">{{ author.country }}</span>
+            </h6>
+        </div>
+    </div>
+    {% if is_granted('ROLE_LIBRARIAN') %}
+        <div id="authorActions">
+            <div id="edit">
+                <a href="{{ path('edit-author', {slug: author.slug}) }}">
+                    <span class="fa fa-edit" title="Edit"></span>
+                </a>
+            </div>
+            <div id="delete">
+                <!-- Author removal validation modal trigger -->
+                <a data-toggle="modal" data-target="#validationModal">
+                    <span class="fa fa-trash" title="Delete"></span>
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Author removal validation modal -->
+<div class="modal" id="validationModal" tabindex="-1" role="dialog" aria-hidden="true">
+    {% include 'catalog/author/_removal_validation.html.twig' with {'author': author} %}
+</div>
+<!-- author removal validation modal end. -->

@@ -1,0 +1,15 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-body">
+            <h2>
+                <span class="all-caps">"{{ book.title }}"</span> by
+                <span class="capital">{{ book.author }}</span>
+            </h2>
+            <hr>
+            {{ form_start(ratingForm) }}
+            {{ form_widget(ratingForm) }}
+            <button type="submit" class="book-form-btn">SUBMIT</button>
+            {{ form_end(ratingForm) }}
+        </div>
+    </div>
+</div>

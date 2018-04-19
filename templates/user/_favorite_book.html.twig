@@ -1,0 +1,15 @@
+<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+    <div class="flip-card-container user-favorite">
+        <div class="flip-card">
+            <div class="face front-face d-flex justify-content-center">
+                <img src="{{ asset('uploads/covers/' ~ book.cover) }}"/>
+            </div>
+            <div class="face back-face">
+                <a href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
+                    book page
+                    <span class="fa fa-angle-right"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalog{% endblock %}
+{% block content %}
+    <div class="col-xs-12 col-sm-12 col-md-9">
+        <h2>
+            {% block catalogTitle %}
+                All books
+                {% if is_granted("ROLE_LIBRARIAN") %}
+                    <a href="{{ path('new-book') }}" id="newBookLink" class="new-btn">
+                        <button class="btn float-right"><span class="plus">+</span>NEW</button>
+                    </a>
+                {% endif %}
+            {% endblock %}
+        </h2>
+        <hr>
+        <div class="row book-list">
+            {% if books|length > 0 %}
+                {% for book in books %}
+                    {% include 'catalog/_book_preview.html.twig' with {'book': book } %}
+                {% endfor %}
+            {% else %}
+                <h4 class="no-data">Nothing to display.</h4>
+            {% endif %}
+        </div>
+
+        <!-- Page navigation -->
+        {% if maxPages > 1 %}
+            <ul class="row d-flex justify-content-center align-items-center pagination">
+                <!-- Previous link -->
+                <a href="
+                    {% if filter == 'author' %}
+                        {{ path('show-books-by-author', {page: currentPage-1 < 1 ? 1 : currentPage-1, slug: author.slug}) }}
+                    {% elseif filter == 'genre' %}
+                        {{ path('show-books-by-genre', {page: currentPage-1 < 1 ? 1 : currentPage-1, slug: genre.slug}) }}
+                    {% else %}
+                        {{ path('show-catalog', {page: currentPage-1 < 1 ? 1 : currentPage-1}) }}
+                    {% endif %}
+                    "
+                   class="d-flex align-items-center {{ currentPage == 1 ? 'disabled' }}">
+                    <li>
+                        <span class="fa fa-angle-left"></span>
+                    </li>
+                </a>
+
+                <!-- Link by page number -->
+                {% for i in 1..maxPages %}
+                    <a href="
+                        {% if filter == 'author' %}
+                            {{ path('show-books-by-author', {page: i, slug: author.slug}) }}
+                        {% elseif filter == 'genre' %}
+                            {{ path('show-books-by-genre', {page: i, slug: genre.slug}) }}
+                        {% else %}
+                            {{ path('show-catalog', {page: i}) }}
+                        {% endif %}
+                        "
+                       class="d-flex align-items-center {{ currentPage == i ? 'active disabled' }}">
+                        <li>
+                            {{ i }}
+                        </li>
+                    </a>
+                {% endfor %}
+
+                <!-- Next link -->
+                <a href="
+                    {% if filter == 'author' %}
+                        {{ path('show-books-by-author', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, slug: author.slug}) }}
+                    {% elseif filter == 'genre' %}
+                        {{ path('show-books-by-genre', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage, slug: genre.slug}) }}
+                    {% else %}
+                        {{ path('show-catalog', {page: currentPage+1 <= maxPages ? currentPage+1 : currentPage}) }}
+                    {% endif %}
+                    "
+                   class="d-flex align-items-center {{ currentPage == maxPages ? 'disabled' }}">
+                    <li>
+                        <span class="fa fa-angle-right"></span>
+                    </li>
+                </a>
+            </ul>
+        {% endif %}
+        <!-- page navigation end. -->
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-3">
+        {% include 'catalog/_filters.html.twig' with {'authors': authors, 'genres': genres } %}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $(function () {
+            let activeModal, currentIndex, currentModal, nextModal, prevModal;
+            // all modals in current page
+            let modals = $('.preview-modal');
+            let firstModal = $(modals[0]);
+            let lastModal = $(modals[modals.length - 1]);
+
+            // disable 'previous' navigation for first and 'next' for last modals
+            firstModal.find("span.prev").css("display", "none");
+            lastModal.find("span.next").css("display", "none");
+
+            <!-- Navigation to next -->
+            $('span.next').on("click", function () {
+                findCurrentModal($(this));
+                nextModal = $(modals[currentIndex + 1]);
+
+                currentModal.modal("hide");
+                nextModal.modal("show");
+            });
+
+            <!-- Navigation to previous -->
+            $('span.prev').on("click", function () {
+                findCurrentModal($(this));
+                prevModal = $(modals[currentIndex - 1]);
+
+                currentModal.modal("hide");
+                prevModal.modal("show");
+            });
+
+            function findCurrentModal(trigger) {
+                activeModal = trigger[0].parentNode.parentNode.parentNode;
+                currentIndex = jQuery.inArray(activeModal, modals);
+                currentModal = $(modals[currentIndex]);
+            }
+        });
+    </script>
+{% endblock %}

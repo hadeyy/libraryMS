@@ -1,12 +1,17 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    locale: 'en'
+    app.user_photo_dir: '%kernel.project_dir%/public/uploads/photos'
+    app.book_cover_dir: '%kernel.project_dir%/public/uploads/covers'
+    app.author_portrait_dir: '%kernel.project_dir%/public/uploads/portraits'
+    app.default_registration_role: 'ROLE_READER'
 
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: false      # Automatically injects dependencies in your services.
+        autoconfigure: false # Automatically registers your services as commands, event subscribers, etc.
         public: false       # Allows optimizing the container by removing unused services; this also means
                             # fetching services directly from the container via $container->get() won't work.
                             # The best practice is to be explicit about your dependencies anyway.
@@ -23,5 +28,150 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    App\Controller\DefaultController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.book_manager'
+            - '@app.activity_manager'
+    App\Controller\RegistrationController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.user_manager'
+            - '@app.password_manager'
+            - '@app.file_manager'
+            - '%app.user_photo_dir%'
+            - '%app.default_registration_role%'
+    App\Controller\SecurityController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@security.authentication_utils'
+    App\Controller\CatalogController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.author_manager'
+            - '@app.genre_manager'
+            - '@app.catalog_manager'
+            - '@app.comment_manager'
+            - '@app.activity_manager'
+            - '@app.rating_manager'
+            - '@app.book_reservation_manager'
+            - '@security.token_storage'
+    App\Controller\UserController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.user_manager'
+            - '@security.token_storage'
+            - '@app.activity_manager'
+            - '@app.book_reservation_manager'
+            - '@app.password_manager'
+    App\Controller\ReaderController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.book_reservation_manager'
+            - '@app.book_manager'
+            - '@app.activity_manager'
+            - '@security.token_storage'
+    App\Controller\LibrarianController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.book_manager'
+            - '@app.book_reservation_manager'
+            - '@app.activity_manager'
+            - '@app.author_manager'
+            - '@app.genre_manager'
+            - '@app.user_manager'
+            - '@security.token_storage'
+    App\Controller\AdminController:
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@app.app_manager'
+            - '@app.user_manager'
+            - '@app.book_reservation_manager'
+            - '@app.activity_manager'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    app.user_manager:
+        class: App\Service\UserManager
+        arguments:
+            - '@doctrine'
+            - '@app.file_manager'
+            - '@app.activity_manager'
+            - '%app.user_photo_dir%'
+    app.file_manager:
+        class: App\Service\FileManager
+    app.password_manager:
+        class: App\Service\PasswordManager
+        arguments:
+            - '@security.user_password_encoder.generic'
+            - '@doctrine'
+    app.activity_manager:
+       class: App\Service\ActivityManager
+       arguments:
+            - '@doctrine'
+    app.author_manager:
+        class: App\Service\AuthorManager
+        arguments:
+            - '@doctrine'
+            - '@app.file_manager'
+            - '%app.author_portrait_dir%'
+    app.genre_manager:
+        class: App\Service\GenreManager
+        arguments:
+            - '@doctrine'
+    app.comment_manager:
+        class: App\Service\CommentManager
+        arguments:
+            - '@doctrine'
+    app.rating_manager:
+        class: App\Service\RatingManager
+        arguments:
+            - '@doctrine'
+    app.book_manager:
+        class: App\Service\BookManager
+        arguments:
+            - '@doctrine'
+            - '@app.file_manager'
+            - '%app.book_cover_dir%'
+    app.book_reservation_manager:
+        class: App\Service\BookReservationManager
+        arguments:
+            - '@doctrine'
+    app.app_manager:
+        class: App\Service\AppManager
+        arguments:
+            - '@doctrine'
+            - '@app.file_manager'
+            - '@app.user_manager'
+    app.catalog_manager:
+        class: App\Service\CatalogManager
+        arguments:
+            - '@doctrine'
+
+    lipsum:
+        class: joshtronic\LoremIpsum
+
+    App\DataFixtures\:
+        resource: '../src/DataFixtures'
+        tags: ['doctrine.fixture.orm']
+
+    App\DataFixtures\ActivityFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
+    App\DataFixtures\AuthorFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
+    App\DataFixtures\BookFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
+    App\DataFixtures\CommentFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@lipsum'
+    App\DataFixtures\UserFixtures:
+        tags: ['doctrine.fixture.orm']
+        arguments:
+            - '@app.password_manager'

@@ -1,0 +1,15 @@
+<div class="portlet reservation-card" id="{{ reservation.id }}" draggable="true">
+    <div class="portlet-header">
+        <span class="reader">{{ reservation.reader }}</span>
+    </div>
+    <div class="portlet-content">
+        <p class="book-title">{{ reservation.book.title }}</p>
+        <p>
+            <small class="by">by</small> <span class="book-author">{{ reservation.book.author }}</span>
+        </p>
+        <p class="dates">
+            <span class="from">from</span> <span class="date">{{ reservation.dateFrom|date('d M Y') }}</span>
+            <span class="to">to</span> <span class="date">{{ reservation.dateTo|date('d M Y') }}</span>
+        </p>
+    </div>
+</div>

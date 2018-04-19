@@ -1,0 +1,910 @@
+// color palette
+$palette-dark: #373737;
+$palette-medium-dark: #C0B283;
+$palette-medium-light: #DCD0C0;
+$palette-light: #F4F4F4;
+
+body {
+  background-color: $palette-light;
+}
+
+.container {
+  margin: 2vh 5vw;
+  max-width: 90vw !important;
+}
+
+nav.navbar {
+  background-color: $palette-dark;
+}
+
+.navbar #brandName {
+  color: $palette-medium-dark;
+}
+
+.navbar-nav a {
+  color: $palette-medium-light;
+}
+
+.dropdown-item {
+  color: $palette-medium-light;
+}
+
+#profileMenu {
+  background-color: $palette-dark;
+  left: unset;
+  right: 0;
+  border: 1px solid $palette-medium-dark;
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+button#profileMenu {
+  color: $palette-medium-light;
+}
+
+a #loginButton, a #registerButton {
+  background-color: $palette-dark;
+  border: 1px solid $palette-medium-dark;
+  &:hover {
+    background-color: $palette-medium-dark;
+    cursor: pointer;
+  }
+}
+
+#registerButton {
+  margin-left: 10px;
+}
+
+a#logout button {
+  width: 80%;
+  margin: 0 10%;
+}
+
+form {
+  padding-top: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+input[type=text], input[type=email], input[type=number], input[type=password], select {
+  padding: 5px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  background-color: #f8f8f8;
+}
+
+input:focus {
+  border: 3px solid $palette-medium-dark;
+  outline: none;
+}
+
+label {
+  display: block;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 1px;
+  padding: 0;
+}
+
+//label:after {
+//  content: ':';
+//}
+
+textarea {
+  width: 50%;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+}
+
+select {
+  border: none;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+}
+
+button[type=submit] {
+  width: 50%;
+  background-color: rgba($palette-dark, 1);
+  border: none;
+  color: $palette-medium-dark;
+  text-transform: uppercase;
+  font-weight: bold;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.plus {
+  font-weight: bold;
+  color: $palette-medium-dark;
+  padding-right: 5px;
+}
+
+#userCard, #bookCard, #authorCard {
+  border: 1px solid $palette-medium-dark;
+  color: $palette-dark;
+  background-color: rgba($palette-medium-light, 0.1);
+}
+
+#userCard h6 {
+  margin-bottom: 0;
+}
+
+#userPhoto, #bookPhoto, #authorPhoto {
+  max-width: 100%;
+}
+
+#bookCoverEnlarged {
+  height: 95vh;
+}
+
+.book-preview {
+  margin-bottom: 25px;
+}
+
+.preview-button {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  vertical-align: top;
+  width: 95%;
+  border: none;
+  position: relative;
+}
+
+.preview-cover {
+  max-width: 100%;
+  max-height: 100%;
+  box-shadow: 6px 3px gray;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.preview-modal .modal-body {
+  height: 355px;
+}
+.preview-modal-cover {
+  max-width: 100%;
+  max-height: 300px;
+}
+
+.preview-title {
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  font-weight: 700;
+  overflow-wrap: break-word;
+  margin-right: 15px;
+}
+
+.preview-author {
+  text-transform: capitalize;
+  font-weight: 400;
+}
+
+.preview-genre {
+  font-variant-caps: all-small-caps;
+  padding-right: 15px;
+  margin-right: 15px;
+}
+
+.preview-annotation {
+  text-align: justify;
+  overflow-wrap: break-word;
+  margin-right: 15px;
+}
+
+.preview-link {
+  color: $palette-dark;
+  font-weight: bold;
+  &:hover {
+    color: inherit;
+  }
+}
+
+#filters a {
+  color: $palette-dark;
+}
+
+#filters ul {
+  padding-left: 0;
+}
+
+#filters li {
+  min-width: 300px;
+  font-variant-caps: all-small-caps;
+  padding: 0 5px;
+  list-style: none;
+  margin-bottom: 5px;
+  &:hover {
+    border: 2px $palette-medium-dark;
+    border-style: none solid;
+    background-color: $palette-medium-light;
+  }
+}
+
+hr {
+  border: 1px solid $palette-medium-dark;
+  margin-top: 5px;
+  width: 100%;
+}
+
+span.badge {
+  background-color: $palette-medium-dark;
+  color: $palette-light;
+}
+
+.new-btn button {
+  background-color: $palette-light;
+  border: 1px solid $palette-dark;
+  color: $palette-dark;
+  font-weight: bold;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.book-form-col > * {
+  width: 100% !important;
+}
+
+.book-form-btn {
+  width: 100% !important;
+}
+
+option {
+  text-transform: capitalize;
+}
+
+#formGenreList {
+  height: 350px;
+  overflow-y: scroll;
+  background-color: #f1f1f1;
+}
+
+.genre-row {
+  text-align: left;
+  input {
+    margin-top: 2px;
+    margin-right: 5px !important;
+  }
+  label {
+    font-weight: unset;
+    font-variant-caps: all-small-caps;
+  }
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: $palette-light;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  background-color: $palette-light;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $palette-medium-dark;
+}
+
+span.fa-bars {
+  color: $palette-medium-light;
+}
+
+.left-side {
+  font-weight: bold;
+  font-family: monospace;
+  text-transform: uppercase;
+  text-align: right;
+  padding-right: 10px;
+  &:after {
+    content: ':';
+  }
+}
+
+.right-side {
+  font-family: monospace;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+span.genre {
+  margin-right: 10px;
+}
+
+h4 a {
+  color: $palette-dark;
+  &:hover {
+    color: $palette-medium-dark;
+  }
+}
+
+span#bookTitle,
+span#authorName {
+  font-family: monospace;
+  text-transform: uppercase;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+span#bookAuthor,
+span#authorCountry {
+  text-transform: capitalize;
+  font-family: sans-serif;
+  font-weight: 300;
+}
+
+div#bookAnnotation {
+  text-align: justify;
+}
+
+a.book-action button, #commentBtn {
+  width: 100%;
+  margin-bottom: 3px;
+  background-color: $palette-medium-dark;
+  color: $palette-dark;
+  font-weight: bold;
+  &:hover {
+    cursor: pointer;
+  }
+  &:disabled {
+    cursor: not-allowed;
+  }
+  &#loginBtn {
+    width: unset;
+  }
+}
+
+#commentBtn {
+  margin: 0;
+}
+
+form#commentForm {
+  width: 100%;
+  margin-bottom: 35px;
+  & textarea {
+    width: 100%;
+  }
+}
+
+div.comment {
+  margin-top: 10px;
+  position: relative;
+}
+
+#loginForm input,
+#loginForm button,
+#registrationForm input,
+#registrationForm button,
+#loginForm,
+#registrationForm,
+#authorForm input,
+#authorForm button,
+#genreForm input,
+#genreForm button,
+.wide-form input,
+.wide-form button {
+  width: 100%;
+}
+
+span.fa {
+  color: $palette-medium-dark;
+}
+
+.filter-title {
+  text-transform: uppercase;
+}
+
+.no-data {
+  margin-left: 20px;
+  color: rgba($palette-dark, 0.8);
+}
+
+div.author-book {
+  max-height: 150px;
+  & div.card-body {
+    padding: 5px 0;
+    position: relative;
+  }
+  & div.row div {
+    max-height: 180px
+  }
+}
+
+div img.author-book-cover {
+  max-height: 100%;
+}
+
+a.author-book-link {
+  color: $palette-medium-dark;
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+}
+
+div#authorCard {
+  position: relative;
+  text-align: center;
+  width: 300px;
+}
+
+a#editAuthorLink {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.author-book-title,
+.author-book-info {
+  font-family: monospace;
+  text-transform: uppercase;
+}
+
+.author-book-info {
+  font-weight: lighter;
+}
+
+.author-book-genres {
+  font-variant-caps: all-small-caps;
+}
+
+.flip-card-container {
+  position: relative;
+  margin: 10px auto;
+  width: 200px;
+  height: 250px;
+  z-index: 1;
+  &:hover .flip-card {
+    transform: rotateY(-180deg);
+  }
+}
+
+.flip-card {
+  width: 90%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: all 1.0s linear;
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  &.front-face {
+    & img {
+      box-shadow: 6px 3px gray;
+    }
+    & .favorite-tag {
+      right: 8px;
+    }
+  }
+  &.back-face {
+    display: block;
+    transform: rotateY(-180deg);
+    box-sizing: border-box;
+    border-right-color: $palette-medium-light;
+    text-align: center;
+    background-color: $palette-medium-dark;
+    color: $palette-light;
+    padding: 40% 10px 10px;
+    & h5 {
+      font-variant-caps: all-small-caps;
+    }
+    & h6 {
+      text-transform: capitalize;
+      & small {
+        text-transform: lowercase;
+      }
+    }
+    & a {
+      color: $palette-dark;
+      & span.fa {
+        color: $palette-dark;
+      }
+    }
+  }
+  & img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+.user-favorite {
+  width: 150px !important;
+  height: 200px !important;
+  & img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  & .flip-card {
+    max-width: 90% !important;
+  }
+  & .back-face {
+    padding-top: 60% !important;
+  }
+}
+
+.profile-featured-book {
+  border: 1px solid $palette-medium-dark;
+  border-radius: 10px;
+  height: 100px;
+  font-family: monospace;
+  margin: 5px;
+  max-width: 45%;
+  & div.row {
+    height: 100%;
+  }
+  & div.row div img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  & span.title {
+    text-transform: uppercase;
+  }
+  & span.author {
+    text-transform: capitalize;
+  }
+  & span.fa {
+    font-size: 2em;
+  }
+}
+
+.author-featured-book {
+  border: 1px solid $palette-medium-dark;
+  border-radius: 10px;
+  margin: 5px;
+  height: 150px;
+  & div.row {
+    height: 100%;
+  }
+  & div.row div img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  & span.fa {
+    font-size: 2em;
+  }
+}
+
+.all-caps {
+  text-transform: uppercase;
+}
+
+.capital {
+  text-transform: capitalize;
+}
+
+.drop-column {
+  padding-bottom: 10px;
+  height: 100%;
+}
+
+.portlet {
+  position: relative;
+}
+
+.portlet-header {
+  position: relative;
+  padding: 0 10px;
+  margin-bottom: 5px;
+  background-color: rgba($palette-medium-dark, 0.5);
+  &:hover {
+    cursor: pointer;
+    background-color: $palette-medium-light;
+  }
+  & .book-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+  }
+  & a {
+    color: $palette-dark;
+  }
+}
+
+.portlet-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -8px;
+}
+
+.portlet-content {
+  padding: 0 10px;
+  & p {
+    margin: 0;
+  }
+  & .book-title {
+    text-transform: uppercase;
+    font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+  }
+  & .book-author {
+    text-transform: capitalize;
+  }
+  & .from:after,
+  & .to:after,
+  & .fine span:after {
+    content: ":";
+  }
+  & .dates, & .date, & .fine {
+    text-transform: uppercase;
+    font-family: monospace;
+  }
+  & .dates {
+    margin: 10px 0 0 0;
+  }
+  & .by, & .from, & .to, & .fine {
+    font-weight: bold;
+  }
+  & .fine .amount {
+    color: darkred;
+    &:after {
+      content: ' \20AC';
+    }
+  }
+}
+
+.portlet-placeholder {
+  border: 2px dashed $palette-medium-light;
+  margin: 0 1em 1em 0;
+  height: 50px;
+  width: 100%;
+}
+
+.reservation-card, .ui-widget {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid $palette-medium-dark !important;
+  border-radius: 5px;
+  background-color: $palette-light;
+  &:active {
+    background-color: $palette-medium-light;
+  }
+  & .reader {
+  }
+}
+
+#bookCard > div {
+  position: relative;
+}
+
+a#toggleFavorite {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 1.75rem;
+}
+
+.row {
+  margin-left: 0;
+}
+
+.favorite-tag {
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: -2px;
+  right: -2px;
+  border: 30px solid $palette-medium-dark;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  & span {
+    color: $palette-light;
+    position: absolute;
+    top: -20px;
+    right: -20px;
+  }
+}
+
+.activity-card {
+  margin: 10px 5px;
+  & a {
+    color: $palette-medium-dark;
+    font-weight: bold;
+  }
+}
+a.activity-book-title {
+  text-transform: uppercase;
+}
+a.activity-book-author {
+  text-transform: capitalize;
+}
+
+div.activity-card {
+  position: relative;
+}
+
+.btn:focus {
+  box-shadow: none;
+}
+
+div.preview-modal .modal-dialog {
+  margin-top: 10%;
+}
+
+div.show div.modal-body {
+  position: relative;
+}
+span.prev, span.next {
+  position: absolute;
+  top: 35%;
+  font-size: 100px;
+  &:hover {
+    cursor: pointer;
+  }
+  &:active {
+    color: $palette-medium-light;
+  }
+}
+span.prev {
+  left: -50px;
+}
+span.next {
+  right: -50px;
+}
+
+.pagination {
+  margin: 0;
+  border-top: 2px solid $palette-medium-dark;
+  border-bottom: 2px solid $palette-medium-dark;
+  background-color: $palette-dark;
+  height: 50px;
+  & a {
+    color: $palette-medium-dark;
+  }
+  & li {
+    list-style: none;
+    display: inline-block;
+    padding: 0 1em;
+    font-size: 1em;
+    font-weight: bold;
+    &:hover {
+      background-color: rgba($palette-medium-light, 0.1);
+    }
+  }
+  & .active {
+    background-color: rgba($palette-medium-light, 0.2);
+  }
+  & .disabled {
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
+#authors, #genres {
+  max-height: 45vh;
+  & .filter-list {
+    max-height: 35vh;
+    overflow: auto;
+  }
+}
+#authors {
+  margin-bottom: 20px;
+}
+#filters {
+  position: fixed;
+}
+
+#backLink,
+#reservationTitle {
+  display: inline-block;
+}
+#reservationTitle {
+  width: 94%;
+}
+#backLink {
+  width: 5%;
+  font-size: 2rem;
+}
+
+.featured-activity {
+  border: 1px solid $palette-medium-light;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+  text-transform: lowercase;
+  & .username {
+    font-variant-caps: all-small-caps;
+  }
+  & a {
+    text-transform: uppercase;
+  }
+  & a {
+    color: $palette-medium-dark;
+  }
+  & .time {
+    color: rgba($palette-dark, 0.75);
+    font-size: 0.75rem;
+  }
+}
+
+button.remove-validation-btn {
+  margin: 0;
+  width: 49%;
+  height: 40px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+div.cover-col {
+  padding: 0;
+}
+
+.table {
+  width: 100%;
+  tr:hover {
+    background-color: $palette-medium-light;
+  }
+  thead {
+    background-color: $palette-medium-dark;
+    color: $palette-dark;
+    & tr:hover {
+      background-color: $palette-medium-dark;
+    }
+  }
+  th, td {
+    padding: 5px 15px;
+  }
+}
+
+#authorActions {
+  position: absolute;
+  top: 0;
+  right: -50px;
+  width: 50px;
+  font-size: 1.5em;
+  & a:hover {
+    cursor: pointer;
+  }
+}
+
+div.comment img {
+  max-width: 100%;
+}
+
+div.comment-trash {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.cancel-reservation {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  & span {
+    color: darkred;
+  }
+}
+
+.filter-group a {
+  background-color: $palette-dark;
+  color: $palette-medium-dark !important;
+  font-weight: bold;
+  cursor: pointer;
+  &:hover {
+    background-color: $palette-medium-light;
+  }
+  &.active {
+    background-color: $palette-medium-dark;
+    color: $palette-dark !important;
+  }
+}
+
+a:hover {
+  cursor: pointer !important;
+}

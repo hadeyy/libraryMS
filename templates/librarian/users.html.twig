@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if is_granted("ROLE_ADMIN") %}
+        Users
+    {% else %}
+        Readers
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <div class="col-xs-12 col-sm-12 col-md-10">
+        <h2>
+            {% if is_granted("ROLE_ADMIN") %}
+                Users
+            {% else %}
+                Readers
+            {% endif %}
+        </h2>
+        <hr>
+        <table class="table table-sm">
+            <thead>
+            <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Member since</th>
+                {% if is_granted("ROLE_ADMIN") %}
+                    <th>Roles</th>
+                    <th>Actions</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.firstName }}</td>
+                    <td>{{ user.lastName }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.registeredAt|date('d-m-Y H:i') }}</td>
+                    {% if is_granted("ROLE_ADMIN") %}
+                        <td>
+                            {% for role in user.roles %}
+                                {{ role }} <br>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a title="Go to profile" href="{{ path('show-user', {id: user.id}) }}">
+                                <span class="fa fa-user-o"></span>
+                            </a>
+                            {% if user != app.user %}
+                                <a title="Change role" href="{{ path('edit-user', {id: user.id}) }}">
+                                    <span class="fa fa-edit"></span>
+                                </a>
+                                <a title="Delete" data-toggle="modal" data-target="#remove{{ user.id }}">
+                                    <span class="fa fa-trash-o"></span>
+                                </a>
+                            {% endif %}
+
+                            <!-- User removal validation modal -->
+                            <div class="modal" id="remove{{ user.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                {% include 'admin/_removal_validation.html.twig' with {'user': user} %}
+                            </div>
+                            <!-- user removal validation modal end. -->
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

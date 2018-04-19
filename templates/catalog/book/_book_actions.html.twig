@@ -1,0 +1,62 @@
+{% if not app.user %}
+    You need to
+    <a href="{{ path('login') }}" class="book-action">
+        <button id="loginBtn" class="btn">LOG IN</button>
+    </a>
+    to enable more actions.
+    <br><br>
+{% elseif not available %}
+    <a class="book-action" title="Book already reserved">
+        <button type="button" class="btn" disabled>RESERVE BOOK</button>
+    </a>
+{% elseif app.user and 0 < book.availableCopies %}
+    <a class="book-action" href="{{ path('reserve-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
+        <!-- Reservation modal trigger -->
+        <button type="button" class="btn">RESERVE BOOK</button>
+    </a>
+{% elseif app.user and 1 > book.availableCopies %}
+    <a class="book-action" title="No available copies">
+        <button type="button" class="btn" disabled>RESERVE BOOK</button>
+    </a>
+{% endif %}
+{% if app.user %}
+    <a class="book-action">
+        <!-- Rating modal trigger -->
+        <button type="button" class="btn" data-toggle="modal" data-target="#ratingModal">
+            RATE BOOK
+        </button>
+    </a>
+
+    <br><br>
+{% endif %}
+
+{% if is_granted("ROLE_LIBRARIAN") %}
+    <a class="book-action" href="{{ path('edit-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
+        <button type="button" class="btn btn-warning">EDIT</button>
+    </a>
+    <a class="book-action">
+        <!-- Book removal validation modal trigger -->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#validationModal">
+            REMOVE
+        </button>
+    </a>
+    <br><br>
+{% endif %}
+
+<a class="book-action" href="{{ path('show-author', {slug: book.author.slug}) }}">
+    <button type="button" class="btn">SEE AUTHOR PAGE</button>
+</a>
+
+<!-- Rating modal -->
+{% if null != ratingForm %}
+    <div class="modal" id="ratingModal" tabindex="-1" role="dialog" aria-hidden="true">
+        {% include 'catalog/book/_rating.html.twig' with {'book': book, 'ratingForm': ratingForm} %}
+    </div>
+{% endif %}
+<!-- rating modal end. -->
+
+<!-- Book removal validation modal -->
+<div class="modal" id="validationModal" tabindex="-1" role="dialog" aria-hidden="true">
+    {% include 'catalog/book/_removal_validation.html.twig' with {'book': book} %}
+</div>
+<!-- book removal validation modal end. -->

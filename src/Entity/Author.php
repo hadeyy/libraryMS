@@ -9,52 +9,85 @@
 namespace App\Entity;
 
 
+use App\Utils\Slugger;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Entity
+ * @ORM\Table(name="app_authors")
+ * @ORM\Entity(repositoryClass="App\Repository\AuthorRepository")
+ * @UniqueEntity(fields="slug", message="Author with this slug already exists.")
  */
 class Author
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "First name must be at least {{ limit }} characters long",
+     *      maxMessage = "First name cannot be longer than {{ limit }} characters"
+     * )
      */
     private $firstName;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
-    private $lastName; // optional (in case of one name alias)
+    private $lastName;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Book", inversedBy="authors")
-     * @ORM\JoinTable(name="authors_books")
+     * @ORM\OneToMany(targetEntity="App\Entity\Book", mappedBy="author", cascade={"persist", "remove"})
      */
     private $books;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\BookSerie", inversedBy="authors")
-     * @ORM\JoinTable(name="authors_bookseries")
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Country name must be at least {{ limit }} characters long",
+     *      maxMessage = "Country name cannot be longer than {{ limit }} characters"
+     * )
      */
-    private $bookSeries;
+    private $country;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $portrait;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $country;
+    private $slug;
 
-    public function __construct()
-    {
+    public function __construct(
+        string $firstName,
+        $lastName = null,
+        string $country,
+        $portrait = null
+    ) {
+        $this->id = Uuid::uuid4();
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->country = $country;
+        $this->portrait = $portrait;
         $this->books = new ArrayCollection();
-        $this->bookSeries = new ArrayCollection();
+        $this->slug = Slugger::slugify($this);
     }
 
     public function getId()
@@ -62,27 +95,25 @@ class Author
         return $this->id;
     }
 
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getFirstName()
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    public function setFirstName($firstName): void
+    public function setFirstName(string $firstName): void
     {
         $this->firstName = $firstName;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLastName()
     {
         return $this->lastName;
     }
 
-    public function setLastName($lastName): void
+    public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
     }
@@ -92,29 +123,38 @@ class Author
         return $this->books;
     }
 
-    public function addBook($book): void
+    public function addBook(Book $book): void
     {
         $this->books->add($book);
     }
 
-    public function getBookSeries()
-    {
-        return $this->bookSeries;
-    }
-
-    public function addBookSeries($bookSerie): void
-    {
-        $this->bookSeries->add($bookSerie);
-    }
-
-    public function getCountry()
+    public function getCountry(): string
     {
         return $this->country;
     }
 
-    public function setCountry($country): void
+    public function setCountry(string $country): void
     {
         $this->country = $country;
     }
 
+    public function getPortrait()
+    {
+        return $this->portrait;
+    }
+
+    public function setPortrait($portrait): void
+    {
+        $this->portrait = $portrait;
+    }
+
+    public function __toString(): string
+    {
+        return $this->firstName . ' ' . $this->lastName;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
 }

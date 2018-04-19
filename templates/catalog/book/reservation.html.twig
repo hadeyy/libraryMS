@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book reservation{% endblock %}
+
+{% block content %}
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <a id="reservationBackLink" href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}"><span class="fa fa-angle-left"></span>
+        </a>
+        <h2 id="reservationTitle">
+            Reserving:
+            <span class="all-caps">"{{ book.title }}"</span> by
+            <span class="capital">{{ book.author }}</span>
+        </h2>
+        <hr>
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button type="submit" class="book-form-btn">SUBMIT</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

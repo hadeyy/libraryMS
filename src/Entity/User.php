@@ -11,80 +11,162 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Entity
+ * @ORM\Table(name="app_users")
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity(fields="email", message="User with this email already exists.")
+ * @UniqueEntity(fields="username", message="Username already taken.")
  */
 class User implements UserInterface, \Serializable
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
-    protected $id;
+    private $id;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "First name must be at least {{ limit }} characters long.",
+     *      maxMessage = "First name cannot be longer than {{ limit }} characters."
+     * )
      */
-    protected $firstName;
+    private $firstName;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Last name must be at least {{ limit }} characters long",
+     *      maxMessage = "Last name cannot be longer than {{ limit }} characters"
+     * )
      */
-    protected $lastName;
+    private $lastName;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=25, unique=true)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 25,
+     *      minMessage = "Username must be at least {{ limit }} characters long",
+     *      maxMessage = "Username cannot be longer than {{ limit }} characters"
+     * )
      */
-    protected $username;
+    private $username;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=60, unique=true)
+     * @Assert\NotBlank()
      */
-    protected $email;
+    private $email;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank()
+     * @Assert\Date()
      */
     private $registeredAt;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Image(
+     *     minWidth = 50,
+     *     maxWidth = 5000,
+     *     minHeight = 50,
+     *     maxHeight = 5000,
+     *     minWidthMessage="Minimum width expected is {{ min_width }}px.",
+     *     maxWidthMessage="Allowed maximum width is {{ max_width }}px.",
+     *     minHeightMessage="Minimum height expected is {{ min_height }}px.",
+     *     maxHeightMessage="Allowed maximum height is {{ max_height }}px."
+     * )
      */
     private $photo;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="reader")
+     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="reader", cascade={"persist", "remove"})
      */
     private $bookReservations;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Notification", mappedBy="receiver")
+     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="user", cascade={"persist", "remove"})
      */
-    private $notifications;
+    private $activities;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author", cascade={"persist", "remove"})
      */
     private $comments;
 
-    protected $plainPassword;
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Book", cascade={"persist"})
+     * @ORM\JoinTable(name="users_books",
+     *     joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="book_id", referencedColumnName="id", unique=true)}
+     * )
+     */
+    private $favorites;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\OneToMany(targetEntity="App\Entity\Rating", mappedBy="user", cascade={"persist", "remove"})
      */
-    protected $password;
+    private $ratings;
 
-    protected $roles;
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Length(max=4096)
+     */
+    private $plainPassword;
 
+    /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $password;
 
-    public function __construct()
-    {
-        $this->notifications = new ArrayCollection();
+    /**
+     * @ORM\Column(type="json_array")
+     * @Assert\NotBlank()
+     */
+    private $roles;
+
+    public function __construct(
+        string $firstName,
+        string $lastName,
+        string $username,
+        string $email,
+        $photo,
+        string $plainPassword,
+        array $roles = ['ROLE_USER']
+    ) {
+        $this->id = Uuid::uuid4();
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->username = $username;
+        $this->email = $email;
+        $this->photo = $photo;
+        $this->plainPassword = $plainPassword;
+        $this->roles = $roles;
+        $this->password = '123456';
+        $this->registeredAt = new \DateTime();
         $this->bookReservations = new ArrayCollection();
+        $this->activities = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
     }
 
     public function getId()
@@ -92,69 +174,59 @@ class User implements UserInterface, \Serializable
         return $this->id;
     }
 
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getFirstName()
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    public function setFirstName($firstName): void
+    public function setFirstName(string $firstName): void
     {
         $this->firstName = $firstName;
     }
 
-    public function getLastName()
+    public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    public function setLastName($lastName): void
+    public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
 
-    public function setUsername($username): void
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
 
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function setEmail($email): void
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
 
-    public function getPlainPassword()
+    public function getPlainPassword(): string
     {
         return $this->plainPassword;
     }
 
-    public function setPlainPassword($plainPassword): void
+    public function setPlainPassword(string $plainPassword): void
     {
         $this->plainPassword = $plainPassword;
     }
 
-    public function getRegisteredAt()
+    public function getRegisteredAt(): \DateTime
     {
         return $this->registeredAt;
-    }
-
-    public function setRegisteredAt($registeredAt): void
-    {
-        $this->registeredAt = $registeredAt;
     }
 
     public function getPhoto()
@@ -172,19 +244,19 @@ class User implements UserInterface, \Serializable
         return $this->bookReservations;
     }
 
-    public function addBookReservation($bookReservation): void
+    public function addBookReservation(BookReservation $bookReservation): void
     {
         $this->bookReservations->add($bookReservation);
     }
 
-    public function getNotifications()
+    public function getActivities()
     {
-        return $this->notifications;
+        return $this->activities;
     }
 
-    public function addNotification($notification): void
+    public function addActivity(Activity $activity): void
     {
-        $this->notifications->add($notification);
+        $this->activities->add($activity);
     }
 
     public function getComments()
@@ -192,9 +264,34 @@ class User implements UserInterface, \Serializable
         return $this->comments;
     }
 
-    public function addComment($comment): void
+    public function addComment(Comment $comment): void
     {
         $this->comments->add($comment);
+    }
+
+    public function getFavorites()
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Book $book): void
+    {
+        $this->favorites->add($book);
+    }
+
+    public function removeFavorite(Book $book): void
+    {
+        $this->favorites->removeElement($book);
+    }
+
+    public function getRatings()
+    {
+        return $this->ratings;
+    }
+
+    public function addRating(Rating $rating): void
+    {
+        $this->ratings->add($rating);
     }
 
     /**
@@ -216,6 +313,16 @@ class User implements UserInterface, \Serializable
         return $this->roles;
     }
 
+    public function addRole(string $role): void
+    {
+        $this->roles[] = $role;
+    }
+
+    public function resetRoles()
+    {
+        $this->roles = ['ROLE_USER'];
+    }
+
     /**
      * Returns the password used to authenticate the user.
      *
@@ -224,12 +331,12 @@ class User implements UserInterface, \Serializable
      *
      * @return string The password
      */
-    public function getPassword()
+    public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function setPassword($password): void
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
@@ -287,5 +394,10 @@ class User implements UserInterface, \Serializable
             $this->username,
             $this->password,
             ) = unserialize($serialized);
+    }
+
+    public function __toString(): string
+    {
+        return $this->firstName . ' ' . $this->lastName;
     }
 }

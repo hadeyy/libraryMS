@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservations{% endblock %}
+{% block content %}
+    <div class="col-md-3">
+        <h2>Reserved</h2>
+        <hr>
+        <div id="reserved" class="drop-column">
+            {% for reservation in reserved %}
+                {% include 'librarian/_reservation_card.html.twig' with {'reservation': reservation} %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h2>Reading</h2>
+        <hr>
+        <div id="reading" class="drop-column">
+            {% for reservation in reading %}
+                {% include 'librarian/_reservation_card.html.twig' with {'reservation': reservation} %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h2>Returned</h2>
+        <hr>
+        <div id="returned" class="drop-column">
+            {% for reservation in returned %}
+                {% include 'librarian/_reservation_card.html.twig' with {'reservation': reservation} %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h2>Canceled</h2>
+        <hr>
+        <div id="canceled" class="drop-column">
+            {% for reservation in canceled %}
+                {% include 'librarian/_reservation_card.html.twig' with {'reservation': reservation} %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $(function () {
+            let activePortlet, portletID, startStatus, stopStatus;
+
+            $(".drop-column").sortable({
+                connectWith: ".drop-column",
+                handle: ".portlet-header",
+                cancel: ".portlet-toggle",
+                placeholder: "portlet-placeholder ui-corner-all",
+                start: function (event, ui) {
+                    // selected portlet
+                    activePortlet = ui.item[0];
+                    // reservation's ID
+                    portletID = activePortlet.id;
+                    // selected portlet's original column name (id)
+                    startStatus = activePortlet.parentNode.id;
+
+                    if (startStatus === 'returned' || startStatus === 'canceled') {
+                        alert("Cannot change reservation status for '" + startStatus + "' reservations!");
+                    }
+                },
+                stop: function (event, ui) {
+                    stopStatus = ui.item[0].parentNode.id;
+
+                    if (
+                        (startStatus === 'reserved' && stopStatus === 'returned') ||
+                        (startStatus === 'reading' && (stopStatus === 'reserved' || stopStatus === 'canceled'))
+                    ) {
+                        $(this).sortable('cancel');
+                        alert("Cannot move reservation from '" + startStatus + "' to '" + stopStatus + "'!");
+                    } else if (stopStatus !== startStatus) {
+                        update(portletID, stopStatus);
+                    }
+                }
+            });
+
+            $(".portlet")
+                .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+                .find(".portlet-header")
+                .addClass("ui-widget-header ui-corner-all");
+
+            $(".portlet-toggle").on("click", function () {
+                let icon = $(this);
+                icon.closest(".portlet").find(".portlet-content").toggle();
+            });
+
+            function update(id, status) {
+                let url = "{{ path('update-reservation', {'id': 9999999999, 'status': 'statusPlaceholder'}) }}";
+                url = url.replace(9999999999, id);
+                url = url.replace("statusPlaceholder", status);
+                // page reload
+                window.location = url;
+            }
+        });
+    </script>
+{% endblock %}

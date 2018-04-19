@@ -1,0 +1,19 @@
+<div class="profile-featured-book col-xs-12 col-sm-12 col-md-6 col-lg-6">
+    <div class="row d-flex justify-content-center align-items-center">
+        <div class="cover-col col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <img src="{{ asset('uploads/covers/' ~ book.cover) }}"/>
+        </div>
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+            <p>
+                <span class="title">{{ book.title }}</span>
+                <br>
+                <span>by</span> <span class="author">{{ book.author }}</span>
+            </p>
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+            <a href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
+                <span class="fa fa-angle-right"></span>
+            </a>
+        </div>
+    </div>
+</div>

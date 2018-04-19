@@ -9,122 +9,260 @@
 namespace App\Entity;
 
 
+use App\Utils\Slugger;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Table(name="app_books")
+ * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
+ * @UniqueEntity(fields="ISBN", message="Book with this ISBN already exists.")
+ * @UniqueEntity(fields="slug", message="Book with this slug already exists.")
  */
 class Book
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Expression(
+     *     "strlen(value) == 10 or strlen(value) == 13",
+     *     message="ISBN must be either 10 or 13 characters long."
+     * )
      */
     private $ISBN;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 1,
+     *     max = 140,
+     *     minMessage="Title must be at least {{ limit }} characters long.",
+     *     maxMessage="Title cannot be longer than {{ limit }} characters."
+     * )
      */
     private $title;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Author", mappedBy="books")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Author", inversedBy="books")
+     * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
+     * @Assert\NotBlank()
+     * @Assert\Valid
      */
-    private $authors;
+    private $author;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\Range(
+     *     min = 10,
+     *     max = 13095,
+     *     minMessage="This value should be greater than or equal to {{ limit }}.",
+     *     maxMessage="This value should be less than or equal to {{ limit }}."
+     * )
      */
     private $pages;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 2,
+     *     max = 20,
+     *     minMessage="Language name must be at least {{ limit }} characters long.",
+     *     maxMessage="Language name cannot be longer than {{ limit }} characters."
+     * )
      */
     private $language;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Genre", inversedBy="books")
-     * @ORM\JoinTable(name="books_genres")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Genre", inversedBy="books", cascade={"persist"})
+     * @ORM\JoinTable(name="books_and_genres",
+     *     joinColumns={@ORM\JoinColumn(name="bookId", referencedColumnName="id", unique=false)},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="genreId", referencedColumnName="id", unique=false)}
+     * )
+     * @Assert\NotBlank()
+     * @Assert\Count(
+     *     min="1",
+     *     max="5",
+     *     minMessage="You must specify at least one genre.",
+     *     maxMessage="You cannot specify more than {{ limit }} genres."
+     * )
      */
     private $genres;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 2,
+     *     max = 140,
+     *     minMessage="Publisher name must be at least {{ limit }} characters long.",
+     *     maxMessage="Publisher name cannot be longer than {{ limit }} characters."
+     * )
      */
     private $publisher;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank()
+     * @Assert\Date()
+     * @Assert\LessThan("today")
      */
     private $publicationDate;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\Range(
+     *     min = 1,
+     *     max = 100,
+     *     minMessage="This value should be greater than or equal to {{ limit }}.",
+     *     maxMessage="This value should be less than or equal to {{ limit }}."
+     * )
      */
     private $availableCopies;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\Expression(
+     *     "value >= 0",
+     *     message="There cannot be a negative amount of reserved copies."
+     * )
+     * @Assert\Expression(
+     *     "value <= this.getAvailableCopies()",
+     *     message="Amount of reserved copies cannot be greater than amount of available copies."
+     * )
      */
     private $reservedCopies;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Image(
+     *     minWidth = 50,
+     *     maxWidth = 5000,
+     *     minHeight = 50,
+     *     maxHeight = 5000,
+     *     minWidthMessage="Minimum width expected is {{ min_width }}px.",
+     *     maxWidthMessage="Allowed maximum width is {{ max_width }}px.",
+     *     minHeightMessage="Minimum height expected is {{ min_height }}px.",
+     *     maxHeightMessage="Allowed maximum height is {{ max_height }}px."
+     * )
      */
     private $cover;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 140,
+     *     max = 2000,
+     *     minMessage="Annotation must be at least {{ limit }} characters long.",
+     *     maxMessage="Annotation cannot be longer than {{ limit }} characters.",
+     * )
      */
     private $annotation;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\OneToMany(targetEntity="App\Entity\Rating", mappedBy="book", cascade={"persist", "remove"})
      */
-    private $rating;
+    private $ratings;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="integer",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\Expression(
+     *     "value >= 0",
+     *     message="There cannot be a negative amount of times book has been borrowed."
+     * )
      */
     private $timesBorrowed;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\BookSerie", inversedBy="book")
-     * @ORM\JoinColumn(name="bookserie_id", referencedColumnName="id")
-     */
-    private $serie;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="book")
+     * @ORM\OneToMany(targetEntity="App\Entity\BookReservation", mappedBy="book", cascade={"persist", "remove"})
      */
     private $reservations;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="book")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="book", cascade={"persist", "remove"})
      */
     private $comments;
 
-    public function __construct()
-    {
-        $this->authors = new ArrayCollection();
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Activity", mappedBy="book", cascade={"persist", "remove"})
+     */
+    private $activities;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $slug;
+
+    public function __construct(
+        string $ISBN,
+        string $title,
+        Author $author,
+        int $pages,
+        string $language,
+        string $publisher,
+        \DateTime $publicationDate,
+        int $availableCopies,
+        $cover,
+        string $annotation
+    ) {
+        $this->id = Uuid::uuid4();
+        $this->ISBN = $ISBN;
+        $this->title = $title;
+        $this->author = $author;
+        $this->pages = $pages;
+        $this->language = $language;
+        $this->publisher = $publisher;
+        $this->publicationDate = $publicationDate;
+        $this->availableCopies = $availableCopies;
+        $this->cover = $cover;
+        $this->annotation = $annotation;
+        $this->reservedCopies = 0;
+        $this->timesBorrowed = 0;
         $this->genres = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->activities = new ArrayCollection();
+        $this->slug = Slugger::slugify($this);
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     public function getISBN(): string
@@ -147,14 +285,14 @@ class Book
         $this->title = $title;
     }
 
-    public function getAuthors()
+    public function getAuthor(): Author
     {
-        return $this->authors;
+        return $this->author;
     }
 
-    public function addAuthor($author): void
+    public function setAuthor(Author $author): void
     {
-        $this->authors->add($author);
+        $this->author = $author;
     }
 
     public function getPages(): int
@@ -182,9 +320,14 @@ class Book
         return $this->genres;
     }
 
-    public function addGenre($genre): void
+    public function addGenre(Genre $genre): void
     {
         $this->genres->add($genre);
+    }
+
+    public function resetGenres(): void
+    {
+        $this->genres = new ArrayCollection();
     }
 
     public function getPublisher(): string
@@ -197,12 +340,12 @@ class Book
         $this->publisher = $publisher;
     }
 
-    public function getPublicationDate()
+    public function getPublicationDate(): \DateTime
     {
         return $this->publicationDate;
     }
 
-    public function setPublicationDate($publicationDate): void
+    public function setPublicationDate(\DateTime $publicationDate): void
     {
         $this->publicationDate = $publicationDate;
     }
@@ -247,17 +390,17 @@ class Book
         $this->annotation = $annotation;
     }
 
-    public function getRating():float
+    public function getRatings()
     {
-        return $this->rating;
+        return $this->ratings;
     }
 
-    public function setRating(float $rating): void
+    public function addRating(Rating $rating): void
     {
-        $this->rating = $rating;
+        $this->ratings->add($rating);
     }
 
-    public function getTimesBorrowed():int
+    public function getTimesBorrowed(): int
     {
         return $this->timesBorrowed;
     }
@@ -267,24 +410,14 @@ class Book
         $this->timesBorrowed = $timesBorrowed;
     }
 
-    public function getSerie()
-    {
-        return $this->serie;
-    }
-
-    public function setSerie($serie): void
-    {
-        $this->serie = $serie;
-    }
-
     public function getReservations()
     {
         return $this->reservations;
     }
 
-    public function setReservations($reservations): void
+    public function addReservation(BookReservation $reservation): void
     {
-        $this->reservations = $reservations;
+        $this->reservations->add($reservation);
     }
 
     public function getComments()
@@ -292,8 +425,28 @@ class Book
         return $this->comments;
     }
 
-    public function setComments($comments): void
+    public function addComment(Comment $comment): void
     {
-        $this->comments = $comments;
+        $this->comments->add($comment);
+    }
+
+    public function getActivities()
+    {
+        return $this->activities;
+    }
+
+    public function addActivity(Activity $activity): void
+    {
+        $this->activities->add($activity);
+    }
+
+    public function __toString(): string
+    {
+        return $this->title;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
     }
 }

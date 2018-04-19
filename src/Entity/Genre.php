@@ -9,23 +9,37 @@
 namespace App\Entity;
 
 
+use App\Utils\Slugger;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Entity
+ * @ORM\Table(name="app_genres")
+ * @ORM\Entity(repositoryClass="App\Repository\GenreRepository")
+ * @UniqueEntity(fields="slug", message="Genre with this slug already exists.")
  */
 class Genre
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="guid")
+     * @Assert\NotBlank()
+     * @Assert\Uuid
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 2,
+     *     max = 35,
+     *     minMessage="Genre name must be at least {{ limit }} characters long.",
+     *     maxMessage="Genre name cannot be longer than {{ limit }} characters."
+     * )
      */
     private $name;
 
@@ -34,9 +48,17 @@ class Genre
      */
     private $books;
 
-    public function __construct()
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $slug;
+
+    public function __construct(string $name)
     {
+        $this->id = Uuid::uuid4();
+        $this->name = $name;
         $this->books = new ArrayCollection();
+        $this->slug = Slugger::slugify($this);
     }
 
     public function getId()
@@ -44,17 +66,12 @@ class Genre
         return $this->id;
     }
 
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -64,9 +81,18 @@ class Genre
         return $this->books;
     }
 
-    public function addBook($book): void
+    public function addBook(Book $book): void
     {
         $this->books->add($book);
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
 }

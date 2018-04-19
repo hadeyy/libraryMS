@@ -1,0 +1,22 @@
+<div class="flip-card-container">
+    <div class="flip-card">
+        <div class="face front-face d-flex justify-content-center align-items-center">
+            <img src="{{ asset('uploads/covers/' ~ book.cover) }}"/>
+            <!-- Favorite tag -->
+            {% if app.user and book in app.user.favorites %}
+                <div class="favorite-tag">
+                    <span class="fa fa-star"></span>
+                </div>
+            {% endif %}
+            <!-- favorite tag end. -->
+        </div>
+        <div class="face back-face">
+            <h5>{{ book.title }}</h5>
+            <h6><small>by</small> {{ book.author }}</h6>
+            <br><br>
+            <a href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}">
+                see more <span class="fa fa-angle-right"></span>
+            </a>
+        </div>
+    </div>
+</div>

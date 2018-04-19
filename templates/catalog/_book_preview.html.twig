@@ -1,0 +1,79 @@
+<div class="book-preview col-xs-12 col-sm-6 col-md-2 col-lg-2 d-flex align-items-center">
+    <!-- Modal trigger -->
+    <button class="preview-button" data-toggle="modal" data-target="#bookInfo{{ book.id }}">
+        <img class="preview-cover" src="{{ asset('uploads/covers/' ~ book.cover) }}" alt="Book cover">
+        <!-- Favorite tag -->
+        {% if app.user and book in app.user.favorites %}
+            <div class="favorite-tag">
+                <span class="fa fa-star"></span>
+            </div>
+        {% endif %}
+        <!-- favorite tag end. -->
+    </button>
+
+    <!-- Modal -->
+    <div class="modal preview-modal" id="bookInfo{{ book.id }}" tabindex="-1" role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Book cover image -->
+                        <div class="col-xs-12 col-sm-12 col-md-4 d-flex align-items-center">
+                            <img class="preview-modal-cover" src="{{ asset('uploads/covers/' ~ book.cover) }}"
+                                 alt="Book cover">
+                        </div>
+                        <!-- Book info -->
+                        <div class="col-xs-12 col-sm-12 col-md-8">
+                            <!-- Modal close button -->
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+
+                            <h5 class="card-title">
+                                <span class="preview-title">
+                                    {{ book.title|length > 50 ? book.title|slice(0,47) ~ '..' : book.title }}
+                                </span>
+                                <br>
+                                <small>by</small>
+                                <span class="preview-author">
+                                    {{ book.author.firstName }} {{ book.author.lastName }}
+                                </span>
+                            </h5>
+
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                {% for genre in book.genres %}
+                                    <span class="preview-genre">{{ genre.name }}</span>
+                                {% endfor %}
+                            </h6>
+                            <h6 class="card-subtitle mb-2 text-muted preview-pages">
+                                {{ book.pages }} pages
+                            </h6>
+
+                            <p class="card-text preview-annotation">
+                                {{ book.annotation|length > 400 ? book.annotation|slice(0,400) ~ '...' : book.annotation }}
+                            </p>
+
+                            <a href="{{ path('show-book', {bookSlug: book.slug, authorSlug: book.author.slug}) }}" class="card-link preview-link">
+                                Book page
+                                <span class="fa fa-angle-right"></span>
+                            </a>
+                            <a href="{{ path('show-author', {slug: book.author.slug}) }}" class="card-link preview-link">
+                                Author page
+                                <span class="fa fa-angle-right"></span>
+                            </a>
+                        </div>
+                        <!-- book info end. -->
+                    </div>
+                </div>
+
+                <!-- Next and previous navigation -->
+                <span class="fa fa-angle-left prev"></span>
+                <span class="fa fa-angle-right next"></span>
+                <!-- next and previous end. -->
+
+            </div>
+        </div>
+    </div>
+    <!-- modal end. -->
+</div>

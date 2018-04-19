@@ -1,0 +1,20 @@
+<div class="card activity-card">
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="{{ path("show-user", {id: activity.user.id}) }}" class="activity-book-author">
+                {{ activity.user }}
+            </a>
+            <span class="text-lowercase">{{ activity.title }}</span>
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+            {{ activity.time|date('H:i d-m-Y') }}
+        </h6>
+        <a href="{{ path("show-book", {bookSlug: activity.book.slug, authorSlug: activity.book.author.slug}) }}" class="activity-book-title">
+            {{ activity.book.title }}
+        </a>
+        by
+        <a href="{{ path("show-author", {slug: activity.book.author.slug}) }}" class="activity-book-author">
+            {{ activity.book.author }}
+        </a>
+    </div>
+</div>

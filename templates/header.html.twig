@@ -1,0 +1,69 @@
+<nav class="navbar navbar-expand-lg">
+    <a id="brandName" class="navbar-brand" href="{{ path('index') }}">libraryMS</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="fa fa-bars"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('show-catalog') }}">Catalog</a>
+            </li>
+            {% if is_granted("ROLE_LIBRARIAN") %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('show-reservations') }}">Reservations</a>
+                </li>
+                {% if is_granted("ROLE_ADMIN") %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('show-users') }}">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('show-all-activity') }}">All activity</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('show-readers') }}">Readers</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+        </ul>
+        <div class="form-inline my-2 my-lg-0">
+            {% if not app.user %}
+                <a href="{{ path('login') }}">
+                    <button id="loginButton" type="button" class="btn text-light">
+                        LOGIN
+                    </button>
+                </a>
+
+                <a href="{{ path('register') }}">
+                    <button id="registerButton" type="button" class="btn text-light">
+                        REGISTER
+                    </button>
+                </a>
+            {% else %}
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" id="profileMenu"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ app.user.username }}
+                    </button>
+                    <div id="profileMenu" class="dropdown-menu">
+                        <h6 class="dropdown-header">{{ app.user.firstName }} {{ app.user.lastName }}</h6>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ path('show-profile') }}">Profile</a>
+                        <a class="dropdown-item" href="{{ path('show-user-activity') }}">Activity</a>
+                        <a class="dropdown-item" href="{{ path('show-user-reservations') }}">Reservations</a>
+
+                        <div class="dropdown-divider"></div>
+                        <a id="logout" href="{{ path('logout') }}">
+                            <button type="button" class="btn btn-small btn-outline-danger text-light">LOGOUT</button>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
