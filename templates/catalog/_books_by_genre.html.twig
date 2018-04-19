@@ -16,9 +16,11 @@
         {% endif %}
     </span>
 
-    <!-- Genre removal validation modal -->
-    <div class="modal" id="removalModal" tabindex="-1" role="dialog" aria-hidden="true">
-        {% include 'catalog/genre/_removal_validation.html.twig' with {'genre': genre} %}
-    </div>
-    <!-- genre removal validation modal end. -->
+    {% if is_granted('ROLE_LIBRARIAN') %}
+        <!-- Genre removal validation modal -->
+        <div class="modal" id="removalModal" tabindex="-1" role="dialog" aria-hidden="true">
+            {% include 'catalog/genre/_removal_validation.html.twig' with {'genre': genre} %}
+        </div>
+        <!-- genre removal validation modal end. -->
+    {% endif %}
 {% endblock %}
