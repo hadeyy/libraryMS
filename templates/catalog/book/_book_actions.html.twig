@@ -1,4 +1,11 @@
-{% if not available %}
+{% if not app.user %}
+    You need to
+    <a href="{{ path('login') }}" class="book-action">
+        <button id="loginBtn" class="btn">LOG IN</button>
+    </a>
+    to enable more actions.
+    <br><br>
+{% elseif not available %}
     <a class="book-action" title="Book already reserved">
         <button type="button" class="btn" disabled>RESERVE BOOK</button>
     </a>
