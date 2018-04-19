@@ -5,8 +5,8 @@
     <span class="float-right">
         <span class="filter-title">{{ genre.name }}</span>
         <small> books</small>
-        |
         {% if is_granted("ROLE_LIBRARIAN") %}
+            |
             <a href="{{ path('edit-genre', {id: genre.id}) }}" title="Edit genre">
                 <span class="fa fa-edit"></span>
             </a>
