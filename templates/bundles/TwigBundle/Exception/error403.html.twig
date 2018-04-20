@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    An Error Occurred
+{% endblock %}
+{% block content %}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10">
+        <h1 class="text-danger">Error 403: Access forbidden.</h1>
+
+        <p class="lead">
+            Return to <a href="{{ path('index') }}">homepage</a>.
+        </p>
+    </div>
+{% endblock %}
